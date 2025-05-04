@@ -23,12 +23,14 @@ function AuthRegister() {
     dispatch(registerUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || "Registration successful",
+          variant: "default",
         });
         navigate("/auth/login");
       } else {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || "Registration failed",
+          description: "Please check your credentials and try again.",
           variant: "destructive",
         });
       }

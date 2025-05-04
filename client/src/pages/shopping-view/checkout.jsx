@@ -32,64 +32,64 @@ function ShoppingCheckout() {
         )
       : 0;
 
-  function handleInitiatePaypalPayment() {
-    if (cartItems.length === 0) {
-      toast({
-        title: "Your cart is empty. Please add items to proceed",
-        variant: "destructive",
-      });
+  // function handleInitiatePaypalPayment() {
+  //   if (cartItems.length === 0) {
+  //     toast({
+  //       title: "Your cart is empty. Please add items to proceed",
+  //       variant: "destructive",
+  //     });
 
-      return;
-    }
-    if (currentSelectedAddress === null) {
-      toast({
-        title: "Please select one address to proceed.",
-        variant: "destructive",
-      });
+  //     return;
+  //   }
+  //   if (currentSelectedAddress === null) {
+  //     toast({
+  //       title: "Please select one address to proceed.",
+  //       variant: "destructive",
+  //     });
 
-      return;
-    }
+  //     return;
+  //   }
 
-    const orderData = {
-      userId: user?.id,
-      cartId: cartItems?._id,
-      cartItems: cartItems.items.map((singleCartItem) => ({
-        productId: singleCartItem?.productId,
-        title: singleCartItem?.title,
-        image: singleCartItem?.image,
-        price:
-          singleCartItem?.salePrice > 0
-            ? singleCartItem?.salePrice
-            : singleCartItem?.price,
-        quantity: singleCartItem?.quantity,
-      })),
-      addressInfo: {
-        addressId: currentSelectedAddress?._id,
-        address: currentSelectedAddress?.address,
-        city: currentSelectedAddress?.city,
-        pincode: currentSelectedAddress?.pincode,
-        phone: currentSelectedAddress?.phone,
-        notes: currentSelectedAddress?.notes,
-      },
-      orderStatus: "pending",
-      paymentMethod: "paypal",
-      paymentStatus: "pending",
-      totalAmount: totalCartAmount,
-      orderDate: new Date(),
-      orderUpdateDate: new Date(),
-      paymentId: "",
-      payerId: "",
-    };
+  //   const orderData = {
+  //     userId: user?.id,
+  //     cartId: cartItems?._id,
+  //     cartItems: cartItems.items.map((singleCartItem) => ({
+  //       productId: singleCartItem?.productId,
+  //       title: singleCartItem?.title,
+  //       image: singleCartItem?.image,
+  //       price:
+  //         singleCartItem?.salePrice > 0
+  //           ? singleCartItem?.salePrice
+  //           : singleCartItem?.price,
+  //       quantity: singleCartItem?.quantity,
+  //     })),
+  //     addressInfo: {
+  //       addressId: currentSelectedAddress?._id,
+  //       address: currentSelectedAddress?.address,
+  //       city: currentSelectedAddress?.city,
+  //       pincode: currentSelectedAddress?.pincode,
+  //       phone: currentSelectedAddress?.phone,
+  //       notes: currentSelectedAddress?.notes,
+  //     },
+  //     orderStatus: "pending",
+  //     paymentMethod: "paypal",
+  //     paymentStatus: "pending",
+  //     totalAmount: totalCartAmount,
+  //     orderDate: new Date(),
+  //     orderUpdateDate: new Date(),
+  //     paymentId: "",
+  //     payerId: "",
+  //   };
 
-    dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
-      if (data?.payload?.success) {
-        setIsPaymemntStart(true);
-      } else {
-        setIsPaymemntStart(false);
-      }
-    });
-  }
+  //   dispatch(createNewOrder(orderData)).then((data) => {
+  //     console.log(data, "group 6");
+  //     if (data?.payload?.success) {
+  //       setIsPaymemntStart(true);
+  //     } else {
+  //       setIsPaymemntStart(false);
+  //     }
+  //   });
+  // }
 
   if (approvalURL) {
     window.location.href = approvalURL;
@@ -118,7 +118,9 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+            <Button 
+            // onClick={handleInitiatePaypalPayment} 
+            className="w-full">
               {isPaymentStart
                 ? "Processing Paypal Payment..."
                 : "Checkout with Paypal"}

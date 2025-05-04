@@ -18,13 +18,8 @@ function ProductImageUpload({
 }) {
   const inputRef = useRef(null);
 
-  console.log(isEditMode, "isEditMode");
-
   function handleImageFileChange(event) {
-    console.log(event.target.files, "event.target.files");
     const selectedFile = event.target.files?.[0];
-    console.log(selectedFile);
-
     if (selectedFile) setImageFile(selectedFile);
   }
 
@@ -40,35 +35,45 @@ function ProductImageUpload({
 
   function handleRemoveImage() {
     setImageFile(null);
+    setUploadedImageUrl("");  // Reset URL when removing image
     if (inputRef.current) {
-      inputRef.current.value = "";
+      inputRef.current.value = "";  // Reset input field
     }
   }
 
   async function uploadImageToCloudinary() {
-    setImageLoadingState(true);
-    const data = new FormData();
-    data.append("my_file", imageFile);
-    const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
-      data
-    );
-    console.log(response, "response");
+    try {
+      setImageLoadingState(true);
+      const data = new FormData();
+      data.append("my_file", imageFile);
 
-    if (response?.data?.success) {
-      setUploadedImageUrl(response.data.result.url);
+      const response = await axios.post(
+        "http://localhost:5000/api/admin/products/upload-image",
+        data
+      );
+
+      if (response?.data?.success) {
+        setUploadedImageUrl(response.data.result.url);
+        console.log("Cloudinary URL:", response.data.result.url);
+      } else {
+        alert("Image upload failed!");
+      }
+    } catch (err) {
+      console.error("Cloudinary upload error", err);
+      alert("An error occurred during upload.");
+    } finally {
       setImageLoadingState(false);
     }
   }
 
   useEffect(() => {
-    if (imageFile !== null) uploadImageToCloudinary();
+    if (imageFile !== null) {
+      uploadImageToCloudinary();
+    }
   }, [imageFile]);
 
   return (
-    <div
-      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
-    >
+    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
       <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
       <div
         onDragOver={handleDragOver}
@@ -83,7 +88,7 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode}
+          disabled={isEditMode || imageLoadingState}  // Disable while uploading
         />
         {!imageFile ? (
           <Label
@@ -98,11 +103,11 @@ function ProductImageUpload({
         ) : imageLoadingState ? (
           <Skeleton className="h-10 bg-gray-100" />
         ) : (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-2">
             <div className="flex items-center">
               <FileIcon className="w-8 text-primary mr-2 h-8" />
+              <p className="text-sm font-medium">{imageFile.name}</p>
             </div>
-            <p className="text-sm font-medium">{imageFile.name}</p>
             <Button
               variant="ghost"
               size="icon"

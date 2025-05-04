@@ -11,23 +11,36 @@ function AdminDashboard() {
   const dispatch = useDispatch();
   const { featureImageList } = useSelector((state) => state.commonFeature);
 
-  console.log(uploadedImageUrl, "uploadedImageUrl");
-
   function handleUploadFeatureImage() {
+    console.log("Trying to upload to DB:", uploadedImageUrl);
+    if (!uploadedImageUrl) {
+      alert("Please upload an image to Cloudinary first.");
+      return;
+    }
+
     dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
       if (data?.payload?.success) {
         dispatch(getFeatureImages());
         setImageFile(null);
         setUploadedImageUrl("");
+      } else {
+        console.error("Failed to add image to DB", data);
       }
     });
+  }
+
+  function handleDeleteFeatureImage(id) {
+    fetch(`http://localhost:5000/api/common/feature/delete/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then(() => dispatch(getFeatureImages()))
+      .catch((err) => console.error("Delete failed:", err));
   }
 
   useEffect(() => {
     dispatch(getFeatureImages());
   }, [dispatch]);
-
-  console.log(featureImageList, "featureImageList");
 
   return (
     <div>
@@ -39,22 +52,31 @@ function AdminDashboard() {
         setImageLoadingState={setImageLoadingState}
         imageLoadingState={imageLoadingState}
         isCustomStyling={true}
-        // isEditMode={currentEditedId !== null}
       />
-      <Button onClick={handleUploadFeatureImage} className="mt-5 w-full">
-        Upload
+      <Button
+        onClick={handleUploadFeatureImage}
+        className="mt-5 w-full"
+        disabled={!uploadedImageUrl || imageLoadingState}
+      >
+        {imageLoadingState ? "Uploading..." : "Save to Database"}
       </Button>
       <div className="flex flex-col gap-4 mt-5">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((featureImgItem) => (
-              <div className="relative">
-                <img
-                  src={featureImgItem.image}
-                  className="w-full h-[300px] object-cover rounded-t-lg"
-                />
-              </div>
-            ))
-          : null}
+        {featureImageList?.map((featureImgItem) => (
+          <div key={featureImgItem._id} className="relative">
+            <img
+              src={featureImgItem.image}
+              className="w-full h-[300px] object-cover rounded-t-lg"
+              alt="feature"
+            />
+            <Button
+              onClick={() => handleDeleteFeatureImage(featureImgItem._id)}
+              className="absolute top-2 right-2"
+              variant="destructive"
+            >
+              Delete
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   );

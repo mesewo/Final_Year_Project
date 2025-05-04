@@ -2,19 +2,25 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 
 cloudinary.config({
-  cloud_name: "",
-  api_key: "",
-  api_secret: "",
+  cloud_name: "duwzuflcq",
+  api_key: "441942542794491",
+  api_secret: "jNs42nobXfPp0_taAgTk",
 });
 
-const storage = new multer.memoryStorage();
+// Use memory storage to store the file temporarily
+const storage = multer.memoryStorage();
 
+// Image upload function
 async function imageUploadUtil(file) {
-  const result = await cloudinary.uploader.upload(file, {
-    resource_type: "auto",
-  });
-
-  return result;
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      resource_type: "auto", // Automatically determine the type (image, video, etc.)
+    });
+    return result;
+  } catch (error) {
+    console.error("Error uploading image to Cloudinary:", error);
+    throw new Error("Cloudinary upload failed");
+  }
 }
 
 const upload = multer({ storage });
