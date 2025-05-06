@@ -1,9 +1,9 @@
-// const paypal = require("../../helpers/paypal");
-const Order = require("../../models/Order");
-const Cart = require("../../models/Cart");
-const Product = require("../../models/Product");
+import paypal from "../../helpers/paypal.js";
+import Order from "../../models/Order.js";
+import Cart from "../../models/Cart.js";
+import Product from "../../models/Product.js";
 
-const createOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
     const {
       userId,
@@ -90,12 +90,12 @@ const createOrder = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const capturePayment = async (req, res) => {
+export const capturePayment = async (req, res) => {
   try {
     const { paymentId, payerId, orderId } = req.body;
 
@@ -104,7 +104,7 @@ const capturePayment = async (req, res) => {
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order can not be found",
+        message: "Order cannot be found",
       });
     }
 
@@ -142,12 +142,12 @@ const capturePayment = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const getAllOrdersByUser = async (req, res) => {
+export const getAllOrdersByUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -168,12 +168,12 @@ const getAllOrdersByUser = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const getOrderDetails = async (req, res) => {
+export const getOrderDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -194,12 +194,12 @@ const getOrderDetails = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-module.exports = {
+export default {
   createOrder,
   capturePayment,
   getAllOrdersByUser,

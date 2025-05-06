@@ -1,10 +1,9 @@
-const express = require("express");
-
-const {
+import express from "express";
+import {
   addFeatureImage,
   getFeatureImages,
   deleteFeatureImage,
-} = require("../../controllers/common/feature-controller");
+} from "../../controllers/common/feature-controller.js";
 
 const router = express.Router();
 
@@ -12,4 +11,4 @@ router.post("/add", addFeatureImage);
 router.get("/get", getFeatureImages);
 router.delete("/delete/:id", deleteFeatureImage);
 
-module.exports = router;
+export default router;

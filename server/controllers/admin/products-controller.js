@@ -1,5 +1,5 @@
-const { imageUploadUtil } = require("../../helpers/cloudinary");
-const Product = require("../../models/Product");
+import { imageUploadUtil } from "../../helpers/cloudinary.js";
+import Product from "../../models/Product.js";
 
 // Centralized error handling function
 const handleError = (res, error, message = "An error occurred") => {
@@ -11,7 +11,7 @@ const handleError = (res, error, message = "An error occurred") => {
 };
 
 // Handle image upload to Cloudinary
-const handleImageUpload = async (req, res) => {
+export const handleImageUpload = async (req, res) => {
   console.log("Received file:", req.file); // Debugging: Log received file
   try {
     if (!req.file) {
@@ -23,7 +23,7 @@ const handleImageUpload = async (req, res) => {
 
     // Directly upload the buffer to Cloudinary instead of converting to base64
     const result = await imageUploadUtil(req.file.buffer);
-    
+
     console.log("Image uploaded to Cloudinary:", result); // Debugging: Log the result from Cloudinary
 
     res.status(200).json({
@@ -36,7 +36,7 @@ const handleImageUpload = async (req, res) => {
 };
 
 // Add a new product
-const addProduct = async (req, res) => {
+export const addProduct = async (req, res) => {
   try {
     const {
       image,
@@ -81,7 +81,7 @@ const addProduct = async (req, res) => {
 };
 
 // Fetch all products
-const fetchAllProducts = async (req, res) => {
+export const fetchAllProducts = async (req, res) => {
   try {
     const listOfProducts = await Product.find({});
     res.status(200).json({
@@ -94,7 +94,7 @@ const fetchAllProducts = async (req, res) => {
 };
 
 // Edit a product
-const editProduct = async (req, res) => {
+export const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -139,7 +139,7 @@ const editProduct = async (req, res) => {
 };
 
 // Delete a product
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findByIdAndDelete(id);
@@ -160,7 +160,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   handleImageUpload,
   addProduct,
   fetchAllProducts,

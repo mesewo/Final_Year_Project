@@ -1,18 +1,74 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const ProductSchema = new mongoose.Schema(
-  {
-    image: String,
-    title: String,
-    description: String,
-    category: String,
-    brand: String,
-    price: Number,
-    salePrice: Number,
-    totalStock: Number,
-    averageReview: Number,
+const ProductSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  { timestamps: true }
-);
+  description: {
+    type: String,
+    required: true,
+  },
+  images: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  category: {
+    type: String,
+    required: true,
+    enum: ["men", "women", "kids", "accessories"],
+  },
+  brand: {
+    type: String,
+    required: true,
+    default: "ABAY",
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  salePrice: {
+    type: Number,
+    min: 0,
+    validate: {
+      validator: function (value) {
+        return value < this.price;
+      },
+      message: "Sale price must be less than regular price",
+    },
+  },
+  totalStock: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  lowStockThreshold: {
+    type: Number,
+    default: 5,
+  },
+  soldCount: {
+    type: Number,
+    default: 0,
+  },
+  averageReview: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5,
+  },
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+}, { timestamps: true });
 
-module.exports = mongoose.model("Product", ProductSchema);
+export default mongoose.model("Product", ProductSchema);

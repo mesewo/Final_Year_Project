@@ -1,6 +1,6 @@
-const Order = require("../../models/Order");
+import Order from "../../models/Order.js";
 
-const getAllOrdersOfAllUsers = async (req, res) => {
+export const getAllOrdersOfAllUsers = async (req, res) => {
   try {
     const orders = await Order.find({});
 
@@ -19,12 +19,12 @@ const getAllOrdersOfAllUsers = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const getOrderDetailsForAdmin = async (req, res) => {
+export const getOrderDetailsForAdmin = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -45,12 +45,12 @@ const getOrderDetailsForAdmin = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const updateOrderStatus = async (req, res) => {
+export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { orderStatus } = req.body;
@@ -74,12 +74,12 @@ const updateOrderStatus = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-module.exports = {
+export default {
   getAllOrdersOfAllUsers,
   getOrderDetailsForAdmin,
   updateOrderStatus,

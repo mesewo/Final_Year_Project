@@ -1,7 +1,7 @@
-const Cart = require("../../models/Cart");
-const Product = require("../../models/Product");
+import Cart from "../../models/Cart.js";
+import Product from "../../models/Product.js";
 
-const addToCart = async (req, res) => {
+export const addToCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
@@ -51,14 +51,14 @@ const addToCart = async (req, res) => {
   }
 };
 
-const fetchCartItems = async (req, res) => {
+export const fetchCartItems = async (req, res) => {
   try {
     const { userId } = req.params;
 
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "User id is manadatory!",
+        message: "User id is mandatory!",
       });
     }
 
@@ -108,7 +108,7 @@ const fetchCartItems = async (req, res) => {
   }
 };
 
-const updateCartItemQty = async (req, res) => {
+export const updateCartItemQty = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
@@ -134,7 +134,7 @@ const updateCartItemQty = async (req, res) => {
     if (findCurrentProductIndex === -1) {
       return res.status(404).json({
         success: false,
-        message: "Cart item not present !",
+        message: "Cart item not present!",
       });
     }
 
@@ -171,7 +171,7 @@ const updateCartItemQty = async (req, res) => {
   }
 };
 
-const deleteCartItem = async (req, res) => {
+export const deleteCartItem = async (req, res) => {
   try {
     const { userId, productId } = req.params;
     if (!userId || !productId) {
@@ -229,7 +229,7 @@ const deleteCartItem = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   addToCart,
   updateCartItemQty,
   deleteCartItem,

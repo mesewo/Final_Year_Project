@@ -1,11 +1,11 @@
-const Product = require("../../models/Product");
+import Product from "../../models/Product.js";
 
-const searchProducts = async (req, res) => {
+export const searchProducts = async (req, res) => {
   try {
     const { keyword } = req.params;
     if (!keyword || typeof keyword !== "string") {
       return res.status(400).json({
-        succes: false,
+        success: false,
         message: "Keyword is required and must be in string format",
       });
     }
@@ -36,4 +36,4 @@ const searchProducts = async (req, res) => {
   }
 };
 
-module.exports = { searchProducts };
+export default { searchProducts };

@@ -1,15 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
   userName: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
+    lowercase: true,
   },
   password: {
     type: String,
@@ -17,9 +20,24 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "user",
+    enum: ["admin", "buyer", "seller", "store_keeper", "assistance", "accountant"],
+    default: "buyer",
   },
-});
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  profile: {
+    firstName: String,
+    lastName: String,
+    phone: String,
+    address: String,
+  },
+  sellerProfile: {
+    storeName: String,
+    taxId: String,
+    bankAccount: String,
+  },
+}, { timestamps: true });
 
-const User = mongoose.model("User", UserSchema);
-module.exports = User;
+export default mongoose.model("User", UserSchema);

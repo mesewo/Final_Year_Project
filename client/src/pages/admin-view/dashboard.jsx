@@ -1,85 +1,59 @@
-import ProductImageUpload from "@/components/admin-view/image-upload";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { addFeatureImage, getFeatureImages } from "@/store/common-slice";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-function AdminDashboard() {
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [imageLoadingState, setImageLoadingState] = useState(false);
-  const dispatch = useDispatch();
-  const { featureImageList } = useSelector((state) => state.commonFeature);
-
-  function handleUploadFeatureImage() {
-    console.log("Trying to upload to DB:", uploadedImageUrl);
-    if (!uploadedImageUrl) {
-      alert("Please upload an image to Cloudinary first.");
-      return;
-    }
-
-    dispatch(addFeatureImage(uploadedImageUrl)).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(getFeatureImages());
-        setImageFile(null);
-        setUploadedImageUrl("");
-      } else {
-        console.error("Failed to add image to DB", data);
-      }
-    });
-  }
-
-  function handleDeleteFeatureImage(id) {
-    fetch(`http://localhost:5000/api/common/feature/delete/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then(() => dispatch(getFeatureImages()))
-      .catch((err) => console.error("Delete failed:", err));
-  }
-
-  useEffect(() => {
-    dispatch(getFeatureImages());
-  }, [dispatch]);
+export default function AdminDashboard() {
+  const stats = [
+    { title: "Total Products", value: "1,234", link: "/admin-view/products" },
+    { title: "Pending Orders", value: "56", link: "/admin-view/orders" },
+    { title: "New Feedback", value: "23", link: "/admin-view/feedback" },
+    { title: "System Alerts", value: "3", link: "/admin-view/settings" },
+  ];
 
   return (
-    <div>
-      <ProductImageUpload
-        imageFile={imageFile}
-        setImageFile={setImageFile}
-        uploadedImageUrl={uploadedImageUrl}
-        setUploadedImageUrl={setUploadedImageUrl}
-        setImageLoadingState={setImageLoadingState}
-        imageLoadingState={imageLoadingState}
-        isCustomStyling={true}
-      />
-      <Button
-        onClick={handleUploadFeatureImage}
-        className="mt-5 w-full"
-        disabled={!uploadedImageUrl || imageLoadingState}
-      >
-        {imageLoadingState ? "Uploading..." : "Save to Database"}
-      </Button>
-      <div className="flex flex-col gap-4 mt-5">
-        {featureImageList?.map((featureImgItem) => (
-          <div key={featureImgItem._id} className="relative">
-            <img
-              src={featureImgItem.image}
-              className="w-full h-[300px] object-cover rounded-t-lg"
-              alt="feature"
-            />
-            <Button
-              onClick={() => handleDeleteFeatureImage(featureImgItem._id)}
-              className="absolute top-2 right-2"
-              variant="destructive"
-            >
-              Delete
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <Link to={stat.link} key={index}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-gray-500">
+                  {stat.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Orders</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="mt-4 w-full">
+              View All Orders
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Latest Feedback</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" className="mt-4 w-full">
+              View All Feedback
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-
-export default AdminDashboard;

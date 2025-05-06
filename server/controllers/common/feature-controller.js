@@ -1,6 +1,6 @@
-const Feature = require("../../models/Feature");
+import Feature from "../../models/Feature.js";
 
-const addFeatureImage = async (req, res) => {
+export const addFeatureImage = async (req, res) => {
   try {
     const { image } = req.body;
 
@@ -20,12 +20,12 @@ const addFeatureImage = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const getFeatureImages = async (req, res) => {
+export const getFeatureImages = async (req, res) => {
   try {
     const images = await Feature.find({});
 
@@ -37,12 +37,12 @@ const getFeatureImages = async (req, res) => {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured!",
+      message: "Some error occurred!",
     });
   }
 };
 
-const deleteFeatureImage = async (req, res) => {
+export const deleteFeatureImage = async (req, res) => {
   try {
     await Feature.findByIdAndDelete(req.params.id);
     res.status(200).json({ success: true });
@@ -52,5 +52,4 @@ const deleteFeatureImage = async (req, res) => {
   }
 };
 
-
-module.exports = { addFeatureImage, getFeatureImages, deleteFeatureImage };
+export default { addFeatureImage, getFeatureImages, deleteFeatureImage };
