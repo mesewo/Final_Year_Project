@@ -35,17 +35,18 @@ const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
   { id: "women", label: "Women", icon: CloudLightning },
   { id: "kids", label: "Kids", icon: BabyIcon },
-  { id: "accessories", label: "Accessories", icon: WatchIcon },
-  { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
+  // { id: "accessories", label: "Accessories", icon: WatchIcon },
+  // { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
 ];
 
 const brandsWithIcon = [
-  { id: "nike", label: "Nike", icon: Shirt },
-  { id: "adidas", label: "Adidas", icon: WashingMachine },
-  { id: "puma", label: "Puma", icon: ShoppingBasket },
-  { id: "levi", label: "Levi's", icon: Airplay },
-  { id: "zara", label: "Zara", icon: Images },
-  { id: "h&m", label: "H&M", icon: Heater },
+  // { id: "nike", label: "Nike", icon: Shirt },
+  // { id: "adidas", label: "Adidas", icon: WashingMachine },
+  // { id: "puma", label: "Puma", icon: ShoppingBasket },
+  // { id: "levi", label: "Levi's", icon: Airplay },
+  // { id: "zara", label: "Zara", icon: Images },
+  // { id: "h&m", label: "H&M", icon: Heater },
+  {id: "abay", label: "ABAY", icon: Shirt},
 ];
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -184,7 +185,7 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-12 bg-gray-50">
+      {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -201,7 +202,7 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="py-12">
         <div className="container mx-auto px-4">
