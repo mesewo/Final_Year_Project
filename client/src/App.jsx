@@ -1,40 +1,52 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// Layouts
 import AuthLayout from "./components/auth/layout";
+import AdminLayout from "./components/admin-view/layout";
+import ShoppingLayout from "./components/shopping-view/layout";
+
+// Auth pages
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
-import AdminLayout from "./components/admin-view/layout";
+
+// Admin pages
 import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
-import AdminOrders from "./pages/admin-view/orders"; // Keep this, you will need it.
+import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
-import ShoppingLayout from "./components/shopping-view/layout";
-import NotFound from "./pages/not-found";
+import AdminFeedback from "./pages/admin-view/feedback";
+import AdminReports from "./pages/admin-view/reports";
+import SystemSettings from "./pages/admin-view/settings";
+import AdminUsers from "./pages/admin-view/users";
+
+// Role-specific dashboards
+import AdminDashboardPage from "./pages/admin-view/dashboard";
+import SellerDashboardPage from "./pages/seller-view/dashboard";
+import StoreKeeperDashboardPage from "./pages/store-keeper-view/dashboard";
+import AccountantDashboardPage from "./pages/accountant-view/dashboard";
+
+// Shopping pages
 import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/account";
-import CheckAuth from "./components/common/check-auth";
-import UnauthPage from "./pages/unauth-page";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { checkAuth } from "./store/auth-slice";
-import { Skeleton } from "@/components/ui/skeleton";
-// import PaypalReturnPage from "./pages/shopping-view/paypal-return"; // commented out
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 
-// Import the new dashboard components
-import AdminDashboardPage from './pages/admin-view/dashboard.jsx';  // Corrected paths
-import SellerDashboardPage from './pages/seller-view/dashboard.jsx';
-import StoreKeeperDashboardPage from './pages/store-keeper-view/dashboard.jsx';
-import AccountantDashboardPage from './pages/accountant-view/dashboard.jsx';
+// Other components
+import NotFound from "./pages/not-found";
+import UnauthPage from "./pages/unauth-page";
+import CheckAuth from "./components/common/check-auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
+// Redux
+import { checkAuth } from "./store/auth-slice";
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useSelector(
-    (state) => state.auth
-  );
   const dispatch = useDispatch();
+  const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(checkAuth());
@@ -42,35 +54,27 @@ function App() {
 
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 
-  console.log(isLoading, user);
-
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        <Route
-          path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
-        />
+
+        {/* Root Auth Check */}
+        <Route path="/" element={<CheckAuth isAuthenticated={isAuthenticated} user={user} />} />
+
+        {/* Auth Pages */}
         <Route
           path="/auth"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <AuthLayout />
-            </CheckAuth>
-          }
+          element={<CheckAuth isAuthenticated={isAuthenticated} user={user}><AuthLayout /></CheckAuth>}
         >
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
         </Route>
+
+        {/* Admin Routes */}
         <Route
           path="/admin"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={['admin']}> {/* Added role check */}
+            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={["admin"]}>
               <AdminLayout />
             </CheckAuth>
           }
@@ -79,22 +83,17 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="features" element={<AdminFeatures />} />
-          {/* Add the new admin route */}
-          <Route path="admin-dashboard" element={<AdminDashboardPage />} />
+          <Route path="feedback" element={<AdminFeedback />} />
+          <Route path="reports" element={<AdminReports />} />
+          <Route path="settings" element={<SystemSettings />} />
+          <Route path="users" element={<AdminUsers />} />
         </Route>
-        {/* Add routes for the other dashboards, with role checks
-        <Route
-          path="/buyer"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={['buyer']}>
-              <BuyerDashboardPage />
-            </CheckAuth>
-          }
-        /> */}
+
+        {/* Role-based Dashboards */}
         <Route
           path="/seller"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={['seller']}>
+            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={["seller"]}>
               <SellerDashboardPage />
             </CheckAuth>
           }
@@ -102,7 +101,7 @@ function App() {
         <Route
           path="/store-keeper"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={['store-keeper']}>
+            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={["store-keeper"]}>
               <StoreKeeperDashboardPage />
             </CheckAuth>
           }
@@ -110,12 +109,13 @@ function App() {
         <Route
           path="/accountant"
           element={
-             <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={['accountant']}>
-                <AccountantDashboardPage/>
-             </CheckAuth>
+            <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={["accountant"]}>
+              <AccountantDashboardPage />
+            </CheckAuth>
           }
         />
 
+        {/* Shopping Routes */}
         <Route
           path="/shop"
           element={
@@ -128,10 +128,11 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
-          {/* <Route path="paypal-return" element={<PaypalReturnPage />} /> */}
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
         </Route>
+
+        {/* Other Pages */}
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -140,4 +141,3 @@ function App() {
 }
 
 export default App;
-

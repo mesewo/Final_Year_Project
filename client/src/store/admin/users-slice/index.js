@@ -4,7 +4,7 @@ import axios from "axios";
 const initialState = {
   users: [],
   loading: false,
-  error: null
+  error: null,
 };
 
 export const fetchAllUsers = createAsyncThunk(
@@ -20,6 +20,48 @@ export const blockUser = createAsyncThunk(
   async (userId) => {
     const response = await axios.put(`/api/admin/users/block/${userId}`);
     return response.data.data;
+  }
+);
+
+export const unblockUser = createAsyncThunk(
+  "adminUsers/unblockUser",
+  async (userId) => {
+    const response = await axios.put(`/api/admin/users/unblock/${userId}`);
+    return response.data.data;
+  }
+);
+export const createUser = createAsyncThunk(
+  "adminUsers/create",
+  async (newUserData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/api/admin/users", newUserData);
+      return response.data.user;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "adminUsers/updateUser",
+  async ({ id, data }) => {
+    const response = await axios.put(`/api/admin/users/${id}`, data);
+    return response.data.data;
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "adminUsers/deleteUser",
+  async (id, { rejectWithValue }) => {
+    if (!id) {
+      return rejectWithValue("Invalid user ID");
+    }
+    try {
+      const response = await axios.delete(`/api/admin/users/${id}`);
+      return response.data.data; // Ensure response includes deleted user data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
   }
 );
 
@@ -41,10 +83,49 @@ const adminUsersSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(blockUser.fulfilled, (state, action) => {
-        const user = state.users.find(u => u._id === action.payload._id);
+        const user = state.users.find((u) => u._id === action.payload._id);
         if (user) {
           user.isBlocked = true;
         }
+      })
+      .addCase(unblockUser.fulfilled, (state, action) => {
+        const user = state.users.find((u) => u._id === action.payload._id);
+        if (user) {
+          user.isBlocked = false;
+        }
+      })
+      .addCase(createUser.fulfilled, (state, action) => {
+        state.users.push(action.payload);
+      })
+      .addCase(createUser.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        const updatedUser = action.payload;
+        const index = state.users.findIndex(u => u._id === updatedUser._id);
+        if (index !== -1) {
+          state.users[index] = updatedUser;
+        }
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      // .addCase(deleteUser.fulfilled, (state, action) => {
+      //   if (!action.payload?._id) {
+      //     console.error('Delete failed - invalid payload:', action.payload);
+      //     return;
+      //   }
+      //   state.users = state.users.filter((user) => user._id !== action.payload._id);
+      // })
+      // .addCase(deleteUser.rejected, (state, action) => {
+      //   state.error = action.payload;
+      // });
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        const deletedUserId = action.payload._id;
+        state.users = state.users.filter((user) => user._id !== deletedUserId);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.error = action.payload;
       });
   }
 });

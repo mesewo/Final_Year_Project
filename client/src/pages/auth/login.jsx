@@ -20,19 +20,28 @@ function AuthLogin() {
     event.preventDefault();
 
     dispatch(loginUser(formData)).then((data) => {
-      if (data?.payload?.success) {
+      const { payload } = data;
+    
+      if (payload?.success) {
         toast({
-          title: data?.payload?.message || "Login successful",
+          title: payload?.message || "Login successful",
           variant: "default",
+        });
+      } else if (payload?.isBlocked) {
+        toast({
+          title: "Account Blocked",
+          description: payload?.message || "Your account is blocked. Please contact support.",
+          variant: "destructive",
         });
       } else {
         toast({
-          title: data?.payload?.message || "Login failed",
+          title: payload?.message || "Login failed",
           description: "Please check your credentials and try again.",
           variant: "destructive",
         });
       }
     });
+    
   }
 
   return (

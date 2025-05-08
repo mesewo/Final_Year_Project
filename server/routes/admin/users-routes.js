@@ -3,11 +3,17 @@ import {
   getAllUsers,
   blockUser,
   unblockUser,
-} from "../../controllers/admin/user-controller.js";
+  createUser,
+  updateUser,
+  deleteUser,
+} from "../../controllers/admin/users-controller.js";
 
 const router = express.Router();
 
 router.get("/", getAllUsers);
+router.post("/", createUser); 
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser); 
 router.put("/block/:id", blockUser);
 router.put("/unblock/:id", unblockUser);
 

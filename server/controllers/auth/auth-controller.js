@@ -20,6 +20,7 @@ export const registerUser = async (req, res) => {
       userName,
       email,
       password: hashPassword,
+      lastLogin: new Date(),
     });
 
     await newUser.save();
@@ -48,6 +49,14 @@ export const loginUser = async (req, res) => {
         message: "User doesn't exist! Please register first",
       });
     }
+    
+    if (checkUser.isBlocked) {
+      return res.json({
+        success: false,
+        message: "Your account has been blocked. Please contact support.",
+        isBlocked: true,
+      });
+    }
 
     const checkPasswordMatch = await bcrypt.compare(password, checkUser.password);
     if (!checkPasswordMatch) {
@@ -57,6 +66,9 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    checkUser.lastLogin = new Date();
+    await checkUser.save();
+
     const token = jwt.sign(
       {
         id: checkUser._id,
@@ -64,7 +76,7 @@ export const loginUser = async (req, res) => {
         email: checkUser.email,
         userName: checkUser.userName,
       },
-      "CLIENT_SECRET_KEY",
+      "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b",
       { expiresIn: "60m" }
     );
 
@@ -76,6 +88,7 @@ export const loginUser = async (req, res) => {
         role: checkUser.role,
         id: checkUser._id,
         userName: checkUser.userName,
+        lastLogin: checkUser.lastLogin,
       },
     });
   } catch (e) {
@@ -106,7 +119,7 @@ export const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "CLIENT_SECRET_KEY");
+    const decoded = jwt.verify(token, "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b");
     req.user = decoded;
     next();
   } catch (error) {

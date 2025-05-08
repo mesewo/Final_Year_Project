@@ -1,4 +1,3 @@
-import paypal from "../../helpers/paypal.js";
 import Order from "../../models/Order.js";
 import Cart from "../../models/Cart.js";
 import Product from "../../models/Product.js";
@@ -7,93 +6,68 @@ export const createOrder = async (req, res) => {
   try {
     const {
       userId,
-      cartItems,
-      addressInfo,
-      orderStatus,
-      paymentMethod,
-      paymentStatus,
-      totalAmount,
-      orderDate,
-      orderUpdateDate,
-      paymentId,
-      payerId,
       cartId,
+      cartItems, // still comes from frontend as "cartItems"
+      addressInfo,
+      totalAmount,
+      paymentMethod,
     } = req.body;
 
-    const create_payment_json = {
-      intent: "sale",
-      payer: {
-        payment_method: "paypal",
-      },
-      redirect_urls: {
-        return_url: "http://localhost:5173/shop/paypal-return",
-        cancel_url: "http://localhost:5173/shop/paypal-cancel",
-      },
-      transactions: [
-        {
-          item_list: {
-            items: cartItems.map((item) => ({
-              name: item.title,
-              sku: item.productId,
-              price: item.price.toFixed(2),
-              currency: "USD",
-              quantity: item.quantity,
-            })),
-          },
-          amount: {
-            currency: "USD",
-            total: totalAmount.toFixed(2),
-          },
-          description: "description",
-        },
-      ],
-    };
+    // Convert cartItems to orderItems
+    const orderItems = cartItems.map((item) => ({
+      productId: item.productId,
+      title: item.title,
+      image: item.image,
+      price: item.price,
+      quantity: item.quantity,
+    }));
 
-    paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      if (error) {
-        console.log(error);
-
-        return res.status(500).json({
-          success: false,
-          message: "Error while creating paypal payment",
-        });
-      } else {
-        const newlyCreatedOrder = new Order({
-          userId,
-          cartId,
-          cartItems,
-          addressInfo,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          totalAmount,
-          orderDate,
-          orderUpdateDate,
-          paymentId,
-          payerId,
-        });
-
-        await newlyCreatedOrder.save();
-
-        const approvalURL = paymentInfo.links.find(
-          (link) => link.rel === "approval_url"
-        ).href;
-
-        res.status(201).json({
-          success: true,
-          approvalURL,
-          orderId: newlyCreatedOrder._id,
-        });
-      }
+    const order = new Order({
+      userId,
+      cartId,
+      orderItems,
+      addressInfo,
+      totalAmount,
+      paymentMethod,
+      paymentStatus: "pending",
+      orderStatus: "pending",
+      orderDate: new Date(),
+      orderUpdateDate: new Date(),
+      paymentId: "",
+      payerId: "",
     });
-  } catch (e) {
-    console.log(e);
+
+    await order.save();
+
+    // Delete cart after order
+    await Cart.findByIdAndDelete(cartId);
+
+    // Update product stock
+    for (let item of orderItems) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.totalStock -= item.quantity;
+        await Product.updateOne(
+          { _id: item.productId },
+          { $inc: { totalStock: -item.quantity } }
+        );        
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      orderId: order._id,
+    });
+  } catch (error) {
+    console.error("Create order error:", error);
     res.status(500).json({
       success: false,
-      message: "Some error occurred!",
+      message: "Error while creating order",
     });
   }
 };
+
 
 export const capturePayment = async (req, res) => {
   try {

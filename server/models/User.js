@@ -38,6 +38,10 @@ const UserSchema = new mongoose.Schema({
     taxId: String,
     bankAccount: String,
   },
+  lastLogin: {
+    type: Date,
+    default: Date.now,
+  },
 }, { timestamps: true });
 
 export default mongoose.model("User", UserSchema);

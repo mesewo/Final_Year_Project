@@ -1,110 +1,67 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { DataTable } from "@/components/common/data-table";
+import { StatusBadge } from "@/components/common/status-badge";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSupportTickets, respondToTicket } from "@/store/assistance/support-slice";
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 
-export default function AssistanceTickets() {
+export default function SupportTickets() {
   const dispatch = useDispatch();
   const { tickets, loading } = useSelector(state => state.assistanceSupport);
-  const [respondingTo, setRespondingTo] = useState(null);
-  const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
     dispatch(fetchSupportTickets());
   }, [dispatch]);
 
-  const handleStartResponse = (ticketId) => {
-    setRespondingTo(ticketId);
-    setResponseText("");
-  };
-
-  const handleSubmitResponse = () => {
-    if (responseText.trim()) {
-      dispatch(respondToTicket({ 
-        ticketId: respondingTo, 
-        response: responseText 
-      }));
-      setRespondingTo(null);
+  const columns = [
+    {
+      header: "Ticket ID",
+      accessor: "_id",
+      cell: ({ row }) => row._id.slice(-6)
+    },
+    {
+      header: "Customer",
+      accessor: "user.userName"
+    },
+    {
+      header: "Type",
+      accessor: "type",
+      cell: ({ row }) => (
+        <span className="capitalize">{row.type}</span>
+      )
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      cell: ({ row }) => <StatusBadge status={row.status} />
+    },
+    {
+      header: "Actions",
+      cell: ({ row }) => (
+        <Button 
+          size="sm" 
+          variant="outline"
+          onClick={() => dispatch(respondToTicket({
+            ticketId: row._id,
+            response: "We're looking into this"
+          }))}
+          disabled={row.status === 'resolved'}
+        >
+          Respond
+        </Button>
+      )
     }
-  };
+  ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Support Tickets</h1>
-      
-      {loading ? (
-        <div>Loading tickets...</div>
-      ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tickets?.map(ticket => (
-                <TableRow key={ticket._id}>
-                  <TableCell className="font-medium">{ticket.user?.userName}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{ticket.type}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={
-                      ticket.status === 'resolved' ? 'success' : 
-                      ticket.status === 'pending' ? 'warning' : 'secondary'
-                    }>
-                      {ticket.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(ticket.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {respondingTo === ticket._id ? (
-                      <div className="space-y-2">
-                        <Textarea
-                          value={responseText}
-                          onChange={(e) => setResponseText(e.target.value)}
-                          placeholder="Enter your response..."
-                        />
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={handleSubmitResponse}>
-                            Submit
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => setRespondingTo(null)}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        disabled={ticket.status === 'resolved'}
-                        onClick={() => handleStartResponse(ticket._id)}
-                      >
-                        Respond
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <h1 className="text-2xl font-bold">Support Tickets</h1>
+      <Card>
+        <DataTable 
+          columns={columns} 
+          data={tickets} 
+          loading={loading}
+        />
+      </Card>
     </div>
   );
 }

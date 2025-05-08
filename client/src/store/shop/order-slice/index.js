@@ -9,17 +9,19 @@ const initialState = {
   orderDetails: null,
 };
 
-export const createNewOrder = createAsyncThunk(
-  "/order/createNewOrder",
-  async (orderData) => {
-    const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
-      orderData
-    );
 
-    return response.data;
+export const createNewOrder = createAsyncThunk(
+  "order/createNewOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/api/shop/order/create", orderData);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
   }
 );
+
 
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
@@ -65,7 +67,7 @@ const shoppingOrderSlice = createSlice({
   reducers: {
     resetOrderDetails: (state) => {
       state.orderDetails = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -74,7 +76,7 @@ const shoppingOrderSlice = createSlice({
       })
       .addCase(createNewOrder.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.approvalURL = action.payload.approvalURL;
+        state.approvalURL = action.payload.approvalURL || null;
         state.orderId = action.payload.orderId;
         sessionStorage.setItem(
           "currentOrderId",
@@ -111,6 +113,6 @@ const shoppingOrderSlice = createSlice({
   },
 });
 
-export const { resetOrderDetails } = shoppingOrderSlice.actions;
+export const { resetOrderDetails, clearCart } = shoppingOrderSlice.actions;
 
 export default shoppingOrderSlice.reducer;
