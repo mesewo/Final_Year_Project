@@ -15,13 +15,16 @@ import {
   deleteUser,
 } from "@/store/admin/users-slice";
 import { useToast } from "@/components/ui/use-toast";
+import { Search } from "lucide-react"; // Import search icon
 
 export default function AdminUsers() {
   const dispatch = useDispatch();
   const { users, loading, error } = useSelector((state) => state.adminUsers);
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null); // new
+  const [editingUser, setEditingUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("all");
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -33,13 +36,27 @@ export default function AdminUsers() {
     dispatch(fetchAllUsers());
   }, [dispatch]);
   
-  useEffect(() => {
-    console.log(users); // Log users to verify the data structure
-  }, [users]);
   const resetForm = () => {
     setFormData({ userName: "", email: "", password: "", role: "buyer" });
     setEditingUser(null);
   };
+
+  // Calculate role counts
+  const roleCounts = users.reduce((acc, user) => {
+    acc[user.role] = (acc[user.role] || 0) + 1;
+    return acc;
+  }, {});
+
+  const totalCount = users.length;
+
+  // Filter users based on selected role and search term
+  const filteredUsers = users.filter(user => {
+    const matchesRole = selectedRole === "all" || user.role === selectedRole;
+    const matchesSearch = 
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
 
   const handleToggleBlock = (user) => {
     user.isBlocked ? dispatch(unblockUser(user._id)) : dispatch(blockUser(user._id));
@@ -47,31 +64,31 @@ export default function AdminUsers() {
 
   const handleSubmit = () => {
     if (editingUser) {
-      const { password, ...dataToSend } = formData; // skip password if empty
+      const { password, ...dataToSend } = formData;
       dispatch(updateUser({ id: editingUser._id, data: dataToSend })).then((res) => {
         if (!res.error) {
           toast({
-            title: "user updated successfully",
-          }); // <-- Success toast for update
+            title: "User updated successfully",
+          });
           setOpen(false);
           resetForm();
         } else {
           toast({
-            title: "error updating user",
-          });// <-- Error toast for update
+            title: "Error updating user",
+          });
         }
       });
     } else {
       dispatch(createUser(formData)).then((res) => {
         if (!res.error) {
           toast({
-            title: "user created successfully",
+            title: "User created successfully",
           }); 
           setOpen(false);
           resetForm();
         } else {
           toast({
-            title: "error creating user",
+            title: "Error creating user",
           });
         }
       });
@@ -120,11 +137,11 @@ export default function AdminUsers() {
               dispatch(deleteUser(row._id)).then((res) => {
                 if (!res.error) {
                   toast({
-                    title: "user deleted successfully",
+                    title: "User deleted successfully",
                   }); 
                 } else {
                   toast({
-                    title: "error deleting user",
+                    title: "Error deleting user",
                   });
                 }
               });
@@ -164,10 +181,62 @@ export default function AdminUsers() {
         </div>
       </div>
 
+      {/* Search and filter controls */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Role filter dropdown with counts */}
+        <div className="flex items-center gap-4">
+          <span className="hidden sm:inline">Filter by Role:</span>
+          <Select value={selectedRole} onValueChange={setSelectedRole}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                All Roles ({totalCount})
+              </SelectItem>
+              <SelectItem value="admin">
+                Admin ({roleCounts['admin'] || 0})
+              </SelectItem>
+              <SelectItem value="seller">
+                Seller ({roleCounts['seller'] || 0})
+              </SelectItem>
+              <SelectItem value="store_keeper">
+                Store Keeper ({roleCounts['store_keeper'] || 0})
+              </SelectItem>
+              <SelectItem value="accountant">
+                Accountant ({roleCounts['accountant'] || 0})
+              </SelectItem>
+              <SelectItem value="buyer">
+                Buyer ({roleCounts['buyer'] || 0})
+              </SelectItem>
+              <SelectItem value="factman">
+                Factory Manager ({roleCounts['factman'] || 0})
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Search input with icon */}
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search users..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        
+      </div>
+
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <div className="rounded-md border">
-        <DataTable columns={columns} data={users} loading={loading} />
+        <DataTable 
+          columns={columns} 
+          data={filteredUsers} 
+          loading={loading} 
+        />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -218,6 +287,7 @@ export default function AdminUsers() {
                 <SelectItem value="store_keeper">Store Keeper</SelectItem>
                 <SelectItem value="accountant">Accountant</SelectItem>
                 <SelectItem value="buyer">Buyer</SelectItem>
+                <SelectItem value="factman">Factory Manager</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={handleSubmit} variant="primary" className="w-full">

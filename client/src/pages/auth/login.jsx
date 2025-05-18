@@ -4,7 +4,7 @@ import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialState = {
   email: "",
@@ -15,6 +15,8 @@ function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
 
   function onSubmit(event) {
     event.preventDefault();
@@ -27,6 +29,9 @@ function AuthLogin() {
           title: payload?.message || "Login successful",
           variant: "default",
         });
+
+        
+
       } else if (payload?.isBlocked) {
         toast({
           title: "Account Blocked",

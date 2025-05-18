@@ -5,21 +5,22 @@ const initialState = {
   products: [],
   unsoldProducts: [],
   loading: false,
-  error: null
+  error: null,
 };
 
+// Fetch products for the authenticated seller
 export const fetchSellerProducts = createAsyncThunk(
   "sellerProducts/fetchAll",
-  async (sellerId) => {
-    const response = await axios.get(`/api/seller/products?seller=${sellerId}`);
+  async () => {
+    const response = await axios.get(`/api/seller/products`, { withCredentials: true }); // No need to pass sellerId here
     return response.data.data;
   }
 );
 
 export const fetchUnsoldProducts = createAsyncThunk(
   "sellerProducts/fetchUnsold",
-  async (sellerId) => {
-    const response = await axios.get(`/api/seller/products/unsold?seller=${sellerId}`);
+  async () => {
+    const response = await axios.get(`/api/seller/products/unsold`, { withCredentials: true });
     return response.data.data;
   }
 );
@@ -37,6 +38,7 @@ const sellerProductsSlice = createSlice({
         state.loading = false;
         state.products = action.payload;
       })
+      
       .addCase(fetchUnsoldProducts.fulfilled, (state, action) => {
         state.unsoldProducts = action.payload;
       });

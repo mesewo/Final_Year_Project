@@ -21,6 +21,7 @@ export const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       lastLogin: new Date(),
+      role: req.body.role || "buyer",
     });
 
     await newUser.save();
@@ -130,9 +131,90 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-export default {
-  registerUser,
-  loginUser,
-  logoutUser,
-  authMiddleware,
+export const sellerAuthMiddleware = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b");
+
+    // 👇 Check if user is a seller
+    if (decoded.role !== "seller") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Seller access only.",
+      });
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
 };
+
+export const storekeeperAuthMiddleware = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b"
+    );
+
+    // console.log("Decoded JWT:", decoded);
+    // console.log("Decoded JWT in storekeeperAuthMiddleware:", decoded);
+    
+    if (decoded.role !== "store_keeper") {
+      // console.log("Decoded JWT:", decoded);
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Store Keeper access only.",
+      });
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+};
+
+
+// ... (existing code)
+
+// Generate token specifically for Socket.io
+// export const generateSocketToken = (user) => {
+//   return jwt.sign(
+//     {
+//       id: user._id,
+//       role: user.role,
+//       email: user.email
+//     },
+//     "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b",
+//     { expiresIn: "1h" }
+//   );
+// };
+
+// // New endpoint for Socket.io auth
+// router.get("/socket-token", authMiddleware, (req, res) => {
+//   const socketToken = generateSocketToken(req.user);
+//   res.json({ success: true, token: socketToken });
+// });

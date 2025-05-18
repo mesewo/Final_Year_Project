@@ -12,8 +12,24 @@ export const fetchInventory = createAsyncThunk(
   "inventory/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/store-keeper/inventory");
+      const response = await axios.get("/api/storekeeper/inventory");
       return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const requestStockReplenishment = createAsyncThunk(
+  "inventory/requestStockReplenishment",
+  async ({ productId, quantity }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "/api/product-requests/request",
+        { productId, quantity }, // add storeId if needed
+        { withCredentials: true }
+      );
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
@@ -24,7 +40,7 @@ export const updateProductStock = createAsyncThunk(
   "inventory/updateStock",
   async ({ productId, quantity, notes }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/store-keeper/inventory/${productId}`, {
+      const response = await axios.put(`/api/storekeeper/inventory/${productId}`, {
         quantity,
         notes
       });
@@ -35,7 +51,7 @@ export const updateProductStock = createAsyncThunk(
   }
 );
 
-const inventorySlice = createSlice({
+const StoreKeeperInventorySlice = createSlice({
   name: "inventory",
   initialState,
   reducers: {},
@@ -59,6 +75,10 @@ const inventorySlice = createSlice({
           state.inventory[index] = action.payload;
         }
       })
+      .addCase(requestStockReplenishment.fulfilled, (state, action) => {
+        state.inventory.push(action.payload);
+      })
+
       .addMatcher(
         (action) => action.type.endsWith("/rejected"),
         (state, action) => {
@@ -69,4 +89,4 @@ const inventorySlice = createSlice({
   }
 });
 
-export default inventorySlice.reducer;
+export default StoreKeeperInventorySlice.reducer;

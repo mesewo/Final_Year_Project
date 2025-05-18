@@ -10,16 +10,14 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  images: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
+  image: {
+    type: String,
+    required: true,
+  },
   category: {
     type: String,
     required: true,
-    enum: ["men", "women", "kids", "accessories"],
+    enum: ["men", "women", "kids"],
   },
   brand: {
     type: String,
@@ -63,7 +61,7 @@ const ProductSchema = new mongoose.Schema({
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
   isActive: {
     type: Boolean,
@@ -71,4 +69,5 @@ const ProductSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-export default mongoose.model("Product", ProductSchema);
+// Prevent model overwrite error in development
+export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

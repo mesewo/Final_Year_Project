@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 
 export default function StoreKeeperProducts() {
   const dispatch = useDispatch();
-  const { inventory, loading } = useSelector(state => state.inventory);
+  const inventory = useSelector(state => state.inventory.inventory || []);
+  const loading = useSelector(state => state.inventory.loading);
   const [requestQuantities, setRequestQuantities] = useState({});
 
   useEffect(() => {

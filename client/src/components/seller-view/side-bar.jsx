@@ -2,7 +2,8 @@ import {
     LayoutDashboard,
     ShoppingBasket,
     BadgeCheck,
-    FileText
+    FileText, 
+    PackagePlus
   } from "lucide-react";
   import { Fragment } from "react";
   import { useNavigate } from "react-router-dom";
@@ -12,25 +13,31 @@ import {
     {
       id: "dashboard",
       label: "Dashboard",
-      path: "/seller-view",
+      path: "/seller/dashboard",
       icon: <LayoutDashboard className="w-5 h-5" />,
     },
     {
       id: "products",
       label: "Products",
-      path: "/seller-view/products",
+      path: "/seller/products",
       icon: <ShoppingBasket className="w-5 h-5" />,
+    },
+    {
+      id: "request products",
+      label: "Request Products",
+      path: "/seller/request-products",
+      icon: <PackagePlus className="w-5 h-5" />,
     },
     {
       id: "orders",
       label: "Orders",
-      path: "/seller-view/orders",
+      path: "/seller/orders",
       icon: <BadgeCheck className="w-5 h-5" />,
     },
     {
       id: "reports",
       label: "Reports",
-      path: "/seller-view/reports",
+      path: "/seller/reports",
       icon: <FileText className="w-5 h-5" />,
     },
   ];

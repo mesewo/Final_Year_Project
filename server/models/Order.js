@@ -12,6 +12,15 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   cartId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   orderItems: [orderItemSchema],
+  store: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Store",
+  },
+  isQRVerified: {
+    type: Boolean,
+    default: false,
+  },
+
   addressInfo: {
     addressId: { type: mongoose.Schema.Types.ObjectId },
     address: String,
@@ -20,6 +29,7 @@ const orderSchema = new mongoose.Schema({
     phone: String,
     notes: String,
   },
+  seller: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   orderStatus: { type: String, default: "pending" },
   paymentMethod: { type: String },
   paymentStatus: { type: String, default: "pending" },
@@ -32,5 +42,6 @@ const orderSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Order = mongoose.model("Order", orderSchema);
+// Prevent OverwriteModelError in dev
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 export default Order;

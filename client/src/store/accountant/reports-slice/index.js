@@ -12,7 +12,7 @@ export const generateSalesReport = createAsyncThunk(
   "accountant/generateSalesReport",
   async (reportParams, { rejectWithValue }) => {
     try {
-      const response = await axios.post("/api/accountant/reports/sales", reportParams);
+      const response = await axios.post("http://localhost:5000/api/accountant/reports/sales", reportParams);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -24,7 +24,7 @@ export const generateInventoryReport = createAsyncThunk(
   "accountant/generateInventoryReport",
   async (threshold = 5, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/accountant/reports/inventory?threshold=${threshold}`);
+      const response = await axios.get(`http://localhost:5000/api/accountant/reports/inventory?threshold=${threshold}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);

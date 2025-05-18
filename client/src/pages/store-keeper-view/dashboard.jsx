@@ -1,76 +1,76 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom"; // Updated import
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStorekeeperDashboardStats } from "@/store/store-keeper/dashboard-slice";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatusBadge } from "@/components/common/status-badge";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
-export default function StoreKeeperDashboard() {
+export default function StorekeeperDashboard() {
+  const dispatch = useDispatch();
+  const { stats, recentOrders, loading } = useSelector((state) => state.storekeeperDashboard || {});
+
+  useEffect(() => {
+    dispatch(fetchStorekeeperDashboardStats());
+  }, [dispatch]);
+
+  const cards = [
+    { title: "Total Products", value: stats?.totalProducts, path: "/storekeeper/inventory" },
+    { title: "Total Sellers", value: stats?.totalSellers, path: "/storekeeper/sellers" },
+    { title: "Pending Orders", value: stats?.pendingOrders, path: "/storekeeper/orders" },
+  ];
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Inventory Dashboard</h1>
-      
-      <div className="grid gap-4 md:grid-cols-3">
-        <Link to="/store-keeper-view/inventory">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">Total Items</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">1,842</p>
-            </CardContent>
-          </Card>
-        </Link>
-        
-        <Link to="/store-keeper-view/inventory?filter=low">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">27</p>
-            </CardContent>
-          </Card>
-        </Link>
-        
-        <Link to="/store-keeper-view/products">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">Pending Updates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">12</p>
-            </CardContent>
-          </Card>
-        </Link>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card, idx) => (
+          <Link to={card.path} key={idx}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{card.value ?? "..."}</div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </div>
-      
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Inventory Changes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Inventory change log */}
-            <Link to="/store-keeper-view/inventory">
-              <Button variant="outline" className="mt-4 w-full">
-                View Full Inventory
-              </Button>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Orders</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr>
+                <th className="text-left">ID</th>
+                <th className="text-left">Date</th>
+                <th className="text-left">Amount</th>
+                <th className="text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders?.map((order) => (
+                <tr key={order._id} className="hover:bg-muted cursor-pointer">
+                  <td>{order._id.slice(-8)}</td>
+                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                  <td>Br{order.totalAmount}</td>
+                  <td>
+                    <StatusBadge status={order.orderStatus} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="flex justify-end mt-4">
+            <Link to="/storekeeper/orders">
+              <Button size="sm" variant="outline">View All</Button>
             </Link>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button className="w-full">Add New Product</Button>
-            <Button variant="outline" className="w-full">
-              Request Stock Replenishment
-            </Button>
-            <Button variant="outline" className="w-full">
-              Generate Stock Report
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

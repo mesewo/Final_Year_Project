@@ -2,6 +2,9 @@ import Product from "../../models/Product.js";
 
 export const getSellerProducts = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const products = await Product.find({ seller: req.user.id });
     res.status(200).json({ success: true, data: products });
   } catch (error) {
@@ -12,6 +15,9 @@ export const getSellerProducts = async (req, res) => {
 
 export const addSellerProduct = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const productData = { ...req.body, seller: req.user.id };
     const product = new Product(productData);
     await product.save();
@@ -25,6 +31,9 @@ export const addSellerProduct = async (req, res) => {
 
 export const getUnsoldProducts = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const products = await Product.find({
       seller: req.user.id,
       soldCount: 0,
@@ -35,10 +44,4 @@ export const getUnsoldProducts = async (req, res) => {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-};
-
-export default {
-  getSellerProducts,
-  addSellerProduct,
-  getUnsoldProducts,
 };

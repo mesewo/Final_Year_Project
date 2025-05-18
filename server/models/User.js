@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "buyer", "seller", "store_keeper", "assistance", "accountant"],
+    enum: ["admin", "buyer", "seller", "store_keeper", "assistance", "accountant", "factman"],
     default: "buyer",
   },
   isBlocked: {
@@ -42,6 +42,11 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  store: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Store",
+},
+
 }, { timestamps: true });
 
 export default mongoose.model("User", UserSchema);

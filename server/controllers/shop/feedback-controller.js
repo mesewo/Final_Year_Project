@@ -1,34 +1,61 @@
 import Feedback from "../../models/Feedback.js";
 import Order from "../../models/Order.js";
+import Product from "../../models/Product.js";
 
 export const submitFeedback = async (req, res) => {
+  console.log("FEEDBACK BODY:", req.body);
   try {
-    const { orderId, productId, rating, comment, type } = req.body;
+    const { userId, orderId, productId, userName,  rating, comment, type } = req.body;
 
     // Verify the user has purchased the product
-    const order = await Order.findOne({
-      _id: orderId,
-      userId: req.user.id,
-      "cartItems.productId": productId,
+    // const order = await Order.findOne({
+    //   _id: orderId,
+    //   userId: userId,
+    //   "cartItems.productId": productId,
+    // });
+
+    // if (!order) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "You need to purchase the product to leave feedback.",
+    //   });
+    // }
+
+    // Check if the user has already left feedback for this product
+    const existingFeedback = await Feedback.findOne({
+      product: productId,
+      user: userId,
     });
 
-    if (!order) {
-      return res.status(403).json({
+    if (existingFeedback) {
+      return res.status(400).json({
         success: false,
-        message: "You can only review purchased products",
+        message: "You already left feedback for this product!",
       });
     }
 
     const feedback = new Feedback({
-      user: req.user.id,
+      user: userId,
       product: productId,
       order: orderId,
+      userName,
       rating,
       comment,
       type: type || "product",
+      // status defaults to "pending"
     });
 
     await feedback.save();
+
+    // Calculate the average rating for the product (only approved feedback)
+    const feedbacks = await Feedback.find({ product: productId, status: "approved" });
+    const totalFeedbacksLength = feedbacks.length;
+    const averageReview =
+      totalFeedbacksLength > 0
+        ? feedbacks.reduce((sum, reviewItem) => sum + reviewItem.rating, 0) / totalFeedbacksLength
+        : 0;
+
+    await Product.findByIdAndUpdate(productId, { averageReview });
 
     res.status(201).json({ success: true, data: feedback });
   } catch (error) {
@@ -39,7 +66,13 @@ export const submitFeedback = async (req, res) => {
 
 export const getMyFeedback = async (req, res) => {
   try {
-    const feedback = await Feedback.find({ user: req.user.id }).populate(
+    // Get userId from query or body (adjust as needed)
+    const userId = req.query.userId || req.body.userId;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "userId is required" });
+    }
+
+    const feedback = await Feedback.find({ user: userId }).populate(
       "product",
       "title image"
     );
@@ -51,7 +84,18 @@ export const getMyFeedback = async (req, res) => {
   }
 };
 
+export const getProductFeedback = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const feedbacks = await Feedback.find({ product: productId, status: "approved" });
+    res.status(200).json({ success: true, data: feedbacks });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export default {
   submitFeedback,
   getMyFeedback,
+  getProductFeedback,
 };

@@ -17,11 +17,32 @@ import shopCartRouter from "./routes/shop/cart-routes.js";
 import shopAddressRouter from "./routes/shop/address-routes.js";
 import shopOrderRouter from "./routes/shop/order-routes.js";
 import shopSearchRouter from "./routes/shop/search-routes.js";
-import shopReviewRouter from "./routes/shop/review-routes.js";
+// import shopReviewRouter from "./routes/shop/review-routes.js";
 import shopFeedbackRouter from "./routes/shop/feedback-routes.js";
 
-import commonFeatureRouter from "./routes/common/feature-routes.js";
 
+import factmanDashboardRouter from "./routes/factman/dashboard-routes.js";
+import factmanProductsRouter from "./routes/factman/products-routes.js";
+import factmanOrdersRouter from "./routes/factman/orders-routes.js";
+import factmanUsersRouter from "./routes/factman/users-routes.js";
+import factmanReportsRouter from "./routes/factman/reports-routes.js";
+import factmanFeedbackRouter from "./routes/factman/feedback-routes.js";
+import factmanSettingsRouter from "./routes/factman/settings-routes.js";
+import factmanFeaturesRouter from "./routes/factman/features-routes.js";
+
+import sellerProductsRouter from "./routes/seller/products-routes.js"
+import sellerOrdersRouter from "./routes/seller/orders-routes.js";
+import sellerDashboardRouter from "./routes/seller/dashboard-routes.js";
+import sellerReportRoutes from "./routes/seller/reports-routes.js";
+import sellerStoreRoutes from "./routes/seller/store-routes.js";
+
+import storeKeeperStoreRoutes from "./routes/store-keeper/store-routes.js";
+import storeKeeeperUserRoutes from "./routes/store-keeper/user-routes.js";
+import storekeeperDashboardRoutes from "./routes/store-keeper/dashboard-routes.js";
+import storeKeeperInventoryRoutes from "./routes/store-keeper/inventory-routes.js";
+
+import commonFeatureRouter from "./routes/common/feature-routes.js";
+import productRequestRoutes from "./routes/productRequest-routes.js";
 // Create a database connection
 mongoose
   .connect("mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -34,7 +55,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -64,9 +85,46 @@ app.use("/api/shop/cart", shopCartRouter);
 app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
-app.use("/api/shop/review", shopReviewRouter);
+// app.use("/api/shop/review", shopReviewRouter);
 app.use("/api/shop/feedback", shopFeedbackRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 
+app.use("/api/factman/products", factmanProductsRouter);
+app.use("/api/factman/orders", factmanOrdersRouter);
+app.use("/api/factman/users", factmanUsersRouter);
+app.use("/api/factman/reports", factmanReportsRouter);
+app.use("/api/factman/feedback", factmanFeedbackRouter);
+app.use("/api/factman/settings", factmanSettingsRouter);
+app.use("/api/factman/features", factmanFeaturesRouter);
+app.use("/api/factman", factmanDashboardRouter);
+
+app.use("/api/seller/products", sellerProductsRouter);
+app.use("/api/seller/stores", sellerStoreRoutes);
+app.use("/api/seller/reports", sellerReportRoutes);
+app.use("/api/seller/orders", sellerOrdersRouter);
+app.use("/api/seller", sellerDashboardRouter);
+
+app.use("/api/storekeeper/stores", storeKeeperStoreRoutes);
+app.use("/api/storekeeper/users", storeKeeeperUserRoutes);
+app.use("/api/storekeeper/inventory", storeKeeperInventoryRoutes);
+app.use("/api/storekeeper", storekeeperDashboardRoutes);
+
+app.use("/api/product-requests", productRequestRoutes);
+
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

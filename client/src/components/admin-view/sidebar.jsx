@@ -19,12 +19,12 @@ const adminSidebarMenuItems = [
     path: "/admin/dashboard",
     icon: <LayoutDashboard className="w-5 h-5" />,
   },
-  {
-    id: "products",
-    label: "Products",
-    path: "/admin/products",
-    icon: <ShoppingBasket className="w-5 h-5" />,
-  },
+  // {
+  //   id: "products",
+  //   label: "Products",
+  //   path: "/admin/products",
+  //   icon: <ShoppingBasket className="w-5 h-5" />,
+  // },
   {
     id: "orders",
     label: "Orders",
@@ -43,12 +43,12 @@ const adminSidebarMenuItems = [
     path: "/admin/reports",
     icon: <FileText className="w-5 h-5" />,
   },
-  {
-    id: "feedback",
-    label: "Feedback",
-    path: "/admin/feedback",
-    icon: <MessageSquare className="w-5 h-5" />,
-  },
+  // {
+  //   id: "feedback",
+  //   label: "Feedback",
+  //   path: "/admin/feedback",
+  //   icon: <MessageSquare className="w-5 h-5" />,
+  // },
   {
     id: "settings",
     label: "Settings",

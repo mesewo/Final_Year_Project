@@ -1,54 +1,61 @@
 import Order from "../../models/Order.js";
-import Product from "../../models/Product.js";
+// import Product from "../../models/Product.js";
+import mongoose from "mongoose";
 
+// Generate sales report for a seller within a date range
 export const generateSellerSalesReport = async (req, res) => {
   try {
+    const sellerId = req.user?.id;
     const { startDate, endDate } = req.query;
-    const sellerId = req.user.id;
 
-    const report = await Order.aggregate([
+    if (!sellerId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    if (!startDate || !endDate) {
+      return res.status(400).json({ success: false, message: "Start and end date are required!" });
+    }
+
+    // Aggregate sales by product
+    const sales = await Order.aggregate([
       {
         $match: {
-          orderDate: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
-          },
-          "cartItems.productId": { $exists: true },
-        },
+          seller: new mongoose.Types.ObjectId(sellerId),
+          createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+          orderStatus: { $in: ["completed", "delivered"] }, // Only count completed/delivered sales
+        }
       },
-      { $unwind: "$cartItems" },
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.product",
+          totalSold: { $sum: "$orderItems.quantity" },
+          totalRevenue: { $sum: { $multiply: ["$orderItems.quantity", "$orderItems.price"] } },
+        }
+      },
       {
         $lookup: {
           from: "products",
-          localField: "cartItems.productId",
+          localField: "_id",
           foreignField: "_id",
-          as: "productDetails",
-        },
+          as: "productInfo"
+        }
       },
-      { $unwind: "$productDetails" },
-      { $match: { "productDetails.seller": sellerId } },
       {
-        $group: {
-          _id: "$productDetails._id",
-          productName: { $first: "$productDetails.title" },
-          totalSold: { $sum: "$cartItems.quantity" },
-          totalRevenue: {
-            $sum: {
-              $multiply: ["$cartItems.quantity", "$cartItems.price"],
-            },
-          },
-        },
+        $unwind: "$productInfo"
       },
-      { $sort: { totalRevenue: -1 } },
+      {
+        $project: {
+          _id: 1,
+          productName: "$productInfo.title",
+          totalSold: 1,
+          totalRevenue: 1,
+        }
+      }
     ]);
 
-    res.status(200).json({ success: true, data: report });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: true, data: sales });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Some error occurred!" });
   }
-};
-
-export default {
-  generateSellerSalesReport,
 };

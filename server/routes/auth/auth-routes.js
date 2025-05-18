@@ -1,17 +1,19 @@
 import express from "express";
-// import User from "../../models/User.js";
 import {
   registerUser,
   loginUser,
   logoutUser,
-  authMiddleware,
+  authMiddleware
 } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
 
+// Authentication routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
+
+// Protected route example using authMiddleware
 router.get("/check-auth", authMiddleware, (req, res) => {
   const user = req.user;
   res.status(200).json({

@@ -18,7 +18,7 @@ export default function AccountantDashboard() {
             <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">$7,500</p>
+            <p className="text-2xl font-bold">Br 7,500</p>
           </CardContent>
         </Card>
         
@@ -27,7 +27,7 @@ export default function AccountantDashboard() {
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">$4,000</p>
+            <p className="text-2xl font-bold">Br 4,000</p>
           </CardContent>
         </Card>
         

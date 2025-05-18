@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import ShoppingHeader from "./header";
+import ShoppingFooter from "./footer";
 
 function ShoppingLayout() {
   return (
@@ -9,6 +10,8 @@ function ShoppingLayout() {
       <main className="flex flex-col w-full">
         <Outlet />
       </main>
+      {/* common footer */}
+      <ShoppingFooter />
     </div>
   );
 }

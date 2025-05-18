@@ -7,7 +7,7 @@ export const getDashboardStats = async (req, res) => {
     const totalProducts = await Product.countDocuments();
 
     const activeUsers = await User.countDocuments({
-      role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance"] },
+      role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance", "factman"] },
     });
     
 

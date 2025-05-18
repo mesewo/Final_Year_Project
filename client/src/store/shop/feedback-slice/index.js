@@ -6,7 +6,7 @@ export const getAllFeedback = createAsyncThunk(
   "shopFeedback/getAllFeedback",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/feedback");
+      const response = await axios.get("/api/shop/feedback");
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch feedback");
@@ -19,10 +19,22 @@ export const getFeedbackDetails = createAsyncThunk(
   "shopFeedback/getFeedbackDetails",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/feedback/${id}`);
+      const response = await axios.get(`http://localhost:5000/api/shop/feedback/${id}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch feedback details");
+    }
+  }
+);
+
+export const addFeedback = createAsyncThunk(
+  "shopFeedback/addFeedback",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/shop/feedback/submit", formData);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to add feedback");
     }
   }
 );
@@ -63,6 +75,19 @@ export const shopFeedbackSlice = createSlice({
         state.feedbackDetails = action.payload;
       })
       .addCase(getFeedbackDetails.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(addFeedback.pending, (state, action) => {
+        state.isLoading = true;
+        state.error = action.payload;
+      })
+      .addCase(addFeedback.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Optionally, you can push the new feedback to feedbackList if you want
+        // state.feedbackList.push(action.payload);
+      })
+      .addCase(addFeedback.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
