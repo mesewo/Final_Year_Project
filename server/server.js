@@ -40,6 +40,7 @@ import storeKeeperStoreRoutes from "./routes/store-keeper/store-routes.js";
 import storeKeeeperUserRoutes from "./routes/store-keeper/user-routes.js";
 import storekeeperDashboardRoutes from "./routes/store-keeper/dashboard-routes.js";
 import storeKeeperInventoryRoutes from "./routes/store-keeper/inventory-routes.js";
+import storeKeeperReportRoutes from "./routes/store-keeper/report-routes.js";
 
 import commonFeatureRouter from "./routes/common/feature-routes.js";
 import productRequestRoutes from "./routes/productRequest-routes.js";
@@ -109,8 +110,8 @@ app.use("/api/storekeeper/stores", storeKeeperStoreRoutes);
 app.use("/api/storekeeper/users", storeKeeeperUserRoutes);
 app.use("/api/storekeeper/inventory", storeKeeperInventoryRoutes);
 app.use("/api/storekeeper", storekeeperDashboardRoutes);
-
 app.use("/api/product-requests", productRequestRoutes);
+app.use("/api/storekeeper/reports", storeKeeperReportRoutes);
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
 

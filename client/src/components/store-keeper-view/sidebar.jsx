@@ -5,9 +5,7 @@ import {
   ShoppingBasket,
   Users,
   FileText,
-  Settings, 
-  MessageSquare,
-  Image,
+  List,
   Store,
 } from "lucide-react";
 import { Fragment } from "react";
@@ -24,19 +22,19 @@ const storekeeperSidebarMenuItems = [
   {
     id: "store",
     label: "Stores",
-    path: "/storekeeper/store",
+    path: "/storekeeper/stores",
     icon: <Store className="w-5 h-5" />,
   },
   {
-    id: "products",
-    label: "Products",
+    id: "inventory",
+    label: "Inventory",
     path: "/storekeeper/inventory",
-    icon: <ShoppingBasket className="w-5 h-5" />,
+    icon: <List className="w-5 h-5" />,
   },
   {
-    id: "orders",
-    label: "Orders",
-    path: "/storekeeper/orders",
+    id: "requests",
+    label: "Product Requests",
+    path: "/storekeeper/requests",
     icon: <BadgeCheck className="w-5 h-5" />,
   },
   // {
@@ -51,24 +49,7 @@ const storekeeperSidebarMenuItems = [
     path: "/storekeeper/reports",
     icon: <FileText className="w-5 h-5" />,
   },
-  // {
-  //   id: "feedback",
-  //   label: "Feedback",
-  //   path: "/storekeeper/feedback",
-  //   icon: <MessageSquare className="w-5 h-5" />,
-  // },
-//   {
-//     id: "settings",
-//     label: "Settings",
-//     path: "/storekeeper/settings",
-//     icon: <Settings className="w-5 h-5" />,
-//   },
-//   {
-//     id: "features",
-//     label: "Features",
-//     path: "/storekeeper/features",
-//     icon: <Image className="w-5 h-5" />,
-//   }
+  
 ];
 
 function MenuItems({ setOpen }) {
@@ -102,7 +83,7 @@ function StoreKeeperSideBar({ open, setOpen }) {
           <SheetHeader className="border-b pb-4">
             <SheetTitle className="flex items-center gap-2">
               <ChartNoAxesCombined className="w-6 h-6" />
-              <span className="text-lg font-bold">Product Manager Panel</span>
+              <span className="text-lg font-bold">Store Keeper Panel</span>
             </SheetTitle>
           </SheetHeader>
           <MenuItems setOpen={setOpen} />
@@ -113,7 +94,7 @@ function StoreKeeperSideBar({ open, setOpen }) {
       <aside className="hidden w-64 flex-col border-r bg-background p-4 lg:flex">
         <div className="flex items-center gap-2 mb-6">
           <ChartNoAxesCombined className="w-6 h-6" />
-          <h1 className="text-lg font-bold">Product Manager Panel</h1>
+          <h1 className="text-lg font-bold">Store Keeper Panel</h1>
         </div>
         <MenuItems />
       </aside>

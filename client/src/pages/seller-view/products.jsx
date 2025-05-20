@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSellerProducts } from "@/store/seller/products-slice";
+import { fetchApprovedSellerProducts } from "@/store/seller/products-slice";
 import { fetchMyRequests } from "@/store/productRequest-slice";
 import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ export default function SellerProducts() {
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchSellerProducts());
+      dispatch(fetchApprovedSellerProducts());
       // Fetch my requests
       dispatch(fetchMyRequests());
     }
@@ -28,13 +28,47 @@ export default function SellerProducts() {
     return "destructive";
   };
 
-  const approvedProductIds = myRequests
+
+  const approvedQuantities = myRequests
   .filter(r => r.status === "approved" && r.product)
-  .map(r => r.product._id);
+  .reduce((acc, r) => {
+    const id = r.product._id;
+    acc[id] = (acc[id] || 0) + (r.quantity || 0);
+    return acc;
+  }, {});
+
+  const approvedProductIds = Object.keys(approvedQuantities);
 
   const approvedProducts = products?.filter(product =>
   approvedProductIds.includes(product._id)
   );
+
+  const uniqueApprovedProducts = approvedProducts
+  ? Object.values(
+      approvedProducts.reduce((acc, product) => {
+        acc[product._id] = product;
+        return acc;
+      }, {})
+    )
+  : [];
+
+  const approvedRequestDates = myRequests
+  .filter(r => r.status === "approved" && r.product)
+  .reduce((acc, r) => {
+    const id = r.product._id;
+    const reqDate = new Date(r.createdAt);
+    if (!acc[id] || reqDate > acc[id]) {
+      acc[id] = reqDate;
+    }
+    return acc;
+  }, {});
+
+  const sortedApprovedProducts = [...uniqueApprovedProducts].sort((a, b) => {
+    const dateA = approvedRequestDates[a._id] || new Date(0);
+    const dateB = approvedRequestDates[b._id] || new Date(0);
+    return dateB - dateA;
+  });
+
 
   return (
     <div className="space-y-6">
@@ -53,11 +87,11 @@ export default function SellerProducts() {
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              {/* <TableHead>Actions</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {approvedProducts?.map((product) => (
+            {sortedApprovedProducts?.map((product) => (
               <TableRow key={product._id}>
                 <TableCell className="font-medium flex items-center gap-3">
                   <img 
@@ -69,8 +103,8 @@ export default function SellerProducts() {
                 </TableCell>
                 <TableCell>Br{product.price}</TableCell>
                 <TableCell>
-                  <Badge variant={stockStatus(product.totalStock)}>
-                    {product.totalStock}
+                  <Badge variant={stockStatus(approvedQuantities[product._id])}>
+                    {approvedQuantities[product._id]}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -78,13 +112,13 @@ export default function SellerProducts() {
                     {product.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/seller-view/products/edit/${product._id}`}>
                       Edit
                     </Link>
                   </Button>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

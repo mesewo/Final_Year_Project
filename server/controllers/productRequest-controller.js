@@ -65,15 +65,16 @@ export const approveProductRequest = async (req, res) => {
 
     if (existingStoreProduct) {
       existingStoreProduct.quantity += request.quantity;
+      existingStoreProduct.seller = request.seller; // <-- add this line
       await existingStoreProduct.save();
     } else {
       await StoreProduct.create({
         product: request.product._id,
         store: request.store,
+        seller: request.seller, // <-- add this line
         quantity: request.quantity,
       });
     }
-
     // Update request status
     request.status = "approved";
     request.reviewedAt = new Date();
@@ -133,5 +134,34 @@ export const getMyRequests = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Trend of seller product requests (grouped by day)
+export const getProductRequestTrend = async (req, res) => {
+  try {
+    const { start, end } = req.query;
+    const match = { status: "approved" }; // Only approved requests
+    if (start && end) {
+      match.requestedAt = {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      };
+    }
+    const trend = await ProductRequest.aggregate([
+      { $match: match },
+      
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$requestedAt" } },
+          totalRequests: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    res.json(trend);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };

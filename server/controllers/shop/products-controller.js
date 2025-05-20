@@ -1,4 +1,5 @@
 import Product from "../../models/Product.js";
+import StoreProduct from "../../models/StoreProduct.js";
 
 export const getFilteredProducts = async (req, res) => {
   try {
@@ -74,4 +75,28 @@ export const getProductDetails = async (req, res) => {
   }
 };
 
-export default { getFilteredProducts, getProductDetails };
+// Add this to products-controller.js
+export const getFeaturedStoreProducts = async (req, res) => {
+  try {
+    const sellerIds = req.query.sellerIds?.split(",") || [];
+
+    const storeProducts = await StoreProduct.find({ seller: { $in: sellerIds } })
+      .populate("product")
+      .populate("store");
+
+    const grouped = sellerIds.map((id) => ({
+      seller: id,
+      products: storeProducts.filter((sp) => sp.seller.toString() === id),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: grouped,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to fetch store products" });
+  }
+};
+
+export default { getFilteredProducts, getProductDetails, getFeaturedStoreProducts };

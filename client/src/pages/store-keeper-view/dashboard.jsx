@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStorekeeperDashboardStats } from "@/store/store-keeper/dashboard-slice";
+import { fetchStorekeeperDashboardStats, fetchRecentProductRequests } from "@/store/store-keeper/dashboard-slice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/common/status-badge";
 import { Link } from "react-router-dom";
@@ -8,16 +8,23 @@ import { Button } from "@/components/ui/button";
 
 export default function StorekeeperDashboard() {
   const dispatch = useDispatch();
-  const { stats, recentOrders, loading } = useSelector((state) => state.storekeeperDashboard || {});
-
+  const { stats, loading, recentRequests = [] } = useSelector((state) => state.storeKeeperDashboard || {});
+  console.log("Dashboard stats:", stats);
+  // const recentOrders = Array.isArray(stats?.recentOrders) ? stats.recentOrders : [];
+  // console.log("Storekeeper Dashboard Stats:", stats);
+  // console.log("Recent Orders:", recentOrders);
   useEffect(() => {
     dispatch(fetchStorekeeperDashboardStats());
+    dispatch(fetchRecentProductRequests());
   }, [dispatch]);
 
   const cards = [
     { title: "Total Products", value: stats?.totalProducts, path: "/storekeeper/inventory" },
-    { title: "Total Sellers", value: stats?.totalSellers, path: "/storekeeper/sellers" },
-    { title: "Pending Orders", value: stats?.pendingOrders, path: "/storekeeper/orders" },
+    { title: "Total Sellers", value: stats?.totalSellers/*, path: "/storekeeper/sellers"*/ },
+    { title: "Pending Requests", value: stats?.pendingOrders, path: "/storekeeper/requests" },
+    { title: "Low Stock Products", value: stats?.lowStockProducts /*, path: "/storekeeper/inventory?filter=low-stock" */},
+    { title: "Total Stores", value: stats?.totalStores, path: "/storekeeper/stores" },
+    { title: "Inventory Value", value: stats?.inventoryValue ? `Br${stats.inventoryValue}` : "...", path: "/storekeeper/inventory" },
   ];
 
   return (
@@ -39,7 +46,7 @@ export default function StorekeeperDashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle>Recent Product Requests</CardTitle>
         </CardHeader>
         <CardContent>
           <table className="min-w-full text-sm">
@@ -47,25 +54,29 @@ export default function StorekeeperDashboard() {
               <tr>
                 <th className="text-left">ID</th>
                 <th className="text-left">Date</th>
-                <th className="text-left">Amount</th>
+                <th className="text-left">Product</th>
+                <th className="text-left">Seller</th>
+                <th className="text-left">Quantity</th>
                 <th className="text-left">Status</th>
               </tr>
             </thead>
             <tbody>
-              {recentOrders?.map((order) => (
-                <tr key={order._id} className="hover:bg-muted cursor-pointer">
-                  <td>{order._id.slice(-8)}</td>
-                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>Br{order.totalAmount}</td>
+              {recentRequests.map((req) => (
+                <tr key={req._id}>
+                  <td>{req._id.slice(-8)}</td>
+                  <td>{new Date(req.createdAt).toLocaleDateString()}</td>
+                  <td>{req.product?.title || "N/A"}</td>
+                  <td>{req.seller?.userName || "N/A"}</td>
+                  <td>{req.quantity}</td>
                   <td>
-                    <StatusBadge status={order.orderStatus} />
+                    <StatusBadge status={req.status} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div className="flex justify-end mt-4">
-            <Link to="/storekeeper/orders">
+            <Link to="/storekeeper/requests">
               <Button size="sm" variant="outline">View All</Button>
             </Link>
           </div>

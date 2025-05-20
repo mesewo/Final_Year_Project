@@ -40,8 +40,9 @@ import FactmanDashboard from "./pages/factman-view/dashboard";
 
 import StoreKeeperDashboard from "./pages/store-keeper-view/dashboard";
 import StoreKeeperStore from "./pages/store-keeper-view/store";
-import StoreKeeperProducts from "./pages/store-keeper-view/products";
+import InventoryManagement from "./pages/store-keeper-view/inventory";
 import StorekeeperProductRequests from "./pages/store-keeper-view/product-request";
+import StoreKeeperReports from "./pages/store-keeper-view/reports";
 
 import AccountantDashboardPage from "./pages/accountant-view/dashboard";
 
@@ -164,9 +165,11 @@ function App() {
           }
         >
           <Route path="dashboard" element={<StoreKeeperDashboard />} />
-          <Route path="store" element={<StoreKeeperStore />} />
-          <Route path="products" element={<StoreKeeperProducts />} />
-          <Route path="orders" element={<StorekeeperProductRequests />} />
+          <Route path="stores" element={<StoreKeeperStore />} />
+          <Route path="inventory" element={<InventoryManagement />} />
+          <Route path="requests" element={<StorekeeperProductRequests />} />
+          <Route path="reports" element={<StoreKeeperReports />} />
+
         </Route>
 
         <Route

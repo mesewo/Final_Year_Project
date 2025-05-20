@@ -61,19 +61,42 @@ useEffect(() => {
 };
 
   const handleRequest = async (productId) => {
-    const quantity = parseInt(quantities[productId]) || 0;
-    if (!quantity || quantity < 1) return;
-    setLoading((prev) => ({ ...prev, [productId]: true }));
-    await dispatch(requestProduct({ productId, quantity, storeId: selectedStoreId }));
+  const quantity = parseInt(quantities[productId]) || 0;
+  const product = products.find(p => p._id === productId);
+  if (!quantity || quantity < 1) return;
+  if (quantity > product.totalStock) {
     toast({
-          title:  "Request sent",
-          description: "Your request has been sent to the factory.",
-        });
-    setQuantities((prev) => ({ ...prev, [productId]: "" }));
-    setLoading((prev) => ({ ...prev, [productId]: false }));
-    dispatch(fetchMyRequests());
-  };
+      title: "Not enough stock",
+      description: `Only ${product.totalStock} units available.`,
+      variant: "destructive",
+    });
+    return;
+  }
+  setLoading((prev) => ({ ...prev, [productId]: true }));
+  const result = await dispatch(requestProduct({ productId, quantity, storeId: selectedStoreId }));
+  setLoading((prev) => ({ ...prev, [productId]: false }));
 
+  // Handle backend error
+  if (result.type.endsWith("/rejected")) {
+    const message =
+      result?.error?.message ||
+      result?.payload?.message ||
+      "Failed to send request.";
+    toast({
+      title: "Request failed",
+      description: message,
+      variant: "destructive",
+    });
+    return;
+  }
+
+  toast({
+    title: "Request sent",
+    description: "Your request has been sent to the factory.",
+  });
+  setQuantities((prev) => ({ ...prev, [productId]: "" }));
+  dispatch(fetchMyRequests());
+};
   // Handle dialog request
   const handleDialogRequest = async () => {
     if (!selectedProduct || !requestQty || parseInt(requestQty) < 1) return;
@@ -102,8 +125,15 @@ useEffect(() => {
           if (v) fetchFactoryProducts();
         }}>
           <DialogTrigger asChild>
-            <Button variant="outline">Request Product</Button>
+              {/* <Button variant="outline">Request Product</Button> */}
           </DialogTrigger>
+          <Button
+            variant="outline"
+            onClick={fetchFactoryProducts}
+            className="ml-2"
+          >
+            <RefreshCcw size={16} />
+          </Button>
           <DialogContent className="max-w-md">
             <DialogTitle>Request Product from Factory</DialogTitle>
             {/* Product dropdown with images */}
@@ -166,6 +196,9 @@ useEffect(() => {
                 onError={e => { e.target.onerror = null; e.target.src = fallbackImg; }}
               />
               <span className="font-medium">{product.title}</span>
+              <span className="text-xs text-gray-500 ml-2">
+                (Available: {product.totalStock})
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Input
@@ -179,11 +212,22 @@ useEffect(() => {
                 className="w-24"
               />
               <Button
-                onClick={() => handleRequest(product._id)}
+                onClick={() => {
+                  if (parseInt(quantities[product._id]) > product.totalStock) {
+                    toast({
+                      title: "Not enough stock",
+                      description: `Only ${product.totalStock} units available.`,
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  handleRequest(product._id);
+                }}
                 disabled={
                   loading[product._id] ||
                   !quantities[product._id] ||
-                  parseInt(quantities[product._id]) < 1
+                  parseInt(quantities[product._id]) < 1 ||
+                  parseInt(quantities[product._id]) > product.totalStock // Disable if over stock
                 }
               >
                 {loading[product._id] ? "Requesting..." : "Request"}
@@ -192,16 +236,18 @@ useEffect(() => {
           </div>
         ))}
       </div>
-
-      <h3 className="text-xl mt-8 font-semibold">My Requests
-        {/* <Button
+      <div className="flex items-center justify-between ">
+        <h3 className="text-xl mt-8 font-semibold">My Requests
+        <Button
           variant="outline"
           className="ml-2"
           onClick={() => dispatch(fetchMyRequests())}
         >
           <RefreshCcw size={16} />
-        </Button> */}
-      </h3>
+        </Button>
+        </h3>
+      </div>
+
       <ul className="space-y-2">
         {myRequests.length === 0 ? (
           <li className="text-muted-foreground">No requests yet.</li>

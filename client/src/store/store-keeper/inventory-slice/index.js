@@ -10,10 +10,16 @@ const initialState = {
 
 export const fetchInventory = createAsyncThunk(
   "inventory/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (filter = "", { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/storekeeper/inventory");
-      return response.data.data;
+      // Build the URL with filter if provided
+      let url = "/api/storekeeper/inventory";
+      if (filter) {
+        url += `?filter=${filter}`;
+      }
+      const response = await axios.get(url);
+      // Your backend returns { success, data: [...] }
+      return response.data.data || response.data.products || [];
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
@@ -36,7 +42,7 @@ export const requestStockReplenishment = createAsyncThunk(
   }
 );
 
-export const updateProductStock = createAsyncThunk(
+export const updateStock = createAsyncThunk(
   "inventory/updateStock",
   async ({ productId, quantity, notes }, { rejectWithValue }) => {
     try {
@@ -67,7 +73,7 @@ const StoreKeeperInventorySlice = createSlice({
           item => item.currentStock <= item.lowStockThreshold
         );
       })
-      .addCase(updateProductStock.fulfilled, (state, action) => {
+      .addCase(updateStock.fulfilled, (state, action) => {
         const index = state.inventory.findIndex(
           item => item._id === action.payload._id
         );

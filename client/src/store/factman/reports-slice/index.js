@@ -24,9 +24,15 @@ export const generateUserActivityReport = createAsyncThunk(
 // Async thunk to fetch sales trend report
 export const generateSalesTrendReport = createAsyncThunk(
   "factmanReports/generateSalesTrendReport",
-  async ({ days }, { rejectWithValue }) => {
+  async ({ start, end, role, search }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/factman/reports/sales-trend?days=${days}`);
+      const params = new URLSearchParams();
+      if (start) params.append("start", start);
+      if (end) params.append("end", end);
+      if (role) params.append("role", role);
+      if (search) params.append("search", search);
+
+      const response = await axios.get(`/api/factman/reports/sales-trend?${params.toString()}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch sales trend report");

@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Search, Check } from "lucide-react";
+import { Search, Check, RefreshCw} from "lucide-react";
 
 export default function StoreKeeperStores() {
   const dispatch = useDispatch();
@@ -24,6 +24,7 @@ export default function StoreKeeperStores() {
   const [availableSellers, setAvailableSellers] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [storeToDelete, setStoreToDelete] = useState(null);
+  const [allSellers, setAllSellers] = useState([]);
 
   // Fetch stores
   useEffect(() => {
@@ -31,6 +32,15 @@ export default function StoreKeeperStores() {
       dispatch(fetchStores());
     }
   }, [storeStatus, dispatch]);
+
+  // Fetch all sellers once on component mount
+  useEffect(() => {
+    fetch("/api/storekeeper/users?role=seller")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setAllSellers(data.users || []);
+      });
+  }, []);
 
   // Fetch sellers when dialog opens
   useEffect(() => {
@@ -125,20 +135,20 @@ export default function StoreKeeperStores() {
       </div>
 
       {/* Search bar */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="relative w-full max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search stores..."
-            className="pl-9"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <Button variant="outline" onClick={() => dispatch(fetchStores())}>
-          Refresh
-        </Button>
+    <div className="flex items-center gap-2 mb-4 justify-between">
+      <div className="relative w-full max-w-xs flex items-center">
+        <Search className="ml-2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search stores..."
+          className="pl-3 ml-2" // add ml-2 for space between icon and input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
+      <Button variant="outline" onClick={() => dispatch(fetchStores())} size="icon">
+        <RefreshCw className="h-5 w-5" />
+      </Button>
+    </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -171,7 +181,7 @@ export default function StoreKeeperStores() {
                     {store.assignedSellers && store.assignedSellers.length > 0 ? (
                       <ul className="list-disc list-inside space-y-1">
                         {store.assignedSellers.map((sellerId) => {
-                          const seller = availableSellers.find((s) => s._id === sellerId);
+                          const seller = allSellers.find((s) => s._id === sellerId);
                           return (
                             <li key={sellerId}>
                               {seller ? (

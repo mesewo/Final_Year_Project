@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../../models/Product.js";
 import Order from "../../models/Order.js";
+import StoreProduct from "../../models/StoreProduct.js";
 
 export const getSellerDashboardStats = async (req, res) => {
   try {
@@ -8,10 +9,15 @@ export const getSellerDashboardStats = async (req, res) => {
     if (!sellerId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-
+    const storeProducts = await StoreProduct.find({ seller: req.user.id })
+    .populate("product");
     // Total products
-    const totalProducts = await Product.countDocuments({ seller: new mongoose.Types.ObjectId(sellerId) });
-
+    const totalProducts = storeProducts
+      .filter(sp => sp.product)
+      .map(sp => ({
+        ...sp.product.toObject(),
+        totalStock: sp.quantity,
+      }));
     // Last month products
     const now = new Date();
     const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);

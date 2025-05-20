@@ -1,4 +1,4 @@
-import { StarIcon } from "lucide-react";
+// import { StarIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
@@ -11,7 +11,7 @@ import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+// import { X } from "lucide-react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
 import { getAllOrdersByUserId } from "@/store/shop/order-slice";
 
@@ -147,7 +147,7 @@ const userOrders = useSelector(state => state.shopOrder.orderList);
           onClick={handleDialogClose}
           aria-label="Close"
         >
-          <X size={24} />
+          {/* <X size={24} /> */}
         </button>
         
         {/* Product Image */}
@@ -161,13 +161,12 @@ const userOrders = useSelector(state => state.shopOrder.orderList);
           />
         </div>
         {/* Similar Products Placeholder */}
-        <div className="mt-2">
+        {/* <div className="mt-2">
           <h2 className="text-lg font-semibold mb-2">Similar Products</h2>
           <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-muted-foreground">
-            {/* TODO: Display similar products here */}
             <span>Similar products will be displayed here soon.</span>
           </div>
-        </div>
+        </div> */}
         {/* Product Info & Actions */}
         <div className="flex flex-col h-full">
           <div>

@@ -35,6 +35,7 @@ import sellerReportsReducer from "./seller/reports-slice";
 import StoreKeeperInventorySlice from "./store-keeper/inventory-slice";
 import StorekeeperDashboardSlice from "./store-keeper/dashboard-slice";
 import StoreKeeperStoreSlice from "./store-keeper/store-slice";
+import storeKeeperReportReducer from "./store-keeper/report-slice";
 
 import accountantReportsSlice from "./accountant/reports-slice";
 import accountantFinanceSlice from "./accountant/finance-slice";
@@ -89,9 +90,10 @@ const store = configureStore({
     sellerReports: sellerReportsReducer,
 
     // Store Keeper
-    storeKeeperInventory: StoreKeeperInventorySlice,
+    inventory: StoreKeeperInventorySlice,
     storeKeeperDashboard: StorekeeperDashboardSlice,
     storeKeeperStore: StoreKeeperStoreSlice,
+    storeKeeperReports: storeKeeperReportReducer,
 
     // Accountant
     accountantReports: accountantReportsSlice,

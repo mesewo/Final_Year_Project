@@ -73,16 +73,23 @@ export const updateStoreSellers = async (req, res) => {
 export const getStores = async (req, res) => {
   try {
     const stores = await Store.find();
-    // If you need to list sellers with each store in the initial fetch:
+    // For each store, find sellers assigned to it
     const storesWithSellers = await Promise.all(
       stores.map(async (store) => {
-        const sellers = await User.find({ store: store._id, role: 'seller' })
-          .select('userName email');
+        // Defensive: Only find sellers if store._id exists
+        let sellers = [];
+        try {
+          sellers = await User.find({ store: store._id, role: 'seller' })
+            .select('userName email');
+        } catch (err) {
+          console.error(`Error finding sellers for store ${store._id}:`, err);
+        }
         return { ...store.toObject(), sellers };
       })
     );
     res.status(200).json(storesWithSellers);
   } catch (error) {
+    console.error("getStores error:", error);
     res.status(500).json({ message: error.message });
   }
 };

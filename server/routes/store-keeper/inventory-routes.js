@@ -17,9 +17,9 @@ router.get("/",  storekeeperAuthMiddleware, async (req, res) => {
 });
 
 // Update stock for a product
-router.put("/:productId", /* storekeeperAuthMiddleware, */ inventoryController.updateStock);
+router.put("/:productId",  storekeeperAuthMiddleware,  inventoryController.updateStock);
 
 // Request stock replenishment (optional, if you want a POST endpoint)
-router.post("/request", /* storekeeperAuthMiddleware, */ inventoryController.requestStockReplenishment);
+router.post("/request",  storekeeperAuthMiddleware,  inventoryController.requestStockReplenishment);
 
 export default router;

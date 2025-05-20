@@ -15,7 +15,7 @@ function StoreKeeperHeader({ setOpen }) {
   const getHeaderTitle = () => {
     const path = location.pathname;
     if (path.includes("products")) return "Product Gallery";
-    if (path.includes("orders")) return "Order Management";
+    if (path.includes("requests")) return "Product Request Management";
     if (path.includes("users")) return "User Management";
     if (path.includes("reports")) return "Reports Dashboard";
     if (path.includes("feedback")) return "User Feedback";

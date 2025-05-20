@@ -5,6 +5,7 @@ const initialState = {
   isLoading: false,
   productList: [],
   productDetails: null,
+  featuredStoreProducts: [],
 };
 
 export const fetchAllFilteredProducts = createAsyncThunk(
@@ -38,6 +39,18 @@ export const fetchProductDetails = createAsyncThunk(
   }
 );
 
+export const fetchFeaturedStoreProducts = createAsyncThunk(
+  "/products/fetchFeaturedStoreProducts",
+  async (sellerIds) => {
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/featured-store-products?sellerIds=${sellerIds.join(",")}`
+    );
+    return result?.data;
+  }
+);
+
+
+
 const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
   initialState,
@@ -69,7 +82,19 @@ const shoppingProductSlice = createSlice({
       .addCase(fetchProductDetails.rejected, (state, action) => {
         state.isLoading = false;
         state.productDetails = null;
+      })
+      .addCase(fetchFeaturedStoreProducts.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchFeaturedStoreProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.featuredStoreProducts = action.payload.data;
+      })
+      .addCase(fetchFeaturedStoreProducts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.featuredStoreProducts = [];
       });
+      
   },
 });
 

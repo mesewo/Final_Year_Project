@@ -37,7 +37,7 @@ export default function SellerDashboard() {
   const statCards = [
     {
       title: "Total Products",
-      value: stats?.totalProducts,
+      value: Array.isArray(stats?.totalProducts) ? stats.totalProducts.length : stats?.totalProducts,
       change: stats?.productChange
         ? `${stats.productChange > 0 ? "+" : ""}${stats.productChange.toFixed(2)}%`
         : "0%",

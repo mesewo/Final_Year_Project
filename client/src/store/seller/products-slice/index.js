@@ -25,6 +25,14 @@ export const fetchUnsoldProducts = createAsyncThunk(
   }
 );
 
+export const fetchApprovedSellerProducts = createAsyncThunk(
+  "sellerProducts/fetchApproved",
+  async () => {
+    const response = await axios.get(`/api/seller/products/approved`, { withCredentials: true });
+    return response.data.data;
+  }
+);
+
 const sellerProductsSlice = createSlice({
   name: "sellerProducts",
   initialState,
@@ -41,6 +49,14 @@ const sellerProductsSlice = createSlice({
       
       .addCase(fetchUnsoldProducts.fulfilled, (state, action) => {
         state.unsoldProducts = action.payload;
+      })
+      .addCase(fetchApprovedSellerProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = action.payload;
+      })
+      .addCase(fetchSellerProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   }
 });

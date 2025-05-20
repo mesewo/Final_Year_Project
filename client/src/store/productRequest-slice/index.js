@@ -53,6 +53,16 @@ export const rejectRequest = createAsyncThunk(
   }
 );
 
+export const fetchProductRequestTrend = createAsyncThunk(
+  "storeKeeperReports/fetchProductRequestTrend",
+  async ({ start, end }) => {
+    const response = await axios.get(
+      `/api/product-requests/trend?start=${start.toISOString()}&end=${end.toISOString()}`
+    );
+    return response.data;
+  }
+);
+
 const productRequestSlice = createSlice({
   name: "productRequest",
   initialState: {
@@ -60,6 +70,7 @@ const productRequestSlice = createSlice({
     allRequests: [],
     status: "idle",
     error: null,
+    productRequestTrend: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -84,6 +95,13 @@ const productRequestSlice = createSlice({
         state.allRequests = state.allRequests.map((r) =>
           r._id === updated._id ? updated : r
         );
+      })
+      .addCase(fetchProductRequestTrend.pending, state => {
+        state.loading = true;
+      })
+      .addCase(fetchProductRequestTrend.fulfilled, (state, action) => {
+        state.productRequestTrend = action.payload;
+        state.loading = false;
       });
   },
 });

@@ -3,7 +3,7 @@ import Order from "../../models/Order.js";
 import Product from "../../models/Product.js";
 
 export const submitFeedback = async (req, res) => {
-  console.log("FEEDBACK BODY:", req.body);
+  // console.log("FEEDBACK BODY:", req.body);
   try {
     const { userId, orderId, productId, userName,  rating, comment, type } = req.body;
 

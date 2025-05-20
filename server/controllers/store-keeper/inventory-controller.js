@@ -14,7 +14,7 @@ export const updateStock = async (req, res) => {
     product.totalStock = quantity;
     await product.save();
 
-    // Log the inventory change
+    
     await InventoryLog.create({
       product: productId,
       changeType: "adjustment",
@@ -69,9 +69,24 @@ export const getInventory = async (req, res) => {
   }
 };
 
-// Add this export:
+export const getStoreInventory = async (req, res) => {
+  try {
+    const filter = req.query.filter;
+    let query = {};
+    if (filter === "low-stock") {
+      query.totalStock = { $lte: 5 }; // or your threshold
+    }
+    const products = await Product.find(query);
+    res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export default {
   updateStock,
   requestStockReplenishment,
   getInventory,
+  getStoreInventory,
 };
