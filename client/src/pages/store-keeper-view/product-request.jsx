@@ -184,34 +184,34 @@ export default function StorekeeperProductRequests() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "approved":
-        return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
+        return <Badge className="bg-green-100 text-green-800 px-3 py-1 text-sm">Approved</Badge>;
       case "rejected":
-        return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+        return <Badge className="bg-red-100 text-red-800 px-3 py-1 text-sm">Rejected</Badge>;
       default:
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 px-3 py-1 text-sm">Pending</Badge>;
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 text-base">
       <div className="flex flex-col space-y-6">
         {/* Header and Filters */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Product Requests</h1>
-            <p className="text-sm text-gray-500">Manage and review product requests from sellers</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Product Requests</h1>
+            <p className="text-sm md:text-base text-gray-500">Manage and review product requests from sellers</p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative">
+            <div className="relative flex-1 min-w-[200px]">
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:w-64"
+                className="pl-10 w-full text-base h-11"
               />
               <svg
-                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -228,41 +228,56 @@ export default function StorekeeperProductRequests() {
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  <span>Filters</span>
+                <Button variant="outline" className="flex items-center gap-2 h-11 px-4">
+                  <Filter className="h-5 w-5" />
+                  <span className="text-base">Filters</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <div className="px-2 py-1.5 text-sm font-medium text-gray-500">
+              <DropdownMenuContent className="w-56 text-base">
+                <div className="px-3 py-2 text-sm font-medium text-gray-500">
                   Status
                 </div>
-                <DropdownMenuItem onClick={() => setStatusFilter("all")}>
+                <DropdownMenuItem 
+                  onClick={() => setStatusFilter("all")}
+                  className="px-3 py-2 text-base"
+                >
                   All Statuses
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("pending")}>
+                <DropdownMenuItem 
+                  onClick={() => setStatusFilter("pending")}
+                  className="px-3 py-2 text-base"
+                >
                   Pending
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("approved")}>
+                <DropdownMenuItem 
+                  onClick={() => setStatusFilter("approved")}
+                  className="px-3 py-2 text-base"
+                >
                   Approved
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setStatusFilter("rejected")}>
+                <DropdownMenuItem 
+                  onClick={() => setStatusFilter("rejected")}
+                  className="px-3 py-2 text-base"
+                >
                   Rejected
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
                 
-                <div className="px-2 py-1.5 text-sm font-medium text-gray-500">
+                <div className="px-3 py-2 text-sm font-medium text-gray-500">
                   Sellers
                 </div>
-                <DropdownMenuItem onClick={() => setSellerFilter("all")}>
+                <DropdownMenuItem 
+                  onClick={() => setSellerFilter("all")}
+                  className="px-3 py-2 text-base"
+                >
                   All Sellers
                 </DropdownMenuItem>
                 {uniqueSellers.map(seller => (
                   <DropdownMenuItem 
                     key={seller._id} 
                     onClick={() => setSellerFilter(seller._id)}
-                    className="flex items-center gap-2"
+                    className="px-3 py-2 text-base flex items-center gap-2"
                   >
                     <span className="truncate">{seller.userName}</span>
                   </DropdownMenuItem>
@@ -270,16 +285,20 @@ export default function StorekeeperProductRequests() {
                 
                 <DropdownMenuSeparator />
                 
-                <div className="px-2 py-1.5 text-sm font-medium text-gray-500">
+                <div className="px-3 py-2 text-sm font-medium text-gray-500">
                   Categories
                 </div>
-                <DropdownMenuItem onClick={() => setCategoryFilter("all")}>
+                <DropdownMenuItem 
+                  onClick={() => setCategoryFilter("all")}
+                  className="px-3 py-2 text-base"
+                >
                   All Categories
                 </DropdownMenuItem>
                 {mainCategories.map(category => (
                   <DropdownMenuItem 
                     key={category} 
                     onClick={() => setCategoryFilter(category)}
+                    className="px-3 py-2 text-base"
                   >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </DropdownMenuItem>
@@ -287,16 +306,20 @@ export default function StorekeeperProductRequests() {
 
                 <DropdownMenuSeparator />
 
-                <div className="px-2 py-1.5 text-sm font-medium text-gray-500">
+                <div className="px-3 py-2 text-sm font-medium text-gray-500">
                   Time
                 </div>
-                <DropdownMenuItem onClick={() => setTimeRange("all")}>
+                <DropdownMenuItem 
+                  onClick={() => setTimeRange("all")}
+                  className="px-3 py-2 text-base"
+                >
                   All Time
                 </DropdownMenuItem>
                 {timeOptions.slice(1).map(option => (
                   <DropdownMenuItem 
                     key={option.value} 
                     onClick={() => setTimeRange(option.value)}
+                    className="px-3 py-2 text-base"
                   >
                     {option.label}
                   </DropdownMenuItem>
@@ -314,7 +337,7 @@ export default function StorekeeperProductRequests() {
                 setTimeRange("all");
                 dispatch(fetchAllRequests());
               }} 
-              className="shrink-0"
+              className="shrink-0 h-11 px-4 text-base"
             >
               Reset
             </Button>
@@ -323,52 +346,67 @@ export default function StorekeeperProductRequests() {
 
         {/* Active Filters */}
         {(statusFilter !== "all" || sellerFilter !== "all" || categoryFilter !== "all" || searchTerm || timeRange !== "all") && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {statusFilter !== "all" && (
-              <Badge className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-200">
                 Status: {statusFilter}
-                <button onClick={() => setStatusFilter("all")} className="ml-1">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button 
+                  onClick={() => setStatusFilter("all")} 
+                  className="ml-1 p-1 rounded-full hover:bg-gray-300"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </Badge>
             )}
             {sellerFilter !== "all" && (
-              <Badge className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-200">
                 Seller: {uniqueSellers.find(s => s._id === sellerFilter)?.userName || "Unknown"}
-                <button onClick={() => setSellerFilter("all")} className="ml-1">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button 
+                  onClick={() => setSellerFilter("all")} 
+                  className="ml-1 p-1 rounded-full hover:bg-gray-300"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </Badge>
             )}
             {categoryFilter !== "all" && (
-              <Badge className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-200">
                 Category: {categoryFilter}
-                <button onClick={() => setCategoryFilter("all")} className="ml-1">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button 
+                  onClick={() => setCategoryFilter("all")} 
+                  className="ml-1 p-1 rounded-full hover:bg-gray-300"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </Badge>
             )}
             {searchTerm && (
-              <Badge className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-200">
                 Search: {searchTerm}
-                <button onClick={() => setSearchTerm("")} className="ml-1">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button 
+                  onClick={() => setSearchTerm("")} 
+                  className="ml-1 p-1 rounded-full hover:bg-gray-300"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </Badge>
             )}
             {timeRange !== "all" && (
-              <Badge className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-200">
                 Time: {timeOptions.find(t => t.value === timeRange)?.label}
-                <button onClick={() => setTimeRange("all")} className="ml-1">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button 
+                  onClick={() => setTimeRange("all")} 
+                  className="ml-1 p-1 rounded-full hover:bg-gray-300"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -379,10 +417,10 @@ export default function StorekeeperProductRequests() {
 
         {/* Requests List */}
         {filteredRequests.length === 0 ? (
-          <Card className="flex flex-col items-center justify-center py-12">
-            <div className="text-muted-foreground text-center">
+          <Card className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="text-muted-foreground">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-14 w-14 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -395,8 +433,8 @@ export default function StorekeeperProductRequests() {
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                 />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900">No requests found</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <h3 className="mt-4 text-lg md:text-xl font-medium text-gray-900">No requests found</h3>
+              <p className="mt-2 text-sm md:text-base text-gray-500 max-w-md mx-auto">
                 {searchTerm || statusFilter !== "all" || sellerFilter !== "all" || categoryFilter !== "all" || timeRange !== "all"
                   ? "Try adjusting your filters or search term" 
                   : "There are currently no product requests"}
@@ -404,7 +442,7 @@ export default function StorekeeperProductRequests() {
             </div>
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {filteredRequests.map((group) => {
               const pendingCount = group.requests.filter(r => r.status === "pending").length;
               const approvedCount = group.requests.filter(r => r.status === "approved").length;
@@ -414,26 +452,26 @@ export default function StorekeeperProductRequests() {
               const activeTab = sellerStatusTab[group.seller._id] || "pending";
 
               return (
-                <Card key={group.seller._id} className="overflow-hidden">
+                <Card key={group.seller._id} className="overflow-hidden hover:shadow-md transition-shadow">
                   <div 
                     className="bg-gray-50 px-5 py-4 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => toggleSellerExpansion(group.seller._id)}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+                    <div className="flex items-center gap-4 w-full">
+                      <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
                         {group.seller?.userName ? group.seller.userName.charAt(0).toUpperCase() : "?"}
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
-                          <h3 className="font-medium text-gray-800">{group.seller.userName}</h3>
-                          <div className="text-sm text-gray-500">
+                          <h3 className="font-medium text-gray-800 text-base md:text-lg">{group.seller.userName}</h3>
+                          <div className="text-sm md:text-base text-gray-500">
                             {group.requests.length} request{group.requests.length !== 1 ? 's' : ''}
                           </div>
                         </div>
                         
-                        <div className="flex gap-4 mt-2">
+                        <div className="flex gap-3 mt-3">
                           <div 
-                            className={`flex flex-col items-center px-3 py-1 rounded-md cursor-pointer ${activeTab === "all" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100"}`}
+                            className={`flex flex-col items-center px-3 py-1.5 rounded-md cursor-pointer text-sm md:text-base ${activeTab === "all" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100"}`}
                             onClick={e => {
                               e.stopPropagation();
                               setSellerStatusTab(tab => ({ ...tab, [group.seller._id]: "all" }));
@@ -443,7 +481,7 @@ export default function StorekeeperProductRequests() {
                             <span className="text-xs">All</span>
                           </div>
                           <div 
-                            className={`flex flex-col items-center px-3 py-1 rounded-md cursor-pointer ${activeTab === "pending" ? "bg-blue-50 text-blue-600" : "hover:bg-gray-100"}`}
+                            className={`flex flex-col items-center px-3 py-1.5 rounded-md cursor-pointer text-sm md:text-base ${activeTab === "pending" ? "bg-blue-50 text-blue-600" : "hover:bg-gray-100"}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSellerStatusTab(tab => ({ ...tab, [group.seller._id]: "pending" }));
@@ -453,7 +491,7 @@ export default function StorekeeperProductRequests() {
                             <span className="text-xs">Pending</span>
                           </div>
                           <div 
-                            className={`flex flex-col items-center px-3 py-1 rounded-md cursor-pointer ${activeTab === "approved" ? "bg-green-50 text-green-600" : "hover:bg-gray-100"}`}
+                            className={`flex flex-col items-center px-3 py-1.5 rounded-md cursor-pointer text-sm md:text-base ${activeTab === "approved" ? "bg-green-50 text-green-600" : "hover:bg-gray-100"}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSellerStatusTab(tab => ({ ...tab, [group.seller._id]: "approved" }));
@@ -463,7 +501,7 @@ export default function StorekeeperProductRequests() {
                             <span className="text-xs">Approved</span>
                           </div>
                           <div 
-                            className={`flex flex-col items-center px-3 py-1 rounded-md cursor-pointer ${activeTab === "rejected" ? "bg-red-50 text-red-600" : "hover:bg-gray-100"}`}
+                            className={`flex flex-col items-center px-3 py-1.5 rounded-md cursor-pointer text-sm md:text-base ${activeTab === "rejected" ? "bg-red-50 text-red-600" : "hover:bg-gray-100"}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSellerStatusTab(tab => ({ ...tab, [group.seller._id]: "rejected" }));
@@ -478,7 +516,7 @@ export default function StorekeeperProductRequests() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-gray-500 hover:text-gray-700 p-2"
                     >
                       {expandedSellers[group.seller._id] ? (
                         <ChevronUp className="h-5 w-5" />
@@ -495,7 +533,7 @@ export default function StorekeeperProductRequests() {
                         .map((request) => (
                           <div key={request._id} className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50 transition-colors">
                             <div className="flex items-start gap-4 flex-1">
-                              <div className="w-16 h-16 flex-shrink-0 rounded-md border overflow-hidden">
+                              <div className="w-20 h-20 flex-shrink-0 rounded-md border overflow-hidden">
                                 <img
                                   src={request.product.image}
                                   alt={request.product.title}
@@ -503,16 +541,16 @@ export default function StorekeeperProductRequests() {
                                   onError={e => { e.target.src = "/fallback.png"; }}
                                 />
                               </div>
-                              <div className="grid gap-1">
-                                <h4 className="font-medium text-gray-900">{request.product.title}</h4>
+                              <div className="grid gap-1.5">
+                                <h4 className="font-medium text-gray-900 text-base md:text-lg">{request.product.title}</h4>
                                 <div className="flex flex-wrap gap-2">
                                   {request.product.categories?.map(category => (
-                                    <Badge key={category} variant="outline" className="text-xs">
+                                    <Badge key={category} variant="outline" className="text-xs px-2 py-0.5">
                                       {category}
                                     </Badge>
                                   ))}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm md:text-base text-gray-500">
                                   <span className="font-medium">Quantity:</span> {request.quantity}
                                 </div>
                                 <div className="text-xs text-gray-400">
@@ -527,11 +565,11 @@ export default function StorekeeperProductRequests() {
                               </div>
                               
                               {request.status === "pending" && (
-                                <div className="flex gap-2">
+                                <div className="flex gap-3">
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="bg-green-50 hover:bg-green-100 text-green-700"
+                                    className="bg-green-50 hover:bg-green-100 text-green-700 h-10 px-4 text-base"
                                     onClick={() => handleApprove(request._id)}
                                   >
                                     Approve
@@ -539,7 +577,7 @@ export default function StorekeeperProductRequests() {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="bg-red-50 hover:bg-red-100 text-red-700"
+                                    className="bg-red-50 hover:bg-red-100 text-red-700 h-10 px-4 text-base"
                                     onClick={() => handleReject(request._id)}
                                   >
                                     Reject

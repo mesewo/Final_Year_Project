@@ -1,6 +1,7 @@
 import Cart from "../../models/Cart.js";
-import Product from "../../models/Product.js";
+import StoreProduct from "../../models/StoreProduct.js";
 
+// Add to Cart
 export const addToCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
@@ -12,12 +13,22 @@ export const addToCart = async (req, res) => {
       });
     }
 
-    const product = await Product.findById(productId);
+     const storeProduct = await StoreProduct.findOne({ product: productId });
+      if (!storeProduct) {
+        return res.status(404).json({
+          success: false,
+          message: "StoreProduct mapping not found for this product",
+        });
+      }
 
-    if (!product) {
-      return res.status(404).json({
+      const storeId = storeProduct.store;
+      const sellerId = storeProduct.seller;
+
+
+    if (!storeId || !sellerId) {
+      return res.status(400).json({
         success: false,
-        message: "Product not found",
+        message: "Product missing store or seller info!",
       });
     }
 
@@ -32,9 +43,12 @@ export const addToCart = async (req, res) => {
     );
 
     if (findCurrentProductIndex === -1) {
-      cart.items.push({ productId, quantity });
+      cart.items.push({ productId, quantity, storeId, sellerId });
     } else {
       cart.items[findCurrentProductIndex].quantity += quantity;
+      // Also update storeId and sellerId in case product info changed
+      cart.items[findCurrentProductIndex].storeId = storeId;
+      cart.items[findCurrentProductIndex].sellerId = sellerId;
     }
 
     await cart.save();
@@ -51,6 +65,7 @@ export const addToCart = async (req, res) => {
   }
 };
 
+// Fetch Cart Items
 export const fetchCartItems = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -64,7 +79,7 @@ export const fetchCartItems = async (req, res) => {
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice store seller",
     });
 
     if (!cart) {
@@ -90,6 +105,8 @@ export const fetchCartItems = async (req, res) => {
       price: item.productId.price,
       salePrice: item.productId.salePrice,
       quantity: item.quantity,
+      storeId: item.storeId || item.productId.store,
+      sellerId: item.sellerId || item.productId.seller,
     }));
 
     res.status(200).json({
@@ -108,6 +125,7 @@ export const fetchCartItems = async (req, res) => {
   }
 };
 
+// Update Cart Item Quantity
 export const updateCartItemQty = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
@@ -143,7 +161,7 @@ export const updateCartItemQty = async (req, res) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice store seller",
     });
 
     const populateCartItems = cart.items.map((item) => ({
@@ -153,6 +171,8 @@ export const updateCartItemQty = async (req, res) => {
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
+      storeId: item.storeId || (item.productId ? item.productId.store : null),
+      sellerId: item.sellerId || (item.productId ? item.productId.seller : null),
     }));
 
     res.status(200).json({
@@ -171,6 +191,7 @@ export const updateCartItemQty = async (req, res) => {
   }
 };
 
+// Delete Cart Item
 export const deleteCartItem = async (req, res) => {
   try {
     const { userId, productId } = req.params;
@@ -183,7 +204,7 @@ export const deleteCartItem = async (req, res) => {
 
     const cart = await Cart.findOne({ userId }).populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice store seller",
     });
 
     if (!cart) {
@@ -201,7 +222,7 @@ export const deleteCartItem = async (req, res) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price salePrice",
+      select: "image title price salePrice store seller",
     });
 
     const populateCartItems = cart.items.map((item) => ({
@@ -211,6 +232,8 @@ export const deleteCartItem = async (req, res) => {
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
+      storeId: item.storeId || (item.productId ? item.productId.store : null),
+      sellerId: item.sellerId || (item.productId ? item.productId.seller : null),
     }));
 
     res.status(200).json({

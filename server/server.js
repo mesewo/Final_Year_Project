@@ -35,6 +35,7 @@ import sellerOrdersRouter from "./routes/seller/orders-routes.js";
 import sellerDashboardRouter from "./routes/seller/dashboard-routes.js";
 import sellerReportRoutes from "./routes/seller/reports-routes.js";
 import sellerStoreRoutes from "./routes/seller/store-routes.js";
+import sellerRequestsRoutes from "./routes/seller/requests-routes.js";
 
 import storeKeeperStoreRoutes from "./routes/store-keeper/store-routes.js";
 import storeKeeeperUserRoutes from "./routes/store-keeper/user-routes.js";
@@ -44,6 +45,7 @@ import storeKeeperReportRoutes from "./routes/store-keeper/report-routes.js";
 
 import commonFeatureRouter from "./routes/common/feature-routes.js";
 import productRequestRoutes from "./routes/productRequest-routes.js";
+import notificationsRouter from "./routes/notifications.js";
 // Create a database connection
 mongoose
   .connect("mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -105,6 +107,7 @@ app.use("/api/seller/stores", sellerStoreRoutes);
 app.use("/api/seller/reports", sellerReportRoutes);
 app.use("/api/seller/orders", sellerOrdersRouter);
 app.use("/api/seller", sellerDashboardRouter);
+app.use("/api/seller", sellerRequestsRoutes);
 
 app.use("/api/storekeeper/stores", storeKeeperStoreRoutes);
 app.use("/api/storekeeper/users", storeKeeeperUserRoutes);
@@ -112,6 +115,10 @@ app.use("/api/storekeeper/inventory", storeKeeperInventoryRoutes);
 app.use("/api/storekeeper", storekeeperDashboardRoutes);
 app.use("/api/product-requests", productRequestRoutes);
 app.use("/api/storekeeper/reports", storeKeeperReportRoutes);
+app.use("/api/notifications", notificationsRouter);
+
+import { notifyAllLowOrOutOfStockProducts } from "./controllers/productRequest-controller.js";
+notifyAllLowOrOutOfStockProducts();
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
 

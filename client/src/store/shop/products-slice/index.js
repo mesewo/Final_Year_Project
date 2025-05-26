@@ -6,6 +6,7 @@ const initialState = {
   productList: [],
   productDetails: null,
   featuredStoreProducts: [],
+  storeProducts: [],
 };
 
 export const fetchAllFilteredProducts = createAsyncThunk(
@@ -39,13 +40,14 @@ export const fetchProductDetails = createAsyncThunk(
   }
 );
 
-export const fetchFeaturedStoreProducts = createAsyncThunk(
-  "/products/fetchFeaturedStoreProducts",
-  async (sellerIds) => {
+
+export const fetchPublicStoreProducts = createAsyncThunk(
+  "/products/fetchPublicStoreProductsByStore",
+  async (storeId) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/featured-store-products?sellerIds=${sellerIds.join(",")}`
+      `http://localhost:5000/api/shop/products/public-store/${storeId}/products`
     );
-    return result?.data;
+    return result.data.data;
   }
 );
 
@@ -83,16 +85,16 @@ const shoppingProductSlice = createSlice({
         state.isLoading = false;
         state.productDetails = null;
       })
-      .addCase(fetchFeaturedStoreProducts.pending, (state, action) => {
+      .addCase(fetchPublicStoreProducts.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(fetchFeaturedStoreProducts.fulfilled, (state, action) => {
+      .addCase(fetchPublicStoreProducts.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.featuredStoreProducts = action.payload.data;
+        state.storeProducts = action.payload; // <--- THIS IS IMPORTANT
       })
-      .addCase(fetchFeaturedStoreProducts.rejected, (state, action) => {
+      .addCase(fetchPublicStoreProducts.rejected, (state) => {
         state.isLoading = false;
-        state.featuredStoreProducts = [];
+        state.storeProducts = [];
       });
       
   },

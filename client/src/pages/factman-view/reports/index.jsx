@@ -3,20 +3,33 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { fetchInventory } from "@/store/store-keeper/inventory-slice";
 import { 
   generateUserActivityReport,
   generateSalesTrendReport
 } from "@/store/factman/reports-slice";
-import { useEffect, useState } from "react";
 import { LineChart } from "@/components/ui/charts";
+import NotificationsTab from "./NotificationsTab";
 
 export default function FactmanReports() {
   const dispatch = useDispatch();
   const { 
     userActivity, 
     salesTrend, 
-    loading 
+    loading
   } = useSelector(state => state.factmanReports);
+
+  // Use the same inventory as store-keeper
+  const inventory = useSelector(state => state.inventory.inventory || []);
+
+  // Filter low/out-of-stock
+  const lowOrOutProducts = inventory.filter(
+    p =>
+      p.totalStock === 0 ||
+      (p.totalStock > 0 && p.totalStock <= (p.lowStockThreshold ?? 5))
+  );
+
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     end: new Date()
@@ -36,8 +49,10 @@ export default function FactmanReports() {
     );
 
   useEffect(() => {
+    dispatch(fetchInventory());
     dispatch(generateUserActivityReport({ days: 30 }));
     dispatch(generateSalesTrendReport({ days: 30 }));
+    // Optionally: dispatch(fetchInventory()); // If you need to fetch inventory here
   }, [dispatch]);
 
   return (
@@ -53,6 +68,7 @@ export default function FactmanReports() {
         <TabsList>
           <TabsTrigger value="userActivity">User Activity</TabsTrigger>
           <TabsTrigger value="salesTrend">Sales Trend</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
         
         <TabsContent value="userActivity">
@@ -126,6 +142,10 @@ export default function FactmanReports() {
               />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <NotificationsTab products={lowOrOutProducts} />
         </TabsContent>
       </Tabs>
     </div>

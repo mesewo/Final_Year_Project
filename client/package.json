@@ -25,6 +25,7 @@
     "caniuse-lite": "^1.0.30001716",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "lucide-react": "^0.429.0",
     "react": "^18.3.1",
     "react-date-range": "^2.0.1",

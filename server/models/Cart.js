@@ -19,6 +19,16 @@ const CartSchema = new mongoose.Schema(
           required: true,
           min: 1,
         },
+        storeId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Store",
+          required: true,
+        },
+        sellerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
       },
     ],
   },

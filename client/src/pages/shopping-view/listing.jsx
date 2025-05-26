@@ -83,7 +83,7 @@ function ShoppingListing() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+  function handleAddtoCart(getCurrentProductId, getTotalStock, productDetails) {
     console.log(cartItems);
     let getCartItems = cartItems.items || [];
 

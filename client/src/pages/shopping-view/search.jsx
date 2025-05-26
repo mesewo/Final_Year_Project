@@ -36,7 +36,7 @@ function SearchProducts() {
     }
   }, [keyword]);
 
-  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+  function handleAddtoCart(getCurrentProductId, getTotalStock, productDetails) {
     console.log(cartItems);
     let getCartItems = cartItems.items || [];
 

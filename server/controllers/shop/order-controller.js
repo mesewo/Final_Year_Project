@@ -1,6 +1,7 @@
 import Order from "../../models/Order.js";
 import Cart from "../../models/Cart.js";
 import Product from "../../models/Product.js";
+import StoreProduct from "../../models/StoreProduct.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -22,6 +23,18 @@ export const createOrder = async (req, res) => {
       quantity: item.quantity,
     }));
 
+    // Find store and seller for the first product in the cart
+    // (If you want to support multi-store/seller orders, you need to change this logic)
+    let storeId = null;
+    let sellerId = null;
+    if (cartItems.length > 0) {
+      const storeProduct = await StoreProduct.findOne({ product: cartItems[0].productId });
+      if (storeProduct) {
+        storeId = storeProduct.store;
+        sellerId = storeProduct.seller;
+      }
+    }
+
     const order = new Order({
       userId,
       cartId,
@@ -35,6 +48,8 @@ export const createOrder = async (req, res) => {
       orderUpdateDate: new Date(),
       paymentId: "",
       payerId: "",
+      store: storeId,
+      seller: sellerId,
     });
 
     await order.save();
@@ -42,16 +57,18 @@ export const createOrder = async (req, res) => {
     // Delete cart after order
     await Cart.findByIdAndDelete(cartId);
 
-    // Update product stock
+    // Update product stock in StoreProduct and Product
     for (let item of orderItems) {
-      const product = await Product.findById(item.productId);
-      if (product) {
-        product.totalStock -= item.quantity;
-        await Product.updateOne(
-          { _id: item.productId },
-          { $inc: { totalStock: -item.quantity } }
-        );        
-      }
+      // Update StoreProduct stock
+      await StoreProduct.updateOne(
+        { product: item.productId },
+        { $inc: { quantity: -item.quantity } }
+      );
+      // Update Product stock
+      await Product.updateOne(
+        { _id: item.productId },
+        { $inc: { totalStock: -item.quantity } }
+      );
     }
 
     res.status(201).json({

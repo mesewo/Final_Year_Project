@@ -1,3 +1,5 @@
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
