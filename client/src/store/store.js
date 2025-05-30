@@ -39,6 +39,7 @@ import storeKeeperReportReducer from "./store-keeper/report-slice";
 
 import accountantReportsSlice from "./accountant/reports-slice";
 import accountantFinanceSlice from "./accountant/finance-slice";
+import accountantTransactionsReducer from "./accountant/transaction-slice";
 
 import commonFeatureSlice from "./common-slice";
 import commonFeedbackSlice from "./common-slice/feedback-slice";
@@ -98,6 +99,7 @@ const store = configureStore({
     // Accountant
     accountantReports: accountantReportsSlice,
     accountantFinance: accountantFinanceSlice,
+    accountantTransactions: accountantTransactionsReducer,
 
     // Common
     commonFeature: commonFeatureSlice,

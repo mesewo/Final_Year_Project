@@ -8,79 +8,79 @@ export const createOrder = async (req, res) => {
     const {
       userId,
       cartId,
-      cartItems, // still comes from frontend as "cartItems"
+      cartItems,
       addressInfo,
-      totalAmount,
       paymentMethod,
     } = req.body;
 
-    // Convert cartItems to orderItems
-    const orderItems = cartItems.map((item) => ({
-      productId: item.productId,
-      title: item.title,
-      image: item.image,
-      price: item.price,
-      quantity: item.quantity,
-    }));
+    // Group cartItems by sellerId and storeId
+    const ordersMap = {};
+    for (const item of cartItems) {
+      const key = `${item.sellerId}_${item.storeId}`;
+      if (!ordersMap[key]) ordersMap[key] = [];
+      ordersMap[key].push(item);
+    }
 
-    // Find store and seller for the first product in the cart
-    // (If you want to support multi-store/seller orders, you need to change this logic)
-    let storeId = null;
-    let sellerId = null;
-    if (cartItems.length > 0) {
-      const storeProduct = await StoreProduct.findOne({ product: cartItems[0].productId });
-      if (storeProduct) {
-        storeId = storeProduct.store;
-        sellerId = storeProduct.seller;
+    const createdOrders = [];
+
+    for (const [key, items] of Object.entries(ordersMap)) {
+      const { sellerId, storeId } = items[0];
+      const orderItems = items.map((item) => ({
+        productId: item.productId,
+        title: item.title,
+        image: item.image,
+        price: item.price,
+        quantity: item.quantity,
+      }));
+
+      const totalAmount = orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+      const order = new Order({
+        userId,
+        cartId,
+        orderItems,
+        addressInfo,
+        totalAmount,
+        paymentMethod,
+        paymentStatus: "pending",
+        orderStatus: "pending",
+        orderDate: new Date(),
+        orderUpdateDate: new Date(),
+        paymentId: "",
+        payerId: "",
+        store: storeId,
+        seller: sellerId,
+      });
+
+      await order.save();
+      createdOrders.push(order);
+
+      // Update stock for each item
+      for (let item of orderItems) {
+        await StoreProduct.updateOne(
+          { product: item.productId, store: storeId, seller: sellerId },
+          { $inc: { quantity: -item.quantity } }
+        );
+        await Product.updateOne(
+          { _id: item.productId },
+          { $inc: { totalStock: -item.quantity } }
+        );
       }
     }
 
-    const order = new Order({
-      userId,
-      cartId,
-      orderItems,
-      addressInfo,
-      totalAmount,
-      paymentMethod,
-      paymentStatus: "pending",
-      orderStatus: "pending",
-      orderDate: new Date(),
-      orderUpdateDate: new Date(),
-      paymentId: "",
-      payerId: "",
-      store: storeId,
-      seller: sellerId,
-    });
-
-    await order.save();
-
-    // Delete cart after order
+    // Delete cart after all orders are created
     await Cart.findByIdAndDelete(cartId);
-
-    // Update product stock in StoreProduct and Product
-    for (let item of orderItems) {
-      // Update StoreProduct stock
-      await StoreProduct.updateOne(
-        { product: item.productId },
-        { $inc: { quantity: -item.quantity } }
-      );
-      // Update Product stock
-      await Product.updateOne(
-        { _id: item.productId },
-        { $inc: { totalStock: -item.quantity } }
-      );
-    }
 
     res.status(201).json({
       success: true,
-      message: "Order created successfully",
-      orderId: order._id,
+      message: "Orders created successfully",
+      orderIds: createdOrders.map(o => o._id),
     });
   } catch (error) {
     console.error("Create order error:", error);
     res.status(500).json({
       success: false,
-      message: "Error while creating order",
+      message: "Error while creating orders",
     });
   }
 };

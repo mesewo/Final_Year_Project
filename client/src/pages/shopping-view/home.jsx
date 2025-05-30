@@ -78,7 +78,6 @@ function ShoppingHome() {
     navigate(`/shop/listing`);
   }
 
-  // FIX: Use the correct route and property for navigation
   function handleNavigateToStore(store) {
     navigate(`/shop/store/${store.storeId}`);
   }
@@ -150,8 +149,7 @@ function ShoppingHome() {
           onClick={() =>
             setCurrentSlide(
               (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
+                (prevSlide - 1 + featureImageList.length) % featureImageList.length
             )
           }
           className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
@@ -248,27 +246,6 @@ function ShoppingHome() {
           </div>
         </section>
       )}
-
-      {/* Featured Products */}
-      {/* <section className="py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Feature Products
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productList && productList.length > 0
-              ? productList.map((productItem) => (
-                  <ShoppingProductTile
-                    key={productItem._id || productItem.id}
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                  />
-                ))
-              : null}
-          </div>
-        </div>
-      </section> */}
 
       {/* Product Details Modal */}
       <ProductDetailsDialog

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import SellerOrderDetailsView from "./order-details"; // Adjust path if needed
+import { Input } from "@/components/ui/input";
 
 export default function SellerOrders() {
   const dispatch = useDispatch();
@@ -15,6 +16,11 @@ export default function SellerOrders() {
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [timeFilter, setTimeFilter] = useState("all");
 
   useEffect(() => {
     if (user?.id) {
@@ -42,8 +48,89 @@ export default function SellerOrders() {
     dispatch(updateOrderStatus({ orderId, status: newStatus }));
   };
 
-  // Always use an array for mapping
-  const ordersArray = Array.isArray(orders) ? orders : [];
+  // Always use an array for mapping, and sort by newest first
+  const ordersArray = Array.isArray(orders)
+    ? [...orders].sort((a, b) => new Date(b.createdAt || b.orderDate) - new Date(a.createdAt || a.orderDate))
+    : [];
+
+  // Time filter helpers
+  function isWithinTime(date, filter) {
+    const d = new Date(date);
+    const now = new Date();
+
+    if (filter === "all") return true;
+    if (filter === "today") return d.toDateString() === now.toDateString();
+
+    if (filter === "yesterday") {
+      const yesterday = new Date(now);
+      yesterday.setDate(now.getDate() - 1);
+      return d.toDateString() === yesterday.toDateString();
+    }
+
+    if (filter === "this_week") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+      return d >= startOfWeek && d <= endOfWeek;
+    }
+
+    if (filter === "last_week") {
+      const startOfThisWeek = new Date(now);
+      startOfThisWeek.setDate(now.getDate() - now.getDay());
+      startOfThisWeek.setHours(0, 0, 0, 0);
+      const startOfLastWeek = new Date(startOfThisWeek);
+      startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
+      const endOfLastWeek = new Date(startOfThisWeek);
+      endOfLastWeek.setDate(startOfThisWeek.getDate() - 1);
+      endOfLastWeek.setHours(23, 59, 59, 999);
+      return d >= startOfLastWeek && d <= endOfLastWeek;
+    }
+
+    if (filter === "this_month") {
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }
+
+    if (filter === "last_month") {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      return (
+        d.getMonth() === lastMonth.getMonth() &&
+        d.getFullYear() === lastMonth.getFullYear()
+      );
+    }
+
+    if (filter === "this_year") {
+      return d.getFullYear() === now.getFullYear();
+    }
+
+    return true;
+  }
+
+  // First, filter by search and status
+  const baseFilteredOrders = ordersArray.filter(order => {
+    const statusMatch = statusFilter === "all" || (order.status || order.orderStatus) === statusFilter;
+    const searchMatch =
+      search === "" ||
+      (order._id && order._id.includes(search)) ||
+      (order.customerName && order.customerName.toLowerCase().includes(search.toLowerCase())) ||
+      (order.userId && order.userId.toLowerCase().includes(search.toLowerCase()));
+    return statusMatch && searchMatch;
+  });
+
+  // Then, count for each time filter using baseFilteredOrders
+  const timeCounts = Object.fromEntries(
+    timeOptions.map(opt => [
+      opt.value,
+      baseFilteredOrders.filter(order => isWithinTime(order.createdAt || order.orderDate, opt.value)).length
+    ])
+  );
+
+  // Finally, apply the time filter for display
+  const filteredOrders = baseFilteredOrders.filter(order =>
+    isWithinTime(order.createdAt || order.orderDate, timeFilter)
+  );
 
   if (status === "loading") return <div>Loading orders...</div>;
   if (status === "failed") return <div>Error: {error || "Failed to load orders."}</div>;
@@ -51,6 +138,46 @@ export default function SellerOrders() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Orders</h1>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 items-center mb-4">
+        <Input
+          placeholder="Search by Order ID or Customer"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-64"
+        />
+        <select
+          className="border rounded px-2 py-1"
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+        >
+          <option value="all">All Statuses</option>
+          {statusOptions.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Time Filter as Row of Buttons */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <span className="font-medium">Time:</span>
+        {timeOptions.map(opt => (
+          <button
+            key={opt.value}
+            className={`px-3 py-1 rounded border ${
+              timeFilter === opt.value
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-gray-100 text-gray-700 border-gray-300"
+            }`}
+            onClick={() => setTimeFilter(opt.value)}
+            type="button"
+          >
+            {opt.label} <span className="ml-1 text-xs text-gray-500">({timeCounts[opt.value]})</span>
+          </button>
+        ))}
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -64,7 +191,7 @@ export default function SellerOrders() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {ordersArray.map((order) => (
+            {filteredOrders.map((order) => (
               <TableRow key={order._id}>
                 <TableCell className="font-medium">#{order._id?.slice(-6)}</TableCell>
                 <TableCell>
@@ -138,3 +265,14 @@ export default function SellerOrders() {
     </div>
   );
 }
+
+const timeOptions = [
+  { value: "all", label: "All Time" },
+  { value: "today", label: "Today" },
+  { value: "yesterday", label: "Yesterday" },
+  { value: "this_week", label: "This Week" },
+  { value: "last_week", label: "Last Week" },
+  { value: "this_month", label: "This Month" },
+  { value: "last_month", label: "Last Month" },
+  { value: "this_year", label: "This Year" },
+];

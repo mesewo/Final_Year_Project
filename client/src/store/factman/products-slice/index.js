@@ -4,6 +4,7 @@ import axios from "axios";
 const initialState = {
   isLoading: false,
   productList: [],
+  productDetails: null,
 };
 
 export const addNewProduct = createAsyncThunk(
@@ -31,6 +32,16 @@ export const fetchAllProducts = createAsyncThunk(
     );
 
     return result?.data;
+  }
+);
+
+export const fetchProductWithFeedbacks = createAsyncThunk(
+  "/products/fetchProductWithFeedbacks",
+  async (id) => {
+    const result = await axios.get(
+      `http://localhost:5000/api/factman/products/${id}/details`
+    );
+    return result?.data?.data;
   }
 );
 
@@ -65,7 +76,11 @@ export const deleteProduct = createAsyncThunk(
 const FactmanProductsSlice = createSlice({
   name: "factmanProducts",
   initialState,
-  reducers: {},
+  reducers: {
+    clearProductDetails: (state) => {
+      state.productDetails = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllProducts.pending, (state) => {
@@ -78,8 +93,20 @@ const FactmanProductsSlice = createSlice({
       .addCase(fetchAllProducts.rejected, (state, action) => {
         state.isLoading = false;
         state.productList = [];
+      })
+      .addCase(fetchProductWithFeedbacks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProductWithFeedbacks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.productDetails = action.payload;
+      })
+      .addCase(fetchProductWithFeedbacks.rejected, (state) => {
+        state.isLoading = false;
+        state.productDetails = null;
       });
   },
 });
 
+export const { clearProductDetails } = FactmanProductsSlice.actions;
 export default FactmanProductsSlice.reducer;

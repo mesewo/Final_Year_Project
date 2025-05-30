@@ -1,9 +1,9 @@
 import express from "express";
 import { generateSellerSalesReport } from "../../controllers/seller/report-controller.js";
-import { authMiddleware } from "../../controllers/auth/auth-controller.js";
+import { sellerAuthMiddleware } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
 
-router.get("/sales", authMiddleware, generateSellerSalesReport);
+router.get("/sales", sellerAuthMiddleware, generateSellerSalesReport);
 
 export default router;

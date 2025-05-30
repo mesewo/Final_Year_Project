@@ -7,9 +7,31 @@ import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { useToast } from "@/components/ui/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 
+// Example categories, replace with your actual categories
+const categories = [
+  { id: "men", label: "Men" },
+  { id: "women", label: "Women" },
+  { id: "kids", label: "Kids" },
+];
 
-
-
+// Store images and data
+const storeData = {
+  "682ccdd83de974f948889f1f": {
+    name: "Maraki",
+    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
+    description: "Premium fashion for the modern individual"
+  },
+  "682ccde53de974f948889f23": {
+    name: "Azezo",
+    image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
+    description: "Trendy styles for every occasion"
+  },
+  default: {
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
+    name: "Our Store",
+    description: "Quality products for everyone"
+  }
+};
 
 function StorePage() {
   const { storeId } = useParams(); 
@@ -17,8 +39,11 @@ function StorePage() {
   const { storeProducts, isLoading, productDetails } = useSelector((state) => state.shopProducts);
   const { user } = useSelector((state) => state.auth);
   const { toast } = useToast();
-  // State for dialog
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+
+  // Sidebar filter state
+  const [filters, setFilters] = useState({ category: [] });
+  const [searchValue, setSearchValue] = useState(""); // Search state
 
   useEffect(() => {
     if (storeId) {
@@ -26,7 +51,6 @@ function StorePage() {
     }
   }, [dispatch, storeId]);
 
-  // Open dialog when productDetails is set
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
@@ -40,26 +64,40 @@ function StorePage() {
     });
   }
 
-  const store1Id = "682ccdd83de974f948889f1f";
-  const store2Id = "682ccde53de974f948889f23";
+  // Get current store data
+  const currentStore = storeData[storeId] || storeData.default;
 
-  // Map storeId to store name
-  const storeNames = {
-    [store1Id]: "Maraki",
-    [store2Id]: "Azezo",
-  };
-
-  const currentStoreProducts = uniqueById(
+  // Filter products for this store
+  let currentStoreProducts = uniqueById(
     storeProducts.filter(product => product.storeId === storeId)
   );
 
-  // Handler for product details
+  // Sort by latest (most recent first)
+  currentStoreProducts = currentStoreProducts.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  // Apply sidebar filters
+  if (filters.category.length > 0) {
+    currentStoreProducts = currentStoreProducts.filter(product =>
+      filters.category.includes(product.category)
+    );
+  }
+
+  // Apply search filter
+  let intersectionProducts = currentStoreProducts;
+  if (searchValue && searchValue.trim() !== "") {
+    const searchLower = searchValue.trim().toLowerCase();
+    intersectionProducts = intersectionProducts.filter(product =>
+      product.title?.toLowerCase().includes(searchLower)
+    );
+  }
+
   function handleGetProductDetails(productId) {
     dispatch(fetchProductDetails(productId));
   }
 
   function handleAddtoCart(getCurrentProductId) {
-    // console.log("Add to cart args:", { productId, totalStock });
     dispatch(
       addToCart({
         userId: user.id,
@@ -74,35 +112,125 @@ function StorePage() {
     });
   }
 
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-8">
-        {storeNames[storeId] ? `${storeNames[storeId]} Store Products` : "Store Products"}
-      </h2>
-      {isLoading ? (
-        <div className="text-center text-gray-500">Loading...</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {currentStoreProducts.length > 0 ? (
-            currentStoreProducts.map(productItem => (
-              <ShoppingProductTile
-                key={productItem._id || productItem.id}
-                product={productItem}
-                handleGetProductDetails={handleGetProductDetails}
-                handleAddtoCart={handleAddtoCart}
+  // Sidebar filter UI
+  function SidebarFilters() {
+    return (
+      <div className="w-64 pr-6">
+        <h3 className="font-bold mb-4 text-lg">Filter by Category</h3>
+        <div className="space-y-2">
+          {categories.map(cat => (
+            <label key={cat.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.category.includes(cat.id)}
+                onChange={e => {
+                  setFilters(prev => ({
+                    ...prev,
+                    category: e.target.checked
+                      ? [...prev.category, cat.id]
+                      : prev.category.filter(c => c !== cat.id)
+                  }));
+                }}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-gray-500">No products found for this store.</div>
-          )}
+              <span className="text-gray-700">{cat.label}</span>
+            </label>
+          ))}
         </div>
-      )}
-      {/* Product Details Modal */}
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        {/* Store Banner */}
+        <div className="relative rounded-xl overflow-hidden mb-8 h-64">
+          <img 
+            src={currentStore.image} 
+            alt={currentStore.name} 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <div>
+              <h1 className="text-4xl font-bold text-white">{currentStore.name}</h1>
+              <p className="text-gray-200 mt-2">{currentStore.description}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar */}
+          <SidebarFilters />
+          
+          {/* Main content */}
+          <div className="flex-1">
+            <div className="mb-6">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchValue}
+                  onChange={e => setSearchValue(e.target.value)}
+                  className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                />
+                <svg 
+                  className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {intersectionProducts.length > 0 ? (
+                    intersectionProducts.map(productItem => (
+                      <ShoppingProductTile
+                        key={productItem._id || productItem.id}
+                        product={productItem}
+                        handleGetProductDetails={handleGetProductDetails}
+                        handleAddtoCart={handleAddtoCart}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-full py-12 text-center">
+                      <svg 
+                        className="mx-auto h-12 w-12 text-gray-400" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <h3 className="mt-2 text-lg font-medium text-gray-900">No products found</h3>
+                      <p className="mt-1 text-gray-500">Try adjusting your search or filter to find what you're looking for.</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Product Details Modal */}
+        <ProductDetailsDialog
+          open={openDetailsDialog}
+          setOpen={setOpenDetailsDialog}
+          storeId={storeId}
+          productDetails={productDetails}
+        />
+      </div>
     </div>
   );
 }

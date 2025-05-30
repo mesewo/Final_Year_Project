@@ -1,9 +1,9 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { useDispatch, useSelector } from "react-redux";
-import { getFinancialSummary } from "@/store/accountant/finance-slice";
 import { useEffect, useState } from "react";
 import { BarChart } from "@/components/ui/charts";
+import { getFinancialSummary } from "@/store/accountant/finance-slice";
 
 export default function AccountantFinances() {
   const dispatch = useDispatch();

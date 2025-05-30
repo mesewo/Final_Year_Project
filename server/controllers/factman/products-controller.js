@@ -1,5 +1,6 @@
 import { imageUploadUtil } from '../../helpers/cloudinary.js';
 import Product from '../../models/Product.js';
+import Feedback from '../../models/Feedback.js';
 
 // Centralized error handling function
 const handleError = (res, error, message = 'An error occurred') => {
@@ -113,6 +114,7 @@ const editProduct = async (req, res) => {
       });
     }
 
+    
     // Update product fields
     findProduct.title = title || findProduct.title;
     findProduct.description = description || findProduct.description;
@@ -123,7 +125,7 @@ const editProduct = async (req, res) => {
     findProduct.totalStock = totalStock || findProduct.totalStock;
     findProduct.image = image || findProduct.image;
     findProduct.averageReview = averageReview || findProduct.averageReview;
-
+    
     await findProduct.save();
     res.status(200).json({
       success: true,
@@ -133,6 +135,26 @@ const editProduct = async (req, res) => {
     handleError(res, error, 'Error editing product');
   }
 };
+
+const getProductWithFeedbacks = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await Product.findById(id);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+      const feedbacks = await Feedback.find({ productId: id });
+      res.status(200).json({
+        success: true,
+        data: {
+          ...product.toObject(),
+          feedbacks,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Error fetching product details' });
+    }
+  };
 
 // Delete a product
 const deleteProduct = async (req, res) => {
@@ -162,4 +184,5 @@ export {
   fetchAllProducts,
   editProduct,
   deleteProduct,
+  getProductWithFeedbacks,
 };

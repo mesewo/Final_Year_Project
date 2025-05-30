@@ -10,6 +10,9 @@ import {
   ResponsiveContainer,
   LineChart as RechartsLineChart,
   Line,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 export function BarChart({ data, xKey, yKey, revenueColor = "#4CAF50", expenseColor = "#F44336", height = 300 }) {
@@ -42,6 +45,33 @@ export function LineChart({ data, xKey, yKey, lineColor = "#4CAF50", height = 30
           <Legend />
           <Line type="monotone" dataKey={yKey} stroke={lineColor} name="Trend" />
         </RechartsLineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function PieChart({ data, nameKey = "name", valueKey = "value", colors = ["#4CAF50", "#F44336", "#2196F3", "#FF9800"], height = 300 }) {
+  return (
+    <div style={{ width: "100%", height }}>
+      <ResponsiveContainer>
+        <RechartsPieChart>
+          <Tooltip />
+          <Legend />
+          <Pie
+            data={data}
+            dataKey={valueKey}
+            nameKey={nameKey}
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            fill="#8884d8"
+            label
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            ))}
+          </Pie>
+        </RechartsPieChart>
       </ResponsiveContainer>
     </div>
   );

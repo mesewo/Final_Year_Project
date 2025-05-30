@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { BarChart } from "@/components/ui/charts"; // You'll need to create this
-
+import { Button } from "@/components/ui/button";
 export default function AccountantDashboard() {
   const financialData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],

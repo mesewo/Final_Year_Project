@@ -14,12 +14,16 @@ import { useEffect, useState } from "react";
 // import { X } from "lucide-react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
 import { getAllOrdersByUserId } from "@/store/shop/order-slice";
+// import { useDispatch, useSelector } from "react-redux";
+import { fetchStoreProductStock } from "@/store/shop/products-slice"; // adjust path if needed
+// import { useEffect, useState } from "react";
 
 
-function ProductDetailsDialog({ open, setOpen, productDetails }) {
+function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
   const [feedbackMsg, setFeedbackMsg] = useState("");
   const [rating, setRating] = useState(0);
   const dispatch = useDispatch();
+  const [storeStock, setStoreStock] = useState(null);
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { feedbackDetails } = useSelector((state) => state.shopFeedback);
@@ -126,6 +130,15 @@ const userOrders = useSelector(state => state.shopOrder.orderList);
     if (productDetails !== null) dispatch(getFeedbackDetails(productDetails?._id));
   }, [productDetails, dispatch]);
 
+  useEffect(() => {
+    if (productDetails?._id && storeId) {
+      dispatch(fetchStoreProductStock({ productId: productDetails._id, storeId }))
+        .then(res => {
+          setStoreStock(res?.payload?.quantity ?? 0);
+        });
+    }
+  }, [productDetails, storeId, dispatch]);
+
   // Only show approved feedback
   const approvedFeedback =
     feedbackDetails && feedbackDetails.length > 0
@@ -200,9 +213,11 @@ const userOrders = useSelector(state => state.shopOrder.orderList);
           {/* Remaining Stock */}
           <div className="mb-4">
             <span className="inline-block px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
-              {productDetails?.totalStock > 0
-                ? `In stock: ${productDetails?.totalStock}`
-                : "Out of stock"}
+              {storeStock === 0
+                ? "Out of stock"
+                : storeStock > 0
+                  ? `In stock: ${storeStock}`
+                  : "Loading stock..."}
             </span>
           </div>
           <div className="mb-5">

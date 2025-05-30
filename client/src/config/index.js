@@ -109,31 +109,39 @@ export const addProductFormElements = [
 ];
 
 export const shoppingViewHeaderMenuItems = [
-  {
-    id: "home",
-    label: "Home",
-    path: "/shop/home",
-  },
-  {
-    id: "products",
-    label: "Products",
-    path: "/shop/listing",
-  },
-  {
-    id: "men",
-    label: "Men",
-    path: "/shop/listing",
-  },
-  {
-    id: "women",
-    label: "Women",
-    path: "/shop/listing",
-  },
-  {
-    id: "kids",
-    label: "Kids",
-    path: "/shop/listing",
-  },
+
+
+  // ...existing code...
+
+  { id: "home", label: "Home", path: "/shop/home" },
+  { id: "about", label: "About Us", path: "/shop/about" },
+  { id: "contact", label: "Contact", path: "/shop/contact" },
+
+  // {
+  //   id: "home",
+  //   label: "Home",
+  //   path: "/shop/home",
+  // },
+  // {
+  //   id: "products",
+  //   label: "Products",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "men",
+  //   label: "Men",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "women",
+  //   label: "Women",
+  //   path: "/shop/listing",
+  // },
+  // {
+  //   id: "kids",
+  //   label: "Kids",
+  //   path: "/shop/listing",
+  // },
   // {
   //   id: "footwear",
   //   label: "Footwear",

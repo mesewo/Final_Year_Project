@@ -9,11 +9,13 @@ import FactmanLayout from "./components/factman-view/layout";
 import ShoppingLayout from "./components/shopping-view/layout";
 import StoreKeeperLayout from "./components/store-keeper-view/layout";
 import SellerLayout from "./components/seller-view/layout";
+import AccountantLayout from "./components/accountant-view/Layout";
 // import SellerSideBar from "./components/seller-view/side-bar";
 
 // Auth pages
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
+import ForgotPasswordPage from "@/pages/auth/forgot-password";
 
 // Admin pages
 import AdminDashboard from "./pages/admin-view/dashboard";
@@ -54,6 +56,8 @@ import ShoppingAccount from "./pages/shopping-view/account";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import StorePage from "@/pages/shopping-view/store";
 import SearchProducts from "./pages/shopping-view/search";
+import AboutPage from "@/pages/shopping-view/about";
+import ContactPage from "@/pages/shopping-view/contact";
 
 // Other components
 import NotFound from "./pages/not-found";
@@ -68,6 +72,13 @@ import SellerReports from "./pages/seller-view/reports";
 import SellerDashboard from "./pages/seller-view/dashboard"; 
 // import SellerLayout from "./components/seller-view/Layout";
 import SellerRequestProducts from "./pages/seller-view/product-request"
+
+//acountant pages
+import AccountantDashboard from "./pages/accountant-view/dashboard";
+import AccountantFinances from "./pages/accountant-view/finances";
+import AccountantReports from "./pages/accountant-view/reports";
+import AccountantTransaction from "./pages/accountant-view/Transaction";
+
 
 // Redux
 import { checkAuth } from "./store/auth-slice";
@@ -95,6 +106,7 @@ function App() {
         >
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
         </Route>
 
         {/* Admin Routes */}
@@ -177,11 +189,16 @@ function App() {
           path="/accountant"
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user} allowedRoles={["accountant"]}>
-              <AccountantDashboardPage />
+              <AccountantLayout />
             </CheckAuth>
           }
-        />
+        >
+        <Route path="dashboard" element={<AccountantDashboard />} />
+        <Route path="finance" element={<AccountantFinances />}/>
+        <Route path="transactions" element={<AccountantTransaction/>}/>
+        <Route path="reports" element={<AccountantReports/>}/>
 
+</Route>
         {/* Shopping Routes */}
         <Route
           path="/shop"
@@ -198,7 +215,8 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
           <Route path="store/:storeId" element={<StorePage />} />
-
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
         </Route>
         {/* Other Pages */}
         <Route path="/unauth-page" element={<UnauthPage />} />

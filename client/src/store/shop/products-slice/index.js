@@ -51,6 +51,17 @@ export const fetchPublicStoreProducts = createAsyncThunk(
   }
 );
 
+// This function fetches products from a public store by its ID
+
+export const fetchStoreProductStock = createAsyncThunk(
+  "/products/fetchStoreProductStock",
+  async ({ productId, storeId }) => {
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/store-product-stock/${productId}/${storeId}`
+    );
+    return result.data;
+  }
+);
 
 
 const shoppingProductSlice = createSlice({

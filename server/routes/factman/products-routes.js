@@ -5,6 +5,7 @@ import {
   editProduct,
   fetchAllProducts,
   deleteProduct,
+  getProductWithFeedbacks,
 } from '../../controllers/factman/products-controller.js';
 import { upload } from '../../helpers/cloudinary.js';
 
@@ -15,5 +16,6 @@ router.post('/add', addProduct);
 router.put('/edit/:id', editProduct);
 router.delete('/delete/:id', deleteProduct);
 router.get('/get', fetchAllProducts);
+router.get('/:id/details', getProductWithFeedbacks);
 
 export default router;

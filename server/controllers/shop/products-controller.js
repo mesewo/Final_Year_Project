@@ -54,6 +54,23 @@ export const getFilteredProducts = async (req, res) => {
   }
 };
 
+export const getStoreProductStock = async (req, res) => {
+  try {
+    const { productId, storeId } = req.params;
+    if (!productId || !storeId) {
+      return res.status(400).json({ success: false, message: "Product ID and Store ID are required" });
+    }
+    const storeProduct = await StoreProduct.findOne({ product: productId, store: storeId });
+    if (!storeProduct) {
+      return res.status(404).json({ success: false, message: "Store product not found" });
+    }
+    res.status(200).json({ success: true, quantity: storeProduct.quantity });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const getProductDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,4 +129,4 @@ export const getPublicStoreProducts = async (req, res) => {
 
 
 
-export default { getFilteredProducts, getProductDetails, getPublicStoreProducts };
+export default { getFilteredProducts, getStoreProductStock, getProductDetails, getPublicStoreProducts };

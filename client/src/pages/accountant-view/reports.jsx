@@ -2,9 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, PieChart } from "@/components/ui/charts";
-import { useMemo, useState } from "react";
-
+import { BarChart, LineChart, PieChart } from "@/components/ui/charts";
+import React, { useState, useMemo } from "react";
 export default function FinancialReports() {
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setMonth(new Date().getMonth() - 1)),

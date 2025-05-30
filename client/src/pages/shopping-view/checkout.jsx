@@ -46,6 +46,8 @@ export default function ShoppingCheckout() {
         image: i.image,
         price: i.salePrice > 0 ? i.salePrice : i.price,
         quantity: i.quantity,
+        sellerId: i.sellerId,
+        storeId: i.storeId,
       })),
       addressInfo: {
         addressId: currentSelectedAddress._id,

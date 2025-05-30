@@ -46,6 +46,7 @@ import storeKeeperReportRoutes from "./routes/store-keeper/report-routes.js";
 import commonFeatureRouter from "./routes/common/feature-routes.js";
 import productRequestRoutes from "./routes/productRequest-routes.js";
 import notificationsRouter from "./routes/notifications.js";
+import accountantRouter from "./routes/accountant/accountant.js";
 // Create a database connection
 mongoose
   .connect("mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -116,6 +117,7 @@ app.use("/api/storekeeper", storekeeperDashboardRoutes);
 app.use("/api/product-requests", productRequestRoutes);
 app.use("/api/storekeeper/reports", storeKeeperReportRoutes);
 app.use("/api/notifications", notificationsRouter);
+app.use("/api/accountant", accountantRouter);
 
 import { notifyAllLowOrOutOfStockProducts } from "./controllers/productRequest-controller.js";
 notifyAllLowOrOutOfStockProducts();
