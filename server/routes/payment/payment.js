@@ -1,0 +1,43 @@
+// backend/routes/payment.js
+import express from "express";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
+const router = express.Router();
+console.log("CHAPA_SECRET_KEY:", process.env.CHAPA_SECRET_KEY);
+
+// backend/routes/payment.js
+
+router.post("/initiate", async (req, res) => {
+  try {
+    const { amount, email, first_name, last_name, tx_ref, orderId } = req.body;
+
+    const response = await axios.post(
+      "https://api.chapa.co/v1/transaction/initialize",
+      {
+        amount,
+        currency: "ETB",
+        email,
+        first_name,
+        last_name,
+        tx_ref, // your unique tx_ref
+        orderId,
+        //return_url: `http://localhost:5173/shop/payment-success?orderId=${orderId}`, // only orderId here
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Chapa Init Error", error: error?.response?.data });
+  }
+});
+
+export default router;
