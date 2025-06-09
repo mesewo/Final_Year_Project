@@ -8,18 +8,21 @@ export const submitFeedback = async (req, res) => {
     const { userId, orderId, productId, userName,  rating, comment, type } = req.body;
 
     // Verify the user has purchased the product
-    // const order = await Order.findOne({
-    //   _id: orderId,
-    //   userId: userId,
-    //   "cartItems.productId": productId,
-    // });
+    const order = await Order.findOne({
+      _id: orderId,
+      userId: userId,
+      $or: [
+          { "cartItems.productId": productId },
+          { "orderItems.productId": productId }
+      ]
+    });
 
-    // if (!order) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "You need to purchase the product to leave feedback.",
-    //   });
-    // }
+    if (!order) {
+      return res.status(403).json({
+        success: false,
+        message: "You need to purchase and try this product to leave feedback.",
+      });
+    }
 
     // Check if the user has already left feedback for this product
     const existingFeedback = await Feedback.findOne({

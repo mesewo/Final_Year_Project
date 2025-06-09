@@ -5,13 +5,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const router = express.Router();
-console.log("CHAPA_SECRET_KEY:", process.env.CHAPA_SECRET_KEY);
+// console.log("CHAPA_SECRET_KEY:", process.env.CHAPA_SECRET_KEY);
 
 // backend/routes/payment.js
 
 router.post("/initiate", async (req, res) => {
   try {
-    const { amount, email, first_name, last_name, tx_ref, orderId } = req.body;
+    const { amount, email, first_name, last_name, tx_ref, orderId, return_url } = req.body;
 
     const response = await axios.post(
       "https://api.chapa.co/v1/transaction/initialize",
@@ -23,7 +23,8 @@ router.post("/initiate", async (req, res) => {
         last_name,
         tx_ref, // your unique tx_ref
         orderId,
-        //return_url: `http://localhost:5173/shop/payment-success?orderId=${orderId}`, // only orderId here
+        return_url: `http://localhost:5173/shop/payment-static-success?from=chapa`,
+        //  // only orderId here
       },
       {
         headers: {

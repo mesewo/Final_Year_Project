@@ -12,6 +12,7 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   cartId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   orderItems: [orderItemSchema],
+  tx_ref: { type: String },
   store: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "Store",

@@ -278,58 +278,68 @@ export default function FactmanFeedback() {
               groupedFeedbacks.map(({ product, feedbacks }) => {
                 const isExpanded = expandedProducts[product?._id || "unknown"];
                 const displayFeedbacks = isExpanded ? feedbacks : [feedbacks[0]];
-                
+                console.log("Product in feedback table:", product);
                 return (
                   <Fragment key={product?._id || "unknown"}>
                     {displayFeedbacks.map((feedback, idx) => (
                       <TableRow key={feedback._id}>
                         {idx === 0 ? (
                           <TableCell 
-                            rowSpan={isExpanded ? feedbacks.length : 1}
-                            className="align-top font-semibold"
-                          >
-                            <div className="flex items-center gap-2">
-                              {product?.image && (
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      className="h-8 w-8 p-0"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <ImageIcon className="h-4 w-4" />
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent aria-describedby={undefined} className="sm:max-w-[425px]">
-                                    <img 
-                                      src={product.image} 
-                                      alt={product?.title || product?.name} 
-                                      className="w-full h-auto rounded"
-                                    />
-                                  </DialogContent>
-                                </Dialog>
-                              )}
-                              <span 
-                                className="cursor-pointer hover:text-blue-600 flex items-center"
-                                onClick={() => toggleProductExpansion(product?._id || "unknown")}
-                              >
-                                {product?.title || product?.name || "Unknown Product"}
-                                {feedbacks.length > 1 && (
-                                  isExpanded ? (
-                                    <ChevronUp className="ml-1 h-4 w-4" />
-                                  ) : (
-                                    <ChevronDown className="ml-1 h-4 w-4" />
-                                  )
-                                )}
-                              </span>
-                            </div>
-                            {idx === 0 && feedbacks.length > 1 && !isExpanded && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                + {feedbacks.length - 1} more feedback{feedbacks.length > 2 ? "s" : ""}
-                              </div>
+                          rowSpan={isExpanded ? feedbacks.length : 1}
+                          className="align-top font-semibold"
+                        >
+                          <div className="flex items-center gap-2">
+                            {
+                            product?.image && (
+                              <img
+                                src={product.image}
+                                alt={product?.title || product?.name}
+                                className="w-10 h-10 object-cover rounded border"
+                                style={{ minWidth: 40, minHeight: 40 }}
+                              />
                             )}
-                          </TableCell>
+                            <span 
+                              className="cursor-pointer hover:text-blue-600 flex items-center"
+                              onClick={() => toggleProductExpansion(product?._id || "unknown")}
+                            >
+                              {product?.title || product?.name || "Unknown Product"}
+                              {feedbacks.length > 1 && (
+                                isExpanded ? (
+                                  <ChevronUp className="ml-1 h-4 w-4" />
+                                ) : (
+                                  <ChevronDown className="ml-1 h-4 w-4" />
+                                )
+                              )}
+                            </span>
+                            {/* Optional: keep the dialog icon for large preview */}
+                            {product?.image && (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 p-0"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <ImageIcon className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent aria-describedby={undefined} className="sm:max-w-[425px]">
+                                  <img 
+                                    src={product.image} 
+                                    alt={product?.title || product?.name} 
+                                    className="w-full h-auto rounded"
+                                  />
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </div>
+                          {idx === 0 && feedbacks.length > 1 && !isExpanded && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              + {feedbacks.length - 1} more feedback{feedbacks.length > 2 ? "s" : ""}
+                            </div>
+                          )}
+                        </TableCell>
                         ) : null}
                         <TableCell>{feedback.userName || feedback.user?.userName || "Anonymous"}</TableCell>
                         <TableCell>

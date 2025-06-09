@@ -1,41 +1,27 @@
-<<<<<<< HEAD
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-
-function PaymentSuccessPage() {
-  const navigate = useNavigate();
-
-  return (
-    <Card className="p-10">
-      <CardHeader className="p-0">
-        <CardTitle className="text-4xl">Payment is successfull!</CardTitle>
-      </CardHeader>
-      <Button className="mt-5" onClick={() => navigate("/shop/account")}>
-        View Orders
-      </Button>
-    </Card>
-  );
-}
-
-export default PaymentSuccessPage;
-=======
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { clearCart } from "@/store/shop/cart-slice";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import QRCode from "react-qr-code";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
+  const dispatch = useDispatch();
   const [status, setStatus] = useState("Verifying payment...");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const [paymentRef, setPaymentRef] = useState(null);
 
   useEffect(() => {
-    const tx_ref = searchParams.get("tx_ref");
-    const orderId = searchParams.get("orderId");
-
-    if (!tx_ref || !orderId) {
-      setError("Missing transaction reference or order ID.");
+      let tx_ref = searchParams.get("tx_ref");
+    // const orderId = searchParams.get("orderId");
+    if (!tx_ref) {
+        tx_ref = localStorage.getItem("last_tx_ref"); // fallback for test/demo mode
+      }
+    if (!tx_ref /*|| !orderId*/) {
+      setError("Missing transaction reference");
       setStatus(null);
       return;
     }
@@ -43,7 +29,7 @@ export default function PaymentSuccess() {
     fetch("http://localhost:5000/api/payment-verify/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reference: tx_ref, orderId }),
+      body: JSON.stringify({ reference: tx_ref/*, orderId*/ }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -53,6 +39,7 @@ export default function PaymentSuccess() {
         } else {
           setStatus(null);
           setPaymentRef(tx_ref);
+          localStorage.removeItem("last_tx_ref")
         }
       })
       .catch(() => {
@@ -60,6 +47,12 @@ export default function PaymentSuccess() {
         setStatus(null);
       });
   }, [searchParams]);
+
+  useEffect(() => {
+    dispatch(clearCart());
+    // Optionally, clear localStorage if you store cart there
+    localStorage.removeItem("cart");
+  }, [dispatch]);
 
   if (error) return <div className="text-red-600 p-5">{error}</div>;
   if (status) return <div className="p-5">{status}</div>;
@@ -76,7 +69,9 @@ export default function PaymentSuccess() {
           style={{ height: "auto", maxWidth: "200px", width: "100%" }}
         />
       </div>
+      <Button className="mt-6" onClick={() => navigate("/")}>
+        Go to Home
+      </Button>
     </div>
   );
 }
->>>>>>> 6d70975 (integrate Chapa payment gateway)

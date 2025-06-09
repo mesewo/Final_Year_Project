@@ -103,8 +103,8 @@ export default function SellerProducts() {
                 </TableCell>
                 <TableCell>Br{product.price}</TableCell>
                 <TableCell>
-                  <Badge variant={stockStatus(approvedQuantities[product._id])}>
-                    {approvedQuantities[product._id]}
+                  <Badge variant={stockStatus(product.totalStock)}>
+                    {product.totalStock}
                   </Badge>
                 </TableCell>
                 <TableCell>

@@ -2,20 +2,11 @@ import Order from "../../models/Order.js";
 import Cart from "../../models/Cart.js";
 import Product from "../../models/Product.js";
 import StoreProduct from "../../models/StoreProduct.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const createOrder = async (req, res) => {
   try {
-<<<<<<< HEAD
-    const {
-      userId,
-      cartId,
-      cartItems,
-      addressInfo,
-      paymentMethod,
-    } = req.body;
-=======
     const { userId, cartId, cartItems, addressInfo, paymentMethod } = req.body;
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 
     // Group cartItems by sellerId and storeId
     const ordersMap = {};
@@ -37,14 +28,12 @@ export const createOrder = async (req, res) => {
         quantity: item.quantity,
       }));
 
-<<<<<<< HEAD
-      const totalAmount = orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-=======
       const totalAmount = orderItems.reduce(
         (sum, i) => sum + i.price * i.quantity,
         0
       );
->>>>>>> 6d70975 (integrate Chapa payment gateway)
+
+      const tx_ref = `order_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 
       const order = new Order({
         userId,
@@ -61,6 +50,7 @@ export const createOrder = async (req, res) => {
         payerId: "",
         store: storeId,
         seller: sellerId,
+        tx_ref,
       });
 
       await order.save();
@@ -85,11 +75,8 @@ export const createOrder = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Orders created successfully",
-<<<<<<< HEAD
-      orderIds: createdOrders.map(o => o._id),
-=======
-      orderId: createdOrders[0]._id,
->>>>>>> 6d70975 (integrate Chapa payment gateway)
+      orderIds: createdOrders.map((o) => o._id),
+      tx_refs: createdOrders.map((o) => o.tx_ref),
     });
   } catch (error) {
     console.error("Create order error:", error);
@@ -100,10 +87,6 @@ export const createOrder = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 export const capturePayment = async (req, res) => {
   try {
     const { paymentId, payerId, orderId } = req.body;
@@ -213,8 +196,4 @@ export default {
   capturePayment,
   getAllOrdersByUser,
   getOrderDetails,
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 6d70975 (integrate Chapa payment gateway)

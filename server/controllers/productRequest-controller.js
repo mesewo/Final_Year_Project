@@ -27,7 +27,7 @@ async function notifyFactmanIfLowOrOutOfStock(product) {
       seen: false,
       createdAt: new Date(),
     });
-    console.log("Notification created for Factman!", product.title, product.totalStock);
+    // console.log("Notification created for Factman!", product.title, product.totalStock);
   }
 }
 
@@ -223,7 +223,7 @@ export async function notifyAllLowOrOutOfStockProducts() {
         seen: false,
         createdAt: new Date(),
       });
-      console.log("Notification created for Factman!", product.title, product.totalStock);
+      // console.log("Notification created for Factman!", product.title, product.totalStock);
     }
   }
 }

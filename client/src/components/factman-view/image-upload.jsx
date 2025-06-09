@@ -54,7 +54,7 @@ function ProductImageUpload({
 
       if (response?.data?.success) {
         setUploadedImageUrl(response.data.result.url);
-        console.log("Cloudinary URL:", response.data.result.url);
+        // console.log("Cloudinary URL:", response.data.result.url);
       } else {
         alert("Image upload failed!");
       }

@@ -12,7 +12,7 @@ const handleError = (res, error, message = "An error occurred") => {
 
 // Handle image upload to Cloudinary
 export const handleImageUpload = async (req, res) => {
-  console.log("Received file:", req.file); // Debugging: Log received file
+  // console.log("Received file:", req.file); // Debugging: Log received file
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -24,7 +24,7 @@ export const handleImageUpload = async (req, res) => {
     // Directly upload the buffer to Cloudinary instead of converting to base64
     const result = await imageUploadUtil(req.file.buffer);
 
-    console.log("Image uploaded to Cloudinary:", result); // Debugging: Log the result from Cloudinary
+    // console.log("Image uploaded to Cloudinary:", result); // Debugging: Log the result from Cloudinary
 
     res.status(200).json({
       success: true,

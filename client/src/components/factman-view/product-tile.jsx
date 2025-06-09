@@ -7,7 +7,7 @@ function FactmanProductTile({
   setOpenCreateProductsDialog,
   setCurrentEditedId,
   handleDelete,
-  onViewDetails, // <-- new prop for viewing details
+  // onViewDetails, // <-- new prop for viewing details
 }) {
   return (
     <Card className="w-full max-w-sm mx-auto">
@@ -58,9 +58,9 @@ function FactmanProductTile({
             Edit
           </Button>
           <Button onClick={() => handleDelete(product?._id)}>Delete</Button>
-          <Button variant="outline" onClick={() => onViewDetails(product?._id)}>
+          {/* <Button variant="outline" onClick={() => onViewDetails(product?._id)}>
             View
-          </Button>
+          </Button> */}
         </CardFooter>
       </div>
     </Card>

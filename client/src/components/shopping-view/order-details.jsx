@@ -3,6 +3,7 @@ import { Badge } from "../ui/badge";
 import { DialogContent, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
+import QRCode from "react-qr-code";
 
 function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
@@ -47,6 +48,13 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         <DialogDescription className="text-sm text-gray-500">
           Order ID: {orderDetails?._id}
         </DialogDescription>
+        {/* QR Code for order verification */}
+        <div className="flex justify-center my-4">
+          <QRCode
+            value={`${window.location.origin}/verify-qr?orderId=${orderDetails?._id}`}
+            size={128}
+          />
+        </div>
 
         {/* Order Summary Section */}
         <div className="bg-gray-50 p-4 rounded-lg">
@@ -92,7 +100,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {orderDetails?.cartItems?.map((item, index) => (
+                {orderDetails?.orderItems?.map((item, index) => (
                   <tr key={index}>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">

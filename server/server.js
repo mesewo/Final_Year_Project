@@ -2,13 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-<<<<<<< HEAD
-=======
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log("DEBUG CHAPA_SECRET_KEY:", process.env.CHAPA_SECRET_KEY);
->>>>>>> 6d70975 (integrate Chapa payment gateway)
+// console.log("DEBUG CHAPA_SECRET_KEY:", process.env.CHAPA_SECRET_KEY);
 
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-routes.js";
@@ -27,10 +24,6 @@ import shopSearchRouter from "./routes/shop/search-routes.js";
 // import shopReviewRouter from "./routes/shop/review-routes.js";
 import shopFeedbackRouter from "./routes/shop/feedback-routes.js";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 import factmanDashboardRouter from "./routes/factman/dashboard-routes.js";
 import factmanProductsRouter from "./routes/factman/products-routes.js";
 import factmanOrdersRouter from "./routes/factman/orders-routes.js";
@@ -40,11 +33,7 @@ import factmanFeedbackRouter from "./routes/factman/feedback-routes.js";
 import factmanSettingsRouter from "./routes/factman/settings-routes.js";
 import factmanFeaturesRouter from "./routes/factman/features-routes.js";
 
-<<<<<<< HEAD
-import sellerProductsRouter from "./routes/seller/products-routes.js"
-=======
 import sellerProductsRouter from "./routes/seller/products-routes.js";
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 import sellerOrdersRouter from "./routes/seller/orders-routes.js";
 import sellerDashboardRouter from "./routes/seller/dashboard-routes.js";
 import sellerReportRoutes from "./routes/seller/reports-routes.js";
@@ -61,11 +50,6 @@ import commonFeatureRouter from "./routes/common/feature-routes.js";
 import productRequestRoutes from "./routes/productRequest-routes.js";
 import notificationsRouter from "./routes/notifications.js";
 import accountantRouter from "./routes/accountant/accountant.js";
-<<<<<<< HEAD
-// Create a database connection
-mongoose
-  .connect("mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-=======
 
 import paymentroute from "./routes/payment/payment.js";
 import verifyQRRoutes from "./routes/payment/verifyQr.js";
@@ -76,7 +60,6 @@ mongoose
   .connect(
     "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
   )
->>>>>>> 6d70975 (integrate Chapa payment gateway)
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
@@ -110,10 +93,6 @@ app.use("/api/admin/reports", adminReportsRouter);
 app.use("/api/admin/feedback", adminFeedbackRouter);
 app.use("/api/admin/settings", adminSettingsRouter);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
 app.use("/api/shop/address", shopAddressRouter);
@@ -149,32 +128,11 @@ app.use("/api/storekeeper/reports", storeKeeperReportRoutes);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/accountant", accountantRouter);
 
-<<<<<<< HEAD
-=======
 app.use("/api/payment", paymentroute);
 app.use("/api/payment/verify-qr", verifyQRRoutes);
 app.use("/api/payment/verifypaymet", paymentVerify);
 
->>>>>>> 6d70975 (integrate Chapa payment gateway)
 import { notifyAllLowOrOutOfStockProducts } from "./controllers/productRequest-controller.js";
 notifyAllLowOrOutOfStockProducts();
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> 6d70975 (integrate Chapa payment gateway)

@@ -27,6 +27,18 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const getOrderDetailsForSeller = createAsyncThunk(
+  "sellerOrders/getOrderDetailsForSeller",
+  async (orderId, thunkAPI) => {
+    try {
+      const response = await axios.get(`/api/seller/orders/details/${orderId}`);
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const sellerOrdersSlice = createSlice({
   name: "sellerOrders",
   initialState: {

@@ -22,11 +22,14 @@ export function BarChart({ data, xKey, yKey, revenueColor = "#4CAF50", expenseCo
         <RechartsBarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey={xKey} />
-          <YAxis />
+          <YAxis dataKey={yKey}/>
           <Tooltip />
           <Legend />
-          <Bar dataKey="revenues" fill={revenueColor} name="Revenue" />
-          <Bar dataKey="expenses" fill={expenseColor} name="Expenses" />
+          <Bar dataKey={yKey} fill={revenueColor} name="Revenue" />
+          {/* <Bar dataKey="totalSold" fill={expenseColor} name="Units Sold" /> */}
+          {/* <Bar dataKey="totalSold" fill={expenseColor} name="Units Sold" /> */}
+          {/* <BarChart data={salesReport} xKey="productName" yKey="totalRevenue" />
+          <BarChart data={salesReport} xKey="productName" yKey="totalSold" /> */}
         </RechartsBarChart>
       </ResponsiveContainer>
     </div>

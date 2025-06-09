@@ -32,7 +32,7 @@ export const addFeedback = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post("http://localhost:5000/api/shop/feedback/submit", formData);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to add feedback");
     }

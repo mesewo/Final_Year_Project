@@ -8,6 +8,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import SellerOrderDetailsView from "./order-details"; // Adjust path if needed
 import { Input } from "@/components/ui/input";
+import Html5QrScanner from "@/components/common/Html5QrScanner";
+import { getOrderDetailsForSeller } from "@/store/seller/orders-slice";
+import { useToast } from "@/components/ui/use-toast"; // Adjust path if needed 
 
 export default function SellerOrders() {
   const dispatch = useDispatch();
@@ -16,6 +19,35 @@ export default function SellerOrders() {
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scannedOrder, setScannedOrder] = useState(null);
+
+  const { toast } = useToast();
+
+  const handleScanOrderId = async (orderId) => {
+    setScannerOpen(false);
+    if (orderId) {
+      const res = await dispatch(getOrderDetailsForSeller(orderId));
+      if (res.payload) {
+        setSelectedOrder(res.payload);
+        setOpenDetailsDialog(true); // Open the details modal just like "View Details"
+      } else {
+        toast({
+          title: "Order Not Found",
+          description: "No order was found for this QR code. Please check and try again.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Invalid QR Code",
+        description: "The scanned QR code is not valid for an order.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   // Filters
   const [search, setSearch] = useState("");
@@ -137,7 +169,12 @@ export default function SellerOrders() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Orders</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Orders</h1>
+        <Button variant="outline" onClick={() => setScannerOpen(true)}>
+          Scan Order QR
+        </Button>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-center mb-4">
@@ -262,6 +299,31 @@ export default function SellerOrders() {
           </TableBody>
         </Table>
       </div>
+      {/* QR Scanner Modal */}
+      <Dialog open={scannerOpen} onOpenChange={setScannerOpen}>
+        <DialogContent className="w-full max-w-md">
+          <Html5QrScanner
+            onScanOrderId={handleScanOrderId}
+            onClose={() => setScannerOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Scanned Order Details Modal */}
+      <Dialog open={!!scannedOrder} onOpenChange={(open) => !open && setScannedOrder(null)}>
+        <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          {scannedOrder && (
+            <div className="p-4">
+              <SellerOrderDetailsView orderDetails={scannedOrder} />
+              <div className="mt-4 flex justify-end">
+                <Button onClick={() => setScannedOrder(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

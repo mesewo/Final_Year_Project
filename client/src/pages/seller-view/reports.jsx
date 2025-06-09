@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export default function SellerReports() {
   const dispatch = useDispatch();
   const { salesReport, loading } = useSelector(state => state.sellerReports);
+  console.log("Sales Report Data:", salesReport);
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setMonth(new Date().getMonth() - 1)),
     end: new Date()

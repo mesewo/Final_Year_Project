@@ -1,4 +1,3 @@
-// import { StarIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
@@ -11,13 +10,9 @@ import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
-// import { X } from "lucide-react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
 import { getAllOrdersByUserId } from "@/store/shop/order-slice";
-// import { useDispatch, useSelector } from "react-redux";
-import { fetchStoreProductStock } from "@/store/shop/products-slice"; // adjust path if needed
-// import { useEffect, useState } from "react";
-
+import { fetchStoreProductStock } from "@/store/shop/products-slice";
 
 function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
   const [feedbackMsg, setFeedbackMsg] = useState("");
@@ -27,16 +22,17 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { feedbackDetails } = useSelector((state) => state.shopFeedback);
-
+  const userOrders = useSelector((state) => state.shopOrder.orderList);
   const { toast } = useToast();
 
+  // Handle rating change
   function handleRatingChange(getRating) {
     setRating(getRating);
   }
 
+  // Add to cart logic
   function handleAddToCart(getCurrentProductId, getTotalStock) {
     let getCartItems = cartItems.items || [];
-
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
         (item) => item.productId === getCurrentProductId
@@ -48,7 +44,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
             title: `Only ${getQuantity} quantity can be added for this item`,
             variant: "destructive",
           });
-
           return;
         }
       }
@@ -69,67 +64,78 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
     });
   }
 
+  // Handle dialog close
   function handleDialogClose() {
     setOpen(false);
     dispatch(setProductDetails());
     setRating(0);
     setFeedbackMsg("");
   }
-  useEffect(() => {
-  if (user?.id) {
-    dispatch(getAllOrdersByUserId(user.id));
-  }
-}, [user, dispatch]);
 
-const userOrders = useSelector(state => state.shopOrder.orderList);
-  function handleAddFeedback() {
-    const userOrder = userOrders?.find(
-      
-      order =>Array.isArray(order?.cartItems) && order.cartItems.some(item => item.productId === productDetails?._id)
+  // Add feedback logic
+  async function handleAddFeedback() {
+    const userOrder = userOrders?.find(order => {
+      const items = order?.orderItems?.length ? order.orderItems : order?.cartItems || [];
+      return (
+        ["delivered", "completed"].includes(order.orderStatus) &&
+        Array.isArray(items) &&
+        items.some(item => String(item.productId) === String(productDetails?._id))
       );
-      const orderId = userOrder?._id;
-
-      // if (!orderId) {
-      //   toast({
-      //     title: "You must purchase this product before leaving feedback.",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
-      // console.log("user object:", user);
-      // console.log("userName sent:", user?.userName);
-    dispatch(
-    addFeedback({
-      productId: productDetails?._id,
-      userId: user?.id,
-      orderId: orderId,
-      userName: user?.userName,
-      comment: feedbackMsg,
-      rating: rating,
-    })
-    ).then((data) => {
-      const { success, message } = data?.payload || {};
-      if (success) {
-        setRating(0);
-        setFeedbackMsg("");
-        dispatch(getFeedbackDetails(productDetails?._id));
-        toast({
-          title: "Feedback submitted! It will be visible after approval.",
-        });
-      } else {
-        toast({
-          title: message,
-          variant: "destructive",
-        });
-      }
     });
+    const orderId = userOrder?._id;
 
+    if (!orderId) {
+      toast({
+        title: "You must purchase and try this product before leaving feedback.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = await dispatch(
+      addFeedback({
+        productId: productDetails?._id,
+        userId: user?.id,
+        orderId: orderId,
+        userName: user?.userName,
+        comment: feedbackMsg,
+        rating: rating,
+      })
+    );
+
+    const { success, message } = result?.payload || {};
+    if (success) {
+      setRating(0);
+      setFeedbackMsg("");
+      dispatch(getFeedbackDetails(productDetails?._id));
+      toast({
+        title: "Feedback submitted! It will be visible after approval.",
+      });
+      // Automatically close the dialog after a short delay
+      setTimeout(() => {
+        handleDialogClose();
+      }, 1000);
+    } else {
+      toast({
+        title: message || "Failed to submit feedback.",
+        variant: "destructive",
+      });
+    }
   }
 
+  // Fetch user orders on mount
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(getAllOrdersByUserId(user.id));
+    }
+  }, [user, dispatch]);
+
+  // Fetch feedback details when product changes
   useEffect(() => {
     if (productDetails !== null) dispatch(getFeedbackDetails(productDetails?._id));
   }, [productDetails, dispatch]);
 
+  // Fetch store stock when product or store changes
   useEffect(() => {
     if (productDetails?._id && storeId) {
       dispatch(fetchStoreProductStock({ productId: productDetails._id, storeId }))
@@ -173,13 +179,6 @@ const userOrders = useSelector(state => state.shopOrder.orderList);
             className="aspect-square w-full object-cover"
           />
         </div>
-        {/* Similar Products Placeholder */}
-        {/* <div className="mt-2">
-          <h2 className="text-lg font-semibold mb-2">Similar Products</h2>
-          <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-muted-foreground">
-            <span>Similar products will be displayed here soon.</span>
-          </div>
-        </div> */}
         {/* Product Info & Actions */}
         <div className="flex flex-col h-full">
           <div>

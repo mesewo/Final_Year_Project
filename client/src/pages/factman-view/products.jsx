@@ -176,10 +176,10 @@ function FactmanProducts() {
     });
   }
 
-  function handleViewDetails(productId) {
-  setOpenDetailsId(productId);
-  dispatch(fetchProductWithFeedbacks(productId));
-  }
+  // function handleViewDetails(productId) {
+  // setOpenDetailsId(productId);
+  // dispatch(fetchProductWithFeedbacks(productId));
+  // }
 
   function handleCloseDetails() {
     setOpenDetailsId(null);
@@ -398,7 +398,7 @@ function FactmanProducts() {
                   setCurrentEditedId={setCurrentlyEditingProductId}
                   product={product}
                   handleDelete={handleProductDeletion}
-                  onViewDetails={handleViewDetails}
+                  // onViewDetails={handleViewDetails}
                 />
               ))
             ) : (

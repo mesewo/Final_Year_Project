@@ -109,6 +109,7 @@ export const getPublicStoreProducts = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid store ID" });
     }
 
+    // REMOVE quantity filter so all products for the store are shown
     const storeProducts = await StoreProduct.find({ store: storeId })
       .populate("product")
       .populate("store");
@@ -126,7 +127,6 @@ export const getPublicStoreProducts = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 
 export default { getFilteredProducts, getStoreProductStock, getProductDetails, getPublicStoreProducts };

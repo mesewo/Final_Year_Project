@@ -21,15 +21,29 @@ export const generateSellerSalesReport = async (req, res) => {
         $match: {
           seller: new mongoose.Types.ObjectId(sellerId),
           createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
-          orderStatus: { $in: ["completed", "delivered"] }, // Only count completed/delivered sales
+          orderStatus: { $in: ["completed", "delivered"] },
         }
       },
-      { $unwind: "$orderItems" },
+      // Combine orderItems and cartItems into a single array called "items"
+      {
+        $addFields: {
+          items: {
+            $cond: [
+              { $gt: [{ $size: "$orderItems" }, 0] },
+              "$orderItems",
+              "$cartItems"
+            ]
+          }
+        }
+      },
+      { $unwind: "$items" },
       {
         $group: {
-          _id: "$orderItems.product",
-          totalSold: { $sum: "$orderItems.quantity" },
-          totalRevenue: { $sum: { $multiply: ["$orderItems.quantity", "$orderItems.price"] } },
+          _id: {
+            $ifNull: ["$items.product", "$items.productId"]
+          },
+          totalSold: { $sum: "$items.quantity" },
+          totalRevenue: { $sum: { $multiply: ["$items.quantity", { $toDouble: "$items.price" }] } },
         }
       },
       {
@@ -40,9 +54,7 @@ export const generateSellerSalesReport = async (req, res) => {
           as: "productInfo"
         }
       },
-      {
-        $unwind: "$productInfo"
-      },
+      { $unwind: "$productInfo" },
       {
         $project: {
           _id: 1,
