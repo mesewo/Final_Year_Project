@@ -25,12 +25,13 @@ import {
   fetchProductDetails,
 } from "@/store/shop/products-slice";
 import StoreSection from "@/components/shopping-view/StoreSection";
-import ShoppingProductTile from "@/components/shopping-view/product-tile";
+// import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
+// import { ShoppingBasket } from "lucide-react";
 
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
@@ -171,7 +172,7 @@ function ShoppingHome() {
       </div>
 
       {/* Shop by Category */}
-      <section className="py-12 bg-gray-50">
+      {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by category
@@ -193,7 +194,7 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Our Stores - Clickable Store Tiles */}
       <section className="py-12 bg-gray-100">
@@ -245,7 +246,28 @@ function ShoppingHome() {
             />
           </div>
         </section>
+
+        
       )}
+
+      {/* Bulk Request Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4 flex flex-col items-center">
+          <h2 className="text-3xl font-bold text-center mb-8">Bulk/Big Request</h2>
+          <Card
+            className="w-full max-w-md cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate("/shop/bulk-request")}
+          >
+            <CardContent className="flex flex-col items-center justify-center p-8">
+              <ShoppingBasket className="w-16 h-16 mb-4 text-primary" />
+              <span className="font-bold text-xl mb-2">Request Bulk Products</span>
+              <span className="text-muted-foreground text-center">
+                Click here to request large quantities directly from the factory manager.
+              </span>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Product Details Modal */}
       <ProductDetailsDialog

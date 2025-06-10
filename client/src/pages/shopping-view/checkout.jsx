@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createNewOrder } from "@/store/shop/order-slice";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-// import { clearCart } from "@/store/shop/cart-slice";
+import { clearCart } from "@/store/shop/cart-slice";
 
 export default function ShoppingCheckout() {
   const dispatch = useDispatch();
@@ -19,6 +19,7 @@ export default function ShoppingCheckout() {
   );
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isBulkCheckout = useSelector((state) => state.shopCart.isBulk);
   const { toast } = useToast();
 
 
@@ -82,6 +83,7 @@ export default function ShoppingCheckout() {
         totalAmount: totalCartAmount,
         orderDate: new Date(),
         orderUpdateDate: new Date(),
+        ...(isBulkCheckout && {isBulk: true}),
       };
 
       const orderResponse = await dispatch(createNewOrder(orderData)).unwrap();

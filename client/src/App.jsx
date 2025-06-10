@@ -51,7 +51,7 @@ import AccountantTransaction from "./pages/accountant-view/Transaction";
 
 // Shopping pages
 import ShoppingHome from "./pages/shopping-view/home";
-import ShoppingListing from "./pages/shopping-view/listing";
+// import ShoppingListing from "./pages/shopping-view/listing";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/account";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
@@ -60,6 +60,7 @@ import StorePage from "@/pages/shopping-view/store";
 import SearchProducts from "./pages/shopping-view/search";
 import AboutPage from "@/pages/shopping-view/about";
 import ContactPage from "@/pages/shopping-view/contact";
+// import BulkRequest from "./pages/shopping-view/BulkRequestPage";
 
 // Other components
 import NotFound from "./pages/not-found";
@@ -76,6 +77,7 @@ import SellerRequestProducts from "./pages/seller-view/product-request";
 
 // Redux
 import { checkAuth } from "./store/auth-slice";
+import BulkRequest from "./pages/shopping-view/BulkRequestPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -229,7 +231,7 @@ function App() {
           }
         >
           <Route path="home" element={<ShoppingHome />} />
-          <Route path="listing" element={<ShoppingListing />} />
+          {/* <Route path="listing" element={<ShoppingListing />} /> */}
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
@@ -238,6 +240,7 @@ function App() {
           <Route path="store/:storeId" element={<StorePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
+          <Route path="bulk-request" element={<BulkRequest />} />
         </Route>
 
         {/* Other Pages */}

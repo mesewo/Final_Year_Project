@@ -63,11 +63,53 @@ export const fetchProductRequestTrend = createAsyncThunk(
   }
 );
 
+// Bulk order actions
+export const fetchAllBulkOrders = createAsyncThunk(
+  "productRequest/fetchAllBulkOrders",
+  async (storekeeperId) => {
+    const res = await axios.get(`/api/product-requests/bulk/${storekeeperId}`);
+    return res.data.orders;
+  }
+);
+
+export const approveBulkOrder = createAsyncThunk(
+  "productRequest/approveBulkOrder",
+  async (orderId) => {
+    const res = await axios.post(`/api/shop/orders/bulk/${orderId}/approve`);
+    return res.data.order;
+  }
+);
+
+export const rejectBulkOrder = createAsyncThunk(
+  "productRequest/rejectBulkOrder",
+  async (orderId) => {
+    const res = await axios.post(`/api/shop/orders/bulk/${orderId}/reject`);
+    return res.data.order;
+  }
+);
+
+export const markRequestDelivered = createAsyncThunk(
+  "productRequest/markRequestDelivered",
+  async (requestId, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(
+        `/api/product-requests/deliver/${requestId}`,
+        {},
+        { withCredentials: true }
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
 const productRequestSlice = createSlice({
   name: "productRequest",
   initialState: {
     myRequests: [],
     allRequests: [],
+    bulkOrders: [],
     status: "idle",
     error: null,
     productRequestTrend: [],
@@ -102,6 +144,34 @@ const productRequestSlice = createSlice({
       .addCase(fetchProductRequestTrend.fulfilled, (state, action) => {
         state.productRequestTrend = action.payload;
         state.loading = false;
+      })
+      .addCase(fetchProductRequestTrend.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(approveBulkOrder.fulfilled, (state, action) => {
+        const updated = action.payload;
+        state.allRequests = state.allRequests.map((r) =>
+          r._id === updated._id ? updated : r
+        );
+      })
+      .addCase(rejectBulkOrder.fulfilled, (state, action) => {
+        const updated = action.payload;
+        state.allRequests = state.allRequests.map((r) =>
+          r._id === updated._id ? updated : r
+        );
+      })
+      .addCase(fetchAllBulkOrders.fulfilled, (state, action) => {
+        state.bulkOrders = action.payload
+      })
+      .addCase(markRequestDelivered.fulfilled, (state, action) => {
+        const updated = action.payload.request;
+        state.allRequests = state.allRequests.map((r) =>
+          r._id === updated._id ? updated : r
+        );
+      })
+      .addCase(markRequestDelivered.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

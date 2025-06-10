@@ -61,15 +61,20 @@ export default function StorekeeperDashboard() {
               </tr>
             </thead>
             <tbody>
-              {recentRequests.map((req) => (
+              {recentRequests
+              .filter(req => req.isBulk? "Bulk" : "Normal")
+              .map((req) => (
                 <tr key={req._id}>
                   <td>{req._id.slice(-8)}</td>
                   <td>{new Date(req.createdAt).toLocaleDateString()}</td>
                   <td>{req.product?.title || "N/A"}</td>
-                  <td>{req.seller?.userName || "N/A"}</td>
+                  <td>{req.requestedBy?.userName || req.seller?.userName || "N/A"}</td>
                   <td>{req.quantity}</td>
                   <td>
                     <StatusBadge status={req.status} />
+                    {req.isBulk && (
+                      <Badge className="bg-blue-100 text-blue-800 px-2 py-0.5 ml-2">Bulk</Badge>
+                    )}
                   </td>
                 </tr>
               ))}

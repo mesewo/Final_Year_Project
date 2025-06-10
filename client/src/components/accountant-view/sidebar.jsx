@@ -40,18 +40,18 @@ const accountantSidebarMenuItems = [
     path: "/accountant/transactions",
     icon: <DollarSign className="w-5 h-5" />,
   },
-  {
-    id: "users",
-    label: "Users",
-    path: "/accountant/users",
-    icon: <Users className="w-5 h-5" />,
-  },
-  {
-    id: "settings",
-    label: "Settings",
-    path: "/accountant/settings",
-    icon: <Settings className="w-5 h-5" />,
-  },
+  // {
+  //   id: "users",
+  //   label: "Users",
+  //   path: "/accountant/users",
+  //   icon: <Users className="w-5 h-5" />,
+  // },
+  // {
+  //   id: "settings",
+  //   label: "Settings",
+  //   path: "/accountant/settings",
+  //   icon: <Settings className="w-5 h-5" />,
+  // },
 ];
 
 function MenuItems({ setOpen }) {

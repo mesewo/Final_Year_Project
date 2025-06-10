@@ -16,7 +16,7 @@ export default function StoreKeeperReports() {
   });
 
   const { productRequestTrend } = useSelector(state => state.productRequest);
-  console.log("productRequestTrend", productRequestTrend);
+  // console.log("productRequestTrend", productRequestTrend);
   // Per-seller expanded/collapsed state
   const [expandedSellers, setExpandedSellers] = useState({});
   // Per-seller status filter

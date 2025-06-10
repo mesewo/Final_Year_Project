@@ -81,7 +81,7 @@ export const loginUser = async (req, res) => {
       { expiresIn: "60m" }
     );
 
-    res.cookie("token", token, { httpOnly: true, secure: false }).json({
+    res.cookie("token", token, { httpOnly: true, secure: false, sameSite: "lax" }).json({
       success: true,
       message: "Logged in successfully",
       user: {
@@ -151,6 +151,65 @@ export const sellerAuthMiddleware = (req, res, next) => {
       });
     }
 
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+};
+
+export const buyerAuthMiddleware = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b"
+    );
+
+    if (decoded.role !== "buyer") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Buyer access only.",
+      });
+    }
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+};
+
+export const buyerOrSellerAuthMiddleware = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized user!",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, "70a642ec31b78e62ad6cffabc0f42e3d44d9c59758f07730bb2a7a6e527882df59c5a014df3cb94f662ff4b573231db81a3217a50d448cf02aa39ba56f78d56b");
+    if (decoded.role !== "buyer" && decoded.role !== "seller") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Buyer or Seller access only.",
+      });
+    }
     req.user = decoded;
     next();
   } catch (error) {

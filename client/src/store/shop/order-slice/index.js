@@ -61,6 +61,30 @@ export const getOrderDetails = createAsyncThunk(
   }
 );
 
+// export const approveBulkOrder = createAsyncThunk(
+//   "order/approveBulkOrder",
+//   async (orderId, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post(`/api/shop/orders/bulk/${orderId}/approve`);
+//       return response.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || err.message);
+//     }
+//   }
+// );
+
+// export const rejectBulkOrder = createAsyncThunk(
+//   "order/rejectBulkOrder",
+//   async (orderId, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post(`/api/shop/orders/bulk/${orderId}/reject`);
+//       return response.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || err.message);
+//     }
+//   }
+// );
+
 const shoppingOrderSlice = createSlice({
   name: "shoppingOrderSlice",
   initialState,
@@ -110,6 +134,36 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.orderDetails = null;
       });
+      // .addCase(approveBulkOrder.pending, (state) => {
+      //   state.isLoading = true;
+      // })
+      // .addCase(approveBulkOrder.fulfilled, (state, action) => {
+      //   state.isLoading = false;
+      //   const updatedOrder = state.orderList.find(
+      //     (order) => order._id === action.payload.data._id
+      //   );
+      //   if (updatedOrder) {
+      //     Object.assign(updatedOrder, action.payload.data);
+      //   }
+      // })
+      // .addCase(approveBulkOrder.rejected, (state) => {
+      //   state.isLoading = false;
+      // })
+      // .addCase(rejectBulkOrder.pending, (state) => {
+      //   state.isLoading = true;
+      // })
+      // .addCase(rejectBulkOrder.fulfilled, (state, action) => {
+      //   state.isLoading = false;
+      //   const updatedOrder = state.orderList.find(
+      //     (order) => order._id === action.payload.data._id
+      //   );
+      //   if (updatedOrder) {
+      //     Object.assign(updatedOrder, action.payload.data);
+      //   }
+      // })
+      // .addCase(rejectBulkOrder.rejected, (state) => {
+      //   state.isLoading = false;
+      // });
   },
 });
 

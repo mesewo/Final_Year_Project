@@ -12,7 +12,9 @@ const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   cartId: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   orderItems: [orderItemSchema],
+  type: { type: String, enum: ["normal", "bulk"], default: "normal" },  
   tx_ref: { type: String },
+  storekeeper: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   store: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "Store",

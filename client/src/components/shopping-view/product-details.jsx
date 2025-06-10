@@ -8,13 +8,16 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
+import axios from "axios";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
 import { getAllOrdersByUserId } from "@/store/shop/order-slice";
 import { fetchStoreProductStock } from "@/store/shop/products-slice";
 
-function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
+const MIN_BULK_QUANTITY = 10; // Minimum quantity for bulk requests
+
+function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }) {
   const [feedbackMsg, setFeedbackMsg] = useState("");
   const [rating, setRating] = useState(0);
   const dispatch = useDispatch();
@@ -23,6 +26,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { feedbackDetails } = useSelector((state) => state.shopFeedback);
   const userOrders = useSelector((state) => state.shopOrder.orderList);
+  const [bulkQuantity, setBulkQuantity] = useState(MIN_BULK_QUANTITY || 10);
   const { toast } = useToast();
 
   // Handle rating change
@@ -63,6 +67,38 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
       }
     });
   }
+
+const handleBulkRequest = async (productId) => {
+  const quantity = Number(bulkQuantity) || MIN_BULK_QUANTITY;
+  if (quantity < MIN_BULK_QUANTITY) {
+    toast({
+      title: `Minimum order is ${MIN_BULK_QUANTITY} units.`,
+      variant: "destructive",
+    });
+    return;
+  }
+  if (quantity > stock) {
+    toast({
+      title: `Only ${stock} units available in stock.`,
+      variant: "destructive",
+    });
+    return;
+  }
+  try {
+    const payload = {
+      productId,
+      quantity,
+      isBulk: true,
+    };
+    if (storeId) payload.storeId = storeId;
+    const res = await axios.post("/api/product-requests/request", payload, { withCredentials: true });
+    if (res.data.success) {
+      toast({ title: "Bulk request sent for approval." });
+    }
+  } catch (err) {
+    toast({ title: JSON.stringify(err.response?.data) || err.message || "Error sending request", variant: "destructive" });
+  }
+};
 
   // Handle dialog close
   function handleDialogClose() {
@@ -157,6 +193,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
         approvedFeedback.length
       : 0;
 
+      const stock =
+        typeof storeStock === "number"
+          ? storeStock
+          : typeof productDetails?.quantity === "number"
+            ? productDetails.quantity
+            : typeof productDetails?.totalStock === "number"
+              ? productDetails.totalStock
+              : null;
+
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:p-12 max-w-[95vw] sm:max-w-[80vw] lg:max-w-[70vw]">
@@ -212,17 +257,38 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
           {/* Remaining Stock */}
           <div className="mb-4">
             <span className="inline-block px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-medium">
-              {storeStock === 0
+              {stock === 0
                 ? "Out of stock"
-                : storeStock > 0
-                  ? `In stock: ${storeStock}`
+                : stock > 0
+                  ? `In stock: ${stock}`
                   : "Loading stock..."}
             </span>
           </div>
+          {isBulk && (
+            <div className="mb-3">
+              <Label htmlFor="bulk-quantity">Quantity</Label>
+              <Input
+                id="bulk-quantity"
+                type="number"
+                min={MIN_BULK_QUANTITY || 1}
+                max={stock}
+                value={bulkQuantity}
+                onChange={e => setBulkQuantity(e.target.value)}
+                className="w-32"
+              />
+            </div>
+          )}
           <div className="mb-5">
-            {productDetails?.totalStock === 0 ? (
+            {stock === 0 ? (
               <Button className="w-full opacity-60 cursor-not-allowed" disabled>
                 Out of Stock
+              </Button>
+            ) : isBulk ? (
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                onClick={()=>{handleBulkRequest(productDetails?._id)}}
+              >
+                Send Bulk Request
               </Button>
             ) : (
               <Button
@@ -230,7 +296,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId }) {
                 onClick={() =>
                   handleAddToCart(
                     productDetails?._id,
-                    productDetails?.totalStock
+                    stock,
                   )
                 }
               >

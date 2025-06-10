@@ -4,7 +4,7 @@ import StoreProduct from "../../models/StoreProduct.js";
 // Add to Cart
 export const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { userId, productId, quantity, isBulk } = req.body;
 
     if (!userId || !productId || quantity <= 0) {
       return res.status(400).json({
@@ -36,6 +36,9 @@ export const addToCart = async (req, res) => {
 
     if (!cart) {
       cart = new Cart({ userId, items: [] });
+    }
+    else if(typeof isBulk !== 'undefined') {
+    cart.isBulk = !!isBulk;
     }
 
     const findCurrentProductIndex = cart.items.findIndex(
@@ -114,6 +117,7 @@ export const fetchCartItems = async (req, res) => {
       data: {
         ...cart._doc,
         items: populateCartItems,
+        isBulk: cart.isBulk,
       },
     });
   } catch (error) {
@@ -180,6 +184,7 @@ export const updateCartItemQty = async (req, res) => {
       data: {
         ...cart._doc,
         items: populateCartItems,
+        isBulk: cart.isBulk,
       },
     });
   } catch (error) {
@@ -241,6 +246,7 @@ export const deleteCartItem = async (req, res) => {
       data: {
         ...cart._doc,
         items: populateCartItems,
+        isBulk: cart.isBulk,
       },
     });
   } catch (error) {

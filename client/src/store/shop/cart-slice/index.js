@@ -4,17 +4,19 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const initialState = {
   cartItems: [],
   isLoading: false,
+  isBulk: false,
 };
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity }) => {
+  async ({ userId, productId, quantity, isBulk }, thunkAPI) => {
     const response = await axios.post(
       "http://localhost:5000/api/shop/cart/add",
       {
         userId,
         productId,
         quantity,
+        isBulk,
       }
     );
 
@@ -77,6 +79,7 @@ const shoppingCartSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cartItems = action.payload.data;
+        state.isBulk = action.payload.data.isBulk || false;
       })
       .addCase(addToCart.rejected, (state) => {
         state.isLoading = false;
@@ -88,6 +91,7 @@ const shoppingCartSlice = createSlice({
       .addCase(fetchCartItems.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cartItems = action.payload.data;
+        state.isBulk = action.payload.data.isBulk || false;
       })
       .addCase(fetchCartItems.rejected, (state) => {
         state.isLoading = false;
@@ -99,6 +103,7 @@ const shoppingCartSlice = createSlice({
       .addCase(updateCartQuantity.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cartItems = action.payload.data;
+        state.isBulk = action.payload.data.isBulk || false;
       })
       .addCase(updateCartQuantity.rejected, (state) => {
         state.isLoading = false;

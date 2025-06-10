@@ -2,6 +2,7 @@ import Product from "../models/Product.js";
 import StoreProduct from "../models/StoreProduct.js";
 import ProductRequest from "../models/ProductRequest.js";
 import Notification from "../models/Notification.js";
+import Order from "../models/Order.js";
 
 // Helper: Notify Factman if product is low or out of stock
 async function notifyFactmanIfLowOrOutOfStock(product) {
@@ -31,10 +32,69 @@ async function notifyFactmanIfLowOrOutOfStock(product) {
   }
 }
 
+// Example: Get all bulk orders
+export const getBulkOrdersForStorekeeper = async (req, res) => {
+  const { storekeeperId } = req.params;
+  try {
+    const orders = await Order.find({ type: "bulk", storekeeper: storekeeperId }).sort({ createdAt: -1 });
+    res.json({ success: true, orders });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch bulk orders" });
+  }
+};
+
+
+export const approveBulkOrder = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await Order.findById(orderId).populate("orderItems.productId");
+    if (!order || order.type !== "bulk" || order.orderStatus !== "pending") {
+      return res.status(404).json({ success: false, message: "Bulk order not found or already handled" });
+    }
+    // Check stock for each product
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.productId);
+      if (!product || product.totalStock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Not enough stock for ${item.title}` });
+      }
+    }
+    // Deduct stock
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.productId);
+      product.totalStock -= item.quantity;
+      await product.save();
+    }
+    order.orderStatus = "approved";
+    order.orderUpdateDate = new Date();
+    await order.save();
+    res.json({ success: true, order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Reject a bulk order
+export const rejectBulkOrder = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await Order.findById(orderId);
+    if (!order || order.type !== "bulk" || order.orderStatus !== "pending") {
+      return res.status(404).json({ success: false, message: "Bulk order not found or already handled" });
+    }
+    order.orderStatus = "rejected";
+    order.orderUpdateDate = new Date();
+    await order.save();
+    res.json({ success: true, order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // Seller makes a request
 export const requestProduct = async (req, res) => {
-  const { productId, storeId, quantity } = req.body;
+  const { productId, storeId, quantity, isBulk } = req.body;
   const sellerId = req.user.id;
+  const requestedBy = req.user.id;  
 
   try {
     const product = await Product.findById(productId);
@@ -42,11 +102,28 @@ export const requestProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: "Not enough stock" });
     }
 
+    let requestData = {
+      product: productId,
+      quantity,
+      isBulk: !!isBulk,
+      requestedBy,
+    };
+
+    if (req.user.role === "seller") {
+      if (!storeId) {
+        return res.status(400).json({ success: false, message: "Store ID is required for sellers." });
+      }
+      requestData.store = storeId;
+      requestData.seller = req.user.id;
+    }
+
     const existingRequest = await ProductRequest.findOne({
       product: productId,
-      store: storeId,
+      requestedBy,
+      store: requestData.store,
       seller: sellerId,
       status: "pending",
+      isBulk: !!isBulk,
     });
 
     if (existingRequest) {
@@ -56,8 +133,10 @@ export const requestProduct = async (req, res) => {
     const request = new ProductRequest({
       product: productId,
       store: storeId,
+      requestedBy,
       quantity,
       seller: sellerId,
+      isBulk: !!isBulk,
     });
 
     await request.save();
@@ -92,28 +171,49 @@ export const approveProductRequest = async (req, res) => {
     await notifyFactmanIfLowOrOutOfStock(product);
 
     // Add to store stock (or update existing)
-    const existingStoreProduct = await StoreProduct.findOne({
-      product: request.product._id,
-      store: request.store,
-    });
-
-    if (existingStoreProduct) {
-      existingStoreProduct.quantity += request.quantity;
-      existingStoreProduct.seller = request.seller;
-      await existingStoreProduct.save();
-    } else {
-      await StoreProduct.create({
+    if (request.store) {
+      const existingStoreProduct = await StoreProduct.findOne({
         product: request.product._id,
         store: request.store,
-        seller: request.seller,
-        quantity: request.quantity,
       });
+
+      if (existingStoreProduct) {
+        existingStoreProduct.quantity += request.quantity;
+        existingStoreProduct.seller = request.seller;
+        await existingStoreProduct.save();
+      } else {
+        await StoreProduct.create({
+          product: request.product._id,
+          store: request.store,
+          seller: request.seller,
+          quantity: request.quantity,
+        });
+      }
     }
     // Update request status
     request.status = "approved";
     request.reviewedAt = new Date();
     request.reviewedBy = storekeeperId;
     await request.save();
+
+     const order = new Order({
+      userId: request.requestedBy,
+      orderItems: [{
+        productId: request.product._id,
+        title: request.product.title,
+        image: request.product.image,
+        price: request.product.price,
+        quantity: request.quantity,
+      }],
+      totalAmount: request.product.price * request.quantity,
+      orderStatus: "approved",
+      type: request.isBulk ? "bulk" : "normal",
+      orderDate: new Date(),
+      ...(request.store ? { store: request.store } : {}),
+      // store: request.store,
+      // Add other fields as needed
+    });
+    await order.save();
 
     res.json({ success: true, message: "Product request approved", request });
 
@@ -153,7 +253,8 @@ export const getAllRequests = async (req, res) => {
     const requests = await ProductRequest.find()
       .populate("product")
       .populate("seller")
-      .populate("store");
+      .populate("store")
+      .populate("requestedBy")
     res.json({ success: true, requests });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
@@ -265,6 +366,21 @@ export const addOrUpdateProduct = async (req, res) => {
     res.json({ success: true, product });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const markRequestDelivered = async (req, res) => {
+  const { requestId } = req.params;
+  try {
+    const request = await ProductRequest.findById(requestId);
+    if (!request || request.status !== "approved") {
+      return res.status(400).json({ success: false, message: "Only approved requests can be delivered." });
+    }
+    request.status = "delivered";
+    await request.save();
+    res.json({ success: true, request });
+  } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

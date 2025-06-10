@@ -1,12 +1,14 @@
 import Order from "../../models/Order.js";
 import Cart from "../../models/Cart.js";
 import Product from "../../models/Product.js";
+import Notification from "../../models/Notification.js";
 import StoreProduct from "../../models/StoreProduct.js";
+import User from "../../models/User.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createOrder = async (req, res) => {
   try {
-    const { userId, cartId, cartItems, addressInfo, paymentMethod } = req.body;
+    const { userId, cartId, cartItems, addressInfo, paymentMethod, isBulk } = req.body;
 
     // Group cartItems by sellerId and storeId
     const ordersMap = {};
@@ -33,7 +35,18 @@ export const createOrder = async (req, res) => {
         0
       );
 
+      const orderType = isBulk ? "bulk" : "normal";
+
       const tx_ref = `order_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+
+      let storekeeperId = null;
+      if (orderType === "bulk") {
+        // Find the main storekeeper (assuming role is 'storekeeper' or 'factman')
+        const storekeeperUser = await User.findOne({ role: "store_keeper" }); // or "factman"
+        if (storekeeperUser) {
+          storekeeperId = storekeeperUser._id;
+        }
+      }
 
       const order = new Order({
         userId,
@@ -51,6 +64,9 @@ export const createOrder = async (req, res) => {
         store: storeId,
         seller: sellerId,
         tx_ref,
+        type: orderType,
+        storekeeper: storekeeperId,
+        // isQRVerified: false,
       });
 
       await order.save();
@@ -77,6 +93,7 @@ export const createOrder = async (req, res) => {
       message: "Orders created successfully",
       orderIds: createdOrders.map((o) => o._id),
       tx_refs: createdOrders.map((o) => o.tx_ref),
+      orders: createdOrders,
     });
   } catch (error) {
     console.error("Create order error:", error);
@@ -191,9 +208,89 @@ export const getOrderDetails = async (req, res) => {
   }
 };
 
+// Approve a bulk order
+// export const approveBulkOrder = async (req, res) => {
+//   const { orderId } = req.params;
+//   const storekeeperId = req.user.id;
+
+//   try {
+//     const order = await Order.findById(orderId).populate("orderItems.productId");
+//     if (!order || order.type !== "bulk" || order.orderStatus !== "pending") {
+//       return res.status(404).json({ success: false, message: "Bulk order not found or already handled" });
+//     }
+
+//     // Check stock for each product
+//     for (const item of order.orderItems) {
+//       const product = await Product.findById(item.productId);
+//       if (!product || product.totalStock < item.quantity) {
+//         return res.status(400).json({ success: false, message: `Not enough stock for ${item.title}` });
+//       }
+//     }
+
+//     // Deduct stock
+//     for (const item of order.orderItems) {
+//       const product = await Product.findById(item.productId);
+//       product.totalStock -= item.quantity;
+//       await product.save();
+//     }
+
+//     // Update order status
+//     order.orderStatus = "approved";
+//     order.orderUpdateDate = new Date();
+//     order.reviewedBy = storekeeperId;
+//     await order.save();
+
+//     // Optionally: Notify buyer and/or admin
+//     // await Notification.create({ ... });
+
+//     res.json({ success: true, message: "Bulk order approved", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// // Reject a bulk order
+// export const rejectBulkOrder = async (req, res) => {
+//   const { orderId } = req.params;
+//   const storekeeperId = req.user.id;
+
+//   try {
+//     const order = await Order.findById(orderId);
+//     if (!order || order.type !== "bulk" || order.orderStatus !== "pending") {
+//       return res.status(404).json({ success: false, message: "Bulk order not found or already handled" });
+//     }
+
+//     order.orderStatus = "rejected";
+//     order.orderUpdateDate = new Date();
+//     order.reviewedBy = storekeeperId;
+//     await order.save();
+
+//     // Optionally: Notify buyer and/or admin
+//     // await Notification.create({ ... });
+
+//     res.json({ success: true, message: "Bulk order rejected", order });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+// export const getBulkOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.find({ type: "bulk" }).sort({ createdAt: -1 });
+//     res.json({ success: true, orders });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "Failed to fetch bulk orders" });
+//   }
+// };
+
 export default {
   createOrder,
   capturePayment,
   getAllOrdersByUser,
   getOrderDetails,
+  // approveBulkOrder,
+  // rejectBulkOrder,
+  // getBulkOrders,
 };

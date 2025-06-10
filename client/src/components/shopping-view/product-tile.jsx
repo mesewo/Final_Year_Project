@@ -11,6 +11,16 @@ function ShoppingProductTile({
   handleGetProductDetails,
   handleAddtoCart,
 }) {
+
+  const stock =
+    typeof product?.totalStock === "number"
+      ? product.totalStock
+      : typeof product?.quantity === "number"
+        ? product.quantity
+        : typeof product?.stock === "number"
+          ? product.stock
+          : null;
+
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div onClick={() => handleGetProductDetails(product?._id)}>
@@ -20,13 +30,13 @@ function ShoppingProductTile({
             alt={product?.title}
             className="w-full h-[300px] object-cover rounded-t-lg"
           />
-          {product?.totalStock === 0 ? (
+          {stock === 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
               Out Of Stock
             </Badge>
-          ) : product?.totalStock < 10 ? (
+          ) : stock > 0 && stock < 10 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
-              {`Only ${product?.totalStock} items left`}
+              {`Only ${stock} items left`}
             </Badge>
           ) : product?.salePrice > 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">

@@ -31,6 +31,10 @@ const CartSchema = new mongoose.Schema(
         },
       },
     ],
+    isBulk: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
