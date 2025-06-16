@@ -3,6 +3,7 @@ import StoreProduct from "../models/StoreProduct.js";
 import ProductRequest from "../models/ProductRequest.js";
 import Notification from "../models/Notification.js";
 import Order from "../models/Order.js";
+import BulkCart from "../models/BulkCart.js";
 
 // Helper: Notify Factman if product is low or out of stock
 async function notifyFactmanIfLowOrOutOfStock(product) {
@@ -140,6 +141,15 @@ export const requestProduct = async (req, res) => {
     });
 
     await request.save();
+
+    if (isBulk) {
+      const bulkCart = await BulkCart.findOne({ userId: requestedBy });
+      if (bulkCart) {
+        bulkCart.items = [];
+        await bulkCart.save();
+      }
+    }
+
     res.status(201).json({ success: true, request });
 
   } catch (err) {

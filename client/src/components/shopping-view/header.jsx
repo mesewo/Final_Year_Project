@@ -19,6 +19,8 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
+import BulkCartWrapper from "./bulk-cart-wrapper";
+import { fetchBulkCartItems } from "@/store/shop/bulkcart-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
@@ -70,6 +72,8 @@ function HeaderRightContent() {
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { bulkCartItems } = useSelector((state) => state.bulkCart);
+  const [openBulkCartSheet, setOpenBulkCartSheet] = useState(false);
 
   function handleLogout() {
     dispatch(logoutUser());
@@ -77,13 +81,14 @@ function HeaderRightContent() {
 
   useEffect(() => {
     dispatch(fetchCartItems(user?.id));
-  }, [dispatch]);
+    dispatch(fetchBulkCartItems(user?.id));
+  }, [dispatch, user?.id]);
 
   console.log(cartItems, "group 6");
 
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+      <Sheet open={openCartSheet} onOpenChange={setOpenCartSheet}>
         <Button
           onClick={() => setOpenCartSheet(true)}
           variant="outline"
@@ -94,7 +99,7 @@ function HeaderRightContent() {
           <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
             {cartItems?.items?.length || 0}
           </span>
-          <span className="sr-only">User cart</span>
+          {/* <span className="sr-only">User cart</span> */}
         </Button>
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
@@ -105,7 +110,24 @@ function HeaderRightContent() {
           }
         />
       </Sheet>
-
+      <Sheet open={openBulkCartSheet} onOpenChange={setOpenBulkCartSheet}>
+        <Button
+          onClick={() => setOpenBulkCartSheet(true)}
+          variant="outline"
+          size="icon"
+          className="relative"
+        >
+          <ShoppingCart className="w-6 h-6 text-blue-600" />
+          <span className="absolute top-[-5px] right-[2px] font-bold text-sm text-blue-600">
+            {bulkCartItems?.length || 0}
+          </span>
+          <span className="sr-only">Bulk cart</span>
+        </Button>
+        <BulkCartWrapper
+          setOpenBulkCartSheet={setOpenBulkCartSheet}
+          bulkCartItems={bulkCartItems}
+        />
+      </Sheet>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="bg-black">

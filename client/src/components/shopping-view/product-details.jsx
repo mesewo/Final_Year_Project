@@ -5,10 +5,10 @@ import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { addToBulkCart, fetchBulkCartItems } from "@/store/shop/bulkcart-slice"; // <-- import bulk cart actions
 import { useToast } from "../ui/use-toast";
 import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
-import axios from "axios";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
@@ -28,13 +28,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
   const userOrders = useSelector((state) => state.shopOrder.orderList);
   const [bulkQuantity, setBulkQuantity] = useState(MIN_BULK_QUANTITY || 10);
   const { toast } = useToast();
+  const { bulkCartItems } = useSelector((state) => state.bulkCart);
 
   // Handle rating change
   function handleRatingChange(getRating) {
     setRating(getRating);
   }
 
-  // Add to cart logic
+  // Add to cart logic (normal cart)
   function handleAddToCart(getCurrentProductId, getTotalStock) {
     let getCartItems = cartItems.items || [];
     if (getCartItems.length) {
@@ -68,37 +69,58 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
     });
   }
 
-const handleBulkRequest = async (productId) => {
-  const quantity = Number(bulkQuantity) || MIN_BULK_QUANTITY;
-  if (quantity < MIN_BULK_QUANTITY) {
-    toast({
-      title: `Minimum order is ${MIN_BULK_QUANTITY} units.`,
-      variant: "destructive",
-    });
-    return;
-  }
-  if (quantity > stock) {
-    toast({
-      title: `Only ${stock} units available in stock.`,
-      variant: "destructive",
-    });
-    return;
-  }
-  try {
-    const payload = {
-      productId,
-      quantity,
-      isBulk: true,
-    };
-    if (storeId) payload.storeId = storeId;
-    const res = await axios.post("/api/product-requests/request", payload, { withCredentials: true });
-    if (res.data.success) {
-      toast({ title: "Bulk request sent for approval." });
+  // Add to bulk cart logic (NEW)
+  const handleBulkRequest = async (productId) => {
+    const quantity = Number(bulkQuantity) || MIN_BULK_QUANTITY;
+    const stock =
+      typeof storeStock === "number"
+        ? storeStock
+        : typeof productDetails?.quantity === "number"
+        ? productDetails.quantity
+        : typeof productDetails?.totalStock === "number"
+        ? productDetails.totalStock
+        : null;
+
+    if (quantity < MIN_BULK_QUANTITY) {
+      toast({
+        title: `Minimum order is ${MIN_BULK_QUANTITY} units.`,
+        variant: "destructive",
+      });
+      return;
     }
-  } catch (err) {
-    toast({ title: JSON.stringify(err.response?.data) || err.message || "Error sending request", variant: "destructive" });
-  }
-};
+    if (quantity > stock) {
+      toast({
+        title: `Only ${stock} units available in stock.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    // Use Redux bulk cart
+    dispatch(
+      addToBulkCart({
+        userId: user?.id,
+        productId,
+        quantity,
+      })
+    ).then((res) => {
+      if (res?.payload?.success) {
+        dispatch(fetchBulkCartItems(user?.id));
+        toast({ title: "Added to bulk cart." });
+      } else {
+        toast({
+          title: res?.payload?.message || "Failed to add to bulk cart.",
+          description: JSON.stringify(res?.payload, null, 2),
+          variant: "destructive",
+        });
+      }
+    }).catch((err) => {
+      toast({
+        title: "Error adding to bulk cart.",
+        description: err?.message || JSON.stringify(err, null, 2),
+        variant: "destructive",
+      });
+    });
+  };
 
   // Handle dialog close
   function handleDialogClose() {
@@ -193,14 +215,14 @@ const handleBulkRequest = async (productId) => {
         approvedFeedback.length
       : 0;
 
-      const stock =
-        typeof storeStock === "number"
-          ? storeStock
-          : typeof productDetails?.quantity === "number"
-            ? productDetails.quantity
-            : typeof productDetails?.totalStock === "number"
-              ? productDetails.totalStock
-              : null;
+  const stock =
+    typeof storeStock === "number"
+      ? storeStock
+      : typeof productDetails?.quantity === "number"
+        ? productDetails.quantity
+        : typeof productDetails?.totalStock === "number"
+          ? productDetails.totalStock
+          : null;
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
@@ -288,7 +310,7 @@ const handleBulkRequest = async (productId) => {
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 onClick={()=>{handleBulkRequest(productDetails?._id)}}
               >
-                Send Bulk Request
+                Add to Bulk Cart
               </Button>
             ) : (
               <Button

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { clearCart } from "@/store/shop/cart-slice";
+import { clearBulkCart } from "@/store/shop/bulkcart-slice";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,8 @@ export default function PaymentSuccess() {
           setStatus(null);
           setPaymentRef(tx_ref);
           localStorage.removeItem("last_tx_ref")
+          dispatch(clearBulkCart());
+          localStorage.removeItem("cart");
         }
       })
       .catch(() => {
@@ -49,9 +52,10 @@ export default function PaymentSuccess() {
   }, [searchParams]);
 
   useEffect(() => {
-    dispatch(clearCart());
+    
+    // dispatch(clearCart());
     // Optionally, clear localStorage if you store cart there
-    localStorage.removeItem("cart");
+    // localStorage.removeItem("cart");
   }, [dispatch]);
 
   if (error) return <div className="text-red-600 p-5">{error}</div>;

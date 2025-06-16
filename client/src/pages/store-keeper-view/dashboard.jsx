@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStorekeeperDashboardStats, fetchRecentProductRequests } from "@/store/store-keeper/dashboard-slice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/common/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 

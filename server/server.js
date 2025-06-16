@@ -22,6 +22,7 @@ import shopAddressRouter from "./routes/shop/address-routes.js";
 import shopOrderRouter from "./routes/shop/order-routes.js";
 import shopSearchRouter from "./routes/shop/search-routes.js";
 // import shopReviewRouter from "./routes/shop/review-routes.js";
+import bulkCartRoutes from "./routes/shop/bulk-cart-routes.js";
 import shopFeedbackRouter from "./routes/shop/feedback-routes.js";
 
 import factmanDashboardRouter from "./routes/factman/dashboard-routes.js";
@@ -95,6 +96,7 @@ app.use("/api/admin/settings", adminSettingsRouter);
 
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
+app.use("/api/shop/bulk-cart", bulkCartRoutes);
 app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);

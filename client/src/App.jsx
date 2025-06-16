@@ -60,6 +60,7 @@ import StorePage from "@/pages/shopping-view/store";
 import SearchProducts from "./pages/shopping-view/search";
 import AboutPage from "@/pages/shopping-view/about";
 import ContactPage from "@/pages/shopping-view/contact";
+import BulkCheckout from "./pages/shopping-view/BulkCheckout";
 // import BulkRequest from "./pages/shopping-view/BulkRequestPage";
 
 // Other components
@@ -233,6 +234,7 @@ function App() {
           <Route path="home" element={<ShoppingHome />} />
           {/* <Route path="listing" element={<ShoppingListing />} /> */}
           <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="bulk-checkout" element={<BulkCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="payment-static-success" element={<PaymentStaticSuccess />} />

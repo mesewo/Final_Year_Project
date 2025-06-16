@@ -21,6 +21,7 @@ import factmanDashboardSlice from "./factman/dashboard-slice";
 
 import shopProductsSlice from "./shop/products-slice";
 import shopCartSlice from "./shop/cart-slice";
+import bulkCartReducer from "./shop/bulkcart-slice";
 import shopAddressSlice from "./shop/address-slice";
 import shoppingOrderSlice from "./shop/order-slice";
 import shopSearchSlice from "./shop/search-slice";
@@ -78,6 +79,7 @@ const store = configureStore({
     // Buyer (shop)
     shopProducts: shopProductsSlice,
     shopCart: shopCartSlice,
+    bulkCart: bulkCartReducer,
     shopAddress: shopAddressSlice,
     shopOrder: shoppingOrderSlice,
     shopSearch: shopSearchSlice,

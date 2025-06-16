@@ -14,7 +14,7 @@ export const requestProduct = createAsyncThunk(
 export const fetchMyRequests = createAsyncThunk(
   "productRequest/fetchMyRequests",
   async () => {
-    const res = await axios.get("/api/product-requests/me");
+    const res = await axios.get("/api/product-requests/me", { withCredentials: true });
     return res.data;
   }
 );
@@ -23,7 +23,7 @@ export const fetchMyRequests = createAsyncThunk(
 export const fetchAllRequests = createAsyncThunk(
   "productRequest/fetchAllRequests",
   async () => {
-    const res = await axios.get("/api/product-requests");
+    const res = await axios.get("/api/product-requests", { withCredentials: true });
     return res.data;
   }
 );
