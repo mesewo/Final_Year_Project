@@ -46,16 +46,18 @@ export default function StoreKeeperReports() {
     return counts;
   };
 
-  // Toggle expand/collapse
+  // Toggle expand/collapse, but only allow one open at a time
   const toggleSeller = (sellerId) => {
-    setExpandedSellers(prev => ({
-      ...prev,
-      [sellerId]: !prev[sellerId]
-    }));
+    setExpandedSellers(prev => {
+      // If already open, close it
+      if (prev[sellerId]) return {};
+      // Open only this one, close others
+      return { [sellerId]: true };
+    });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 text-base"> {/* Increased base font size */}
       <div className="flex justify-between items-center">
         <CalendarDateRangePicker 
           dateRange={dateRange}
@@ -64,7 +66,7 @@ export default function StoreKeeperReports() {
       </div>
 
       <Tabs defaultValue="inventory">
-        <TabsList>
+        <TabsList className="text-lg"> {/* Larger tab text */}
           <TabsTrigger value="inventory">Seller Activity</TabsTrigger>
           <TabsTrigger value="salesTrend">Sales Trend</TabsTrigger>
         </TabsList>
@@ -72,10 +74,10 @@ export default function StoreKeeperReports() {
         <TabsContent value="inventory">
           <Card>
             <CardHeader>
-              <CardTitle>Sellers Inventory Products</CardTitle>           
+              <CardTitle className="text-2xl">Sellers Inventory Products</CardTitle> {/* Larger title */}
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {inventory.map(seller => {
                   const statusCounts = getStatusCounts(seller.products);
                   const statusFilter = sellerStatus[seller._id] || "all";
@@ -92,30 +94,30 @@ export default function StoreKeeperReports() {
                     <div key={seller._id} className="border rounded shadow-sm bg-gray-50">
                       {/* Seller Row */}
                       <div
-                        className="flex flex-col md:flex-row md:items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                        className="flex flex-col md:flex-row md:items-center justify-between px-4 py-4 cursor-pointer hover:bg-gray-100 transition-colors text-lg"
                         onClick={() => toggleSeller(seller._id)}
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-xl">
                             {seller.userName.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-800">{seller.userName}</div>
-                            <div className="text-xs text-gray-500">{seller.email}</div>
+                            <div className="font-semibold text-gray-800 text-lg">{seller.userName}</div>
+                            <div className="text-base text-gray-500">{seller.email}</div>
                           </div>
                         </div>
                         <div className="flex gap-2 mt-2 md:mt-0">
                           {statuses.map(status => (
                             <button
                               key={status.key}
-                              className={`px-2 py-1 rounded text-xs font-medium ${statusFilter === status.key ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+                              className={`px-3 py-1 rounded text-base font-semibold ${statusFilter === status.key ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
                               onClick={e => {
                                 e.stopPropagation();
                                 setSellerStatus(sc => ({ ...sc, [seller._id]: status.key }));
                               }}
                             >
                               {status.label}
-                              <span className="ml-1">
+                              <span className="ml-2">
                                 {status.key === "all"
                                   ? seller.products.length
                                   : statusCounts[status.key]}
@@ -123,7 +125,7 @@ export default function StoreKeeperReports() {
                             </button>
                           ))}
                         </div>
-                        <div className="ml-4 text-xs text-gray-400">
+                        <div className="ml-4 text-base text-gray-400">
                           {expandedSellers[seller._id] ? "▲" : "▼"}
                         </div>
                       </div>
@@ -131,22 +133,22 @@ export default function StoreKeeperReports() {
                       {expandedSellers[seller._id] && (
                         <div className="divide-y">
                           {displayProducts.length === 0 ? (
-                            <div className="px-8 py-3 text-gray-400 text-sm">No products in this status.</div>
+                            <div className="px-8 py-4 text-gray-400 text-lg">No products in this status.</div>
                           ) : (
                             displayProducts.map((product, idx) => (
-                              <div key={seller._id + '-' + product._id + '-' + idx} className="flex items-center gap-4 px-8 py-3 bg-white">
-                                <div className="flex items-center gap-3 font-medium flex-1">
+                              <div key={seller._id + '-' + product._id + '-' + idx} className="flex items-center gap-4 px-8 py-4 bg-white text-lg">
+                                <div className="flex items-center gap-3 font-semibold flex-1">
                                   {product.image && (
                                     <img
                                       src={product.image}
                                       alt={product.title}
-                                      className="w-8 h-8 object-cover rounded border"
+                                      className="w-10 h-10 object-cover rounded border"
                                     />
                                   )}
                                   {product.title}
                                 </div>
-                                <div className="w-24 text-center">{product.totalStock}</div>
-                                <div className="w-32 text-center">
+                                <div className="w-28 text-center">{product.totalStock}</div>
+                                <div className="w-40 text-center">
                                   <span className={
                                     product.totalStock === 0
                                       ? "text-red-600"
@@ -177,10 +179,9 @@ export default function StoreKeeperReports() {
         <TabsContent value="salesTrend">
           <Card>
             <CardHeader>
-              <CardTitle>Sales Trend Report</CardTitle>
+              <CardTitle className="text-2xl">Sales Trend Report</CardTitle>
             </CardHeader>
             <CardContent className="h-96">
-            
               <LineChart 
                 data={productRequestTrend}
                 xKey="_id"

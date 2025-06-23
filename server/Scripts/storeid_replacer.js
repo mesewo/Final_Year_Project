@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import StoreProduct from "./models/StoreProduct.js"; // Adjust path as needed
+import StoreProduct from "../models/StoreProduct.js"; // Adjust path as needed
 
 const MONGO_URI = "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Replace with your URI
 

@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+// import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Layouts
 import AuthLayout from "./components/auth/layout";
@@ -57,7 +58,7 @@ import ShoppingAccount from "./pages/shopping-view/account";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import PaymentStaticSuccess from "./pages/shopping-view/payment-static-success";
 import StorePage from "@/pages/shopping-view/store";
-import SearchProducts from "./pages/shopping-view/search";
+// import SearchProducts from "./pages/shopping-view/search";
 import AboutPage from "@/pages/shopping-view/about";
 import ContactPage from "@/pages/shopping-view/contact";
 import BulkCheckout from "./pages/shopping-view/BulkCheckout";
@@ -238,7 +239,7 @@ function App() {
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="payment-static-success" element={<PaymentStaticSuccess />} />
-          <Route path="search" element={<SearchProducts />} />
+          {/* <Route path="search" element={<SearchProducts />} /> */}
           <Route path="store/:storeId" element={<StorePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import StoreProduct from "../server/models/StoreProduct.js";
+import StoreProduct from "../models/StoreProduct.js";
 // import User from "../server/models/User.js";
 
 // Replace with your actual MongoDB URI

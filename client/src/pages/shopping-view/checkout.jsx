@@ -110,7 +110,7 @@ export default function ShoppingCheckout() {
             amount: totalCartAmount,
             currency: "ETB",
             email: user.email,
-            first_name: user.firstName,
+            first_name: user.firstName ,
             last_name: user.lastName,
             tx_ref,
             orderId,

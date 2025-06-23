@@ -1,55 +1,36 @@
 import { Button } from "@/components/ui/button";
-import bannerOne from "../../assets/banner-1.webp";
-import bannerTwo from "../../assets/banner-2.webp";
-import bannerThree from "../../assets/banner-3.webp";
-import {
-  Airplay,
-  BabyIcon,
+import { 
   ChevronLeftIcon,
   ChevronRightIcon,
-  CloudLightning,
-  Heater,
-  Images,
-  Shirt,
-  ShirtIcon,
   ShoppingBasket,
-  UmbrellaIcon,
-  WashingMachine,
-  WatchIcon,
+  CheckCircle,
+  ArrowRight
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
+import { 
   fetchAllFilteredProducts,
   fetchProductDetails,
 } from "@/store/shop/products-slice";
 import StoreSection from "@/components/shopping-view/StoreSection";
-// import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
-// import { ShoppingBasket } from "lucide-react";
-
-const categoriesWithIcon = [
-  { id: "men", label: "Men", icon: ShirtIcon },
-  { id: "women", label: "Women", icon: CloudLightning },
-  { id: "kids", label: "Kids", icon: BabyIcon },
-];
 
 const stores = [
   {
     id: "azezo",
     name: "Azezo",
-    image: "https://z-p3-scontent.fbjr1-1.fna.fbcdn.net/v/t1.6435-9/122141760_142306984267744_896324440922264095_n.jpg?stp=dst-jpg_s600x600_tt6&_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHNn26ZieBqcoVxPFd1bpy33IXsFWHOt5HchewVYc63kdv4L6kMMuC-HmI0X8f0YWXP48ob-kpgE38Skh-smoHa&_nc_ohc=NdTLSF1pJHgQ7kNvwHMeM8G&_nc_oc=AdnGFakZrhsXB8kwM_5Lzj6CvYY-tmod2O7kHCU5n4jMDazI41ZMBJp6XEYGtBX8UQo&_nc_zt=23&_nc_ht=z-p3-scontent.fbjr1-1.fna&_nc_gid=N7miM4CWE46W9Q0tkw5AVQ&oh=00_AfKjYHTbv9_6kTG15cMT0I4cBP1A84ciP-6rsEczjHIzuw&oe=68544DAB",
+    image: "https://c8.alamy.com/comp/C3626F/clothes-market-stall-old-town-harar-ethiopia-africa-C3626F.jpg",
     storeId: "682ccde53de974f948889f23",
   },
   {
     id: "maraki",
     name: "Maraki",
-    image: "https://z-p3-scontent.fbjr1-1.fna.fbcdn.net/v/t1.6435-9/119952990_119894139861269_6810437200308365758_n.jpg?stp=c129.0.774.774a_dst-jpg_s600x600_tt6&_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFNhgTgQCwK6FZ6wjtnXL1U2dLXIz-23EzZ0tcjP7bcTKhiHyxT1jiNL_cOkOhqOWz7BcCiGgPrKDJFnWoH_JQm&_nc_ohc=ZugLHHLMewoQ7kNvwFis9Wh&_nc_oc=AdmuB5UjA-Nk3_Ps2TlLeLvHSVganR0e-DF_bCbx90yuzhecE9MfCscowWk6Ml3gRj0&_nc_zt=23&_nc_ht=z-p3-scontent.fbjr1-1.fna&_nc_gid=XcyyAopqSH47tfZFPBdT7A&oh=00_AfKV2DrRcrnsaMy56LQWm85FMauxQbddx6r5klwzLUkSnw&oe=68545FF1",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf073vps5yYWYCkcS-6bn3HiZxUh0Rsy8tpQ&s",
     storeId: "682ccdd83de974f948889f1f",
   },
 ];
@@ -60,24 +41,11 @@ function ShoppingHome() {
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
-
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  function handleNavigateToListingPage(getCurrentItem, section) {
-    sessionStorage.removeItem("filters");
-    const currentFilter = {
-      [section]: [getCurrentItem.id],
-    };
-
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
-    navigate(`/shop/listing`);
-  }
 
   function handleNavigateToStore(store) {
     navigate(`/shop/store/${store.storeId}`);
@@ -130,7 +98,7 @@ function ShoppingHome() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Banner */}
       <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
@@ -171,54 +139,29 @@ function ShoppingHome() {
         </Button>
       </div>
 
-      {/* Shop by Category */}
-      {/* <section className="py-12 bg-gray-50">
+      {/* Our Stores Section */}
+      <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Shop by category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categoriesWithIcon.map((categoryItem) => (
-              <Card
-                key={categoryItem.id}
-                onClick={() =>
-                  handleNavigateToListingPage(categoryItem, "category")
-                }
-                className="cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <categoryItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{categoryItem.label}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* Our Stores - Clickable Store Tiles */}
-      <section className="py-12 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Our Stores</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Our Stores</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-7xl mx-auto">
             {stores.map((store) => (
               <Card
                 key={store.id}
                 onClick={() => handleNavigateToStore(store)}
-                className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
+                className="w-full cursor-pointer transition-transform duration-300 border-0 shadow-lg hover:scale-105 hover:shadow-2xl bg-white rounded-2xl overflow-hidden"
               >
-                <CardContent className="relative p-0 h-48">
+                <div className="relative h-80 w-full">
                   <img
                     src={store.image}
                     alt={store.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-2xl"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <h3 className="text-white text-2xl font-bold">
+                  <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent px-6 py-4 flex items-end rounded-b-2xl">
+                    <h3 className="text-white text-3xl font-bold drop-shadow-lg">
                       {store.name}
                     </h3>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
@@ -227,47 +170,86 @@ function ShoppingHome() {
 
       {/* Store Sections with Product Tiles */}
       {storeProducts && Object.keys(storeProducts).length > 0 && (
-        <section className="py-12">
+        <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
-            <StoreSection
-              storeName="azezo"
-              bgImageUrl="https://example.com/azezo-store-bg.jpg"
-              products={storeProducts["azezo"]}
-              handleGetProductDetails={handleGetProductDetails}
-              handleAddtoCart={handleAddtoCart}
-            />
+            <div className="space-y-16">
+              <StoreSection
+                storeName="azezo"
+                bgImageUrl="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                products={storeProducts["azezo"]}
+                handleGetProductDetails={handleGetProductDetails}
+                handleAddtoCart={handleAddtoCart}
+              />
 
-            <StoreSection
-              storeName="maraki"
-              bgImageUrl="https://example.com/maraki-store-bg.jpg"
-              products={storeProducts["maraki"]}
-              handleGetProductDetails={handleGetProductDetails}
-              handleAddtoCart={handleAddtoCart}
-            />
+              <StoreSection
+                storeName="maraki"
+                bgImageUrl="https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                products={storeProducts["maraki"]}
+                handleGetProductDetails={handleGetProductDetails}
+                handleAddtoCart={handleAddtoCart}
+              />
+            </div>
           </div>
         </section>
-
-        
       )}
 
       {/* Bulk Request Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4 flex flex-col items-center">
-          <h2 className="text-3xl font-bold text-center mb-8">Bulk/Big Request</h2>
-          <Card
-            className="w-full max-w-md cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate("/shop/bulk-request")}
-          >
-            <CardContent className="flex flex-col items-center justify-center p-8">
-              <ShoppingBasket className="w-16 h-16 mb-4 text-primary" />
-              <span className="font-bold text-xl mb-2">Request Bulk Products</span>
-              <span className="text-muted-foreground text-center">
-                Click here to request large quantities directly from the factory manager.
-              </span>
-            </CardContent>
-          </Card>
+      <section className="py-16 bg-gradient-to-br from-indigo-100 to-blue-200">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">Bulk & Corporate Orders</h2>
+              <p className="text-gray-700 max-w-2xl mx-auto">
+                Special pricing and dedicated support for large quantity purchases
+              </p>
+            </div>
+            <Card
+              className="w-full cursor-pointer hover:shadow-2xl transition-all duration-300 border-blue-300 overflow-hidden"
+              onClick={() => navigate("/shop/bulk-request")}
+            >
+              <CardContent className="p-0 flex flex-col md:flex-row">
+                <div className="md:w-1/2 h-64 md:h-auto">
+                  <img
+                    src="https://img.freepik.com/free-photo/textiles-sale_1398-3775.jpg"
+                    alt="Bulk Request"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="md:w-1/2 p-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex flex-col justify-center">
+                  <h3 className="font-bold text-2xl mb-4">Request Bulk Products</h3>
+                  <p className="mb-6 text-blue-100">
+                    Get wholesale pricing and priority processing when ordering in large quantities. 
+                    Perfect for businesses, events, and organizations.
+                  </p>
+                  <ul className="mb-6 space-y-2">
+  <li className="flex items-center gap-2">
+    <CheckCircle className="w-5 h-5" />
+    <span>Volume discounts available</span>
+  </li>
+  <li className="flex items-center gap-2">
+    <CheckCircle className="w-5 h-5" />
+    <span>Dedicated account manager</span>
+  </li>
+  <li className="flex items-center gap-2">
+    <CheckCircle className="w-5 h-5" />
+    <span>Custom packaging options</span>
+  </li>
+</ul>
+                  <Button 
+                    className="mt-4 bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg font-bold w-full md:w-auto"
+                    size="lg"
+                  >
+                    Request Bulk Order <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
+
+      {/* Newsletter Section */}
+      
 
       {/* Product Details Modal */}
       <ProductDetailsDialog

@@ -105,10 +105,14 @@ export default function FactmanFeedback() {
   };
 
   const toggleProductExpansion = (productId) => {
-    setExpandedProducts(prev => ({
-      ...prev,
-      [productId]: !prev[productId]
-    }));
+    setExpandedProducts((prev) => {
+      // If already open, close it; otherwise, open only this one
+      if (prev[productId]) {
+        return {};
+      } else {
+        return { [productId]: true };
+      }
+    });
   };
 
   // Filter and search logic
@@ -255,16 +259,16 @@ export default function FactmanFeedback() {
       </div>
 
       <div className="rounded-md border overflow-x-auto">
-        <Table>
+        <Table className="text-lg"> {/* Increased base font size */}
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">Product</TableHead>
-              <TableHead>User</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Comment</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="w-[200px] text-lg">Product</TableHead>
+              <TableHead className="text-lg">User</TableHead>
+              <TableHead className="text-lg">Rating</TableHead>
+              <TableHead className="text-lg">Comment</TableHead>
+              <TableHead className="text-lg">Date</TableHead>
+              <TableHead className="text-lg">Status</TableHead>
+              <TableHead className="text-lg">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

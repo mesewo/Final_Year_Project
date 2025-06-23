@@ -3,6 +3,7 @@ import { DataTable } from "@/components/common/data-table";
 import { StatusBadge } from "@/components/common/status-badge";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { fetchAdminDashboardStats } from "@/store/admin/dashbard-slice";
 
 export default function AdminDashboard() {

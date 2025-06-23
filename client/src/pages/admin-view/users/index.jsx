@@ -21,6 +21,7 @@ export default function AdminUsers() {
   const dispatch = useDispatch();
   const { users, loading, error } = useSelector((state) => state.adminUsers);
   const { toast } = useToast();
+  const currentUser = useSelector((state) => state.auth?.user); // Get current logged-in user
   const [open, setOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState("all");
@@ -49,8 +50,15 @@ export default function AdminUsers() {
 
   const totalCount = users.length;
 
-  // Filter users based on selected role and search term
+  // Filter users based on selected role and search term, and exclude self
   const filteredUsers = users.filter(user => {
+    // Exclude current logged-in user (robust: check both _id and email)
+    if (
+      (currentUser && user._id && user._id === currentUser._id) ||
+      (currentUser && user.email && user.email === currentUser.email)
+    ) {
+      return false;
+    }
     const matchesRole = selectedRole === "all" || user.role === selectedRole;
     const matchesSearch = 
       user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,18 +104,18 @@ export default function AdminUsers() {
   };
 
   const columns = [
-    { header: "Username", accessor: "userName" },
-    { header: "Email", accessor: "email" },
+    { header: "Username", accessor: "userName", cell: ({ row }) => <span className="text-lg">{row.userName}</span> },
+    { header: "Email", accessor: "email", cell: ({ row }) => <span className="text-lg">{row.email}</span> },
     {
       header: "Role",
       accessor: "role",
-      cell: ({ row }) => <span className="capitalize">{row.role}</span>,
+      cell: ({ row }) => <span className="capitalize text-lg">{row.role}</span>,
     },
     {
       header: "Status",
       accessor: "isBlocked",
       cell: ({ row }) => (
-        <StatusBadge status={row.isBlocked ? "blocked" : "active"} />
+        <StatusBadge status={row.isBlocked ? "blocked" : "active"} className="text-lg" />
       ),
     },
     {
@@ -117,6 +125,7 @@ export default function AdminUsers() {
           <Button
             size="sm"
             variant="outline"
+            className="text-lg"
             onClick={() => {
               setEditingUser(row);
               setFormData({
@@ -133,6 +142,7 @@ export default function AdminUsers() {
           <Button
             size="sm"
             variant="destructive"
+            className="text-lg"
             onClick={() => {
               dispatch(deleteUser(row._id)).then((res) => {
                 if (!res.error) {
@@ -152,6 +162,7 @@ export default function AdminUsers() {
           <Button
             size="sm"
             variant={row.isBlocked ? "default" : "destructive"}
+            className="text-lg"
             onClick={() => handleToggleBlock(row)}
           >
             {row.isBlocked ? "Unblock" : "Block"}
@@ -162,15 +173,16 @@ export default function AdminUsers() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-lg"> {/* Increase base font size */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Users</h2>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => dispatch(fetchAllUsers())}>
+          <Button variant="outline" onClick={() => dispatch(fetchAllUsers())} className="text-lg">
             Refresh
           </Button>
           <Button
             variant="primary"
+            className="text-lg"
             onClick={() => {
               resetForm();
               setOpen(true);
@@ -187,46 +199,41 @@ export default function AdminUsers() {
         <div className="flex items-center gap-4">
           <span className="hidden sm:inline">Filter by Role:</span>
           <Select value={selectedRole} onValueChange={setSelectedRole}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] text-lg">
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                All Roles ({totalCount})
-              </SelectItem>
-              <SelectItem value="admin">
-                Admin ({roleCounts['admin'] || 0})
-              </SelectItem>
-              <SelectItem value="seller">
-                Seller ({roleCounts['seller'] || 0})
-              </SelectItem>
-              <SelectItem value="store_keeper">
-                Store Keeper ({roleCounts['store_keeper'] || 0})
-              </SelectItem>
-              <SelectItem value="accountant">
-                Accountant ({roleCounts['accountant'] || 0})
-              </SelectItem>
-              <SelectItem value="buyer">
-                Buyer ({roleCounts['buyer'] || 0})
-              </SelectItem>
-              <SelectItem value="factman">
-                Factory Manager ({roleCounts['factman'] || 0})
-              </SelectItem>
+            <SelectContent className="text-lg">
+              <SelectItem value="all">All Roles ({totalCount})</SelectItem>
+              <SelectItem value="admin">Admin ({roleCounts['admin'] || 0})</SelectItem>
+              <SelectItem value="seller">Seller ({roleCounts['seller'] || 0})</SelectItem>
+              <SelectItem value="store_keeper">Store Keeper ({roleCounts['store_keeper'] || 0})</SelectItem>
+              <SelectItem value="accountant">Accountant ({roleCounts['accountant'] || 0})</SelectItem>
+              <SelectItem value="buyer">Buyer ({roleCounts['buyer'] || 0})</SelectItem>
+              <SelectItem value="factman">Factory Manager ({roleCounts['factman'] || 0})</SelectItem>
             </SelectContent>
           </Select>
         </div>
         {/* Search input with icon */}
         <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             placeholder="Search users..."
-            className="pl-9"
+            className="pl-9 text-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        
+        {/* Reset Filters Button */}
+        <Button
+          variant="outline"
+          className="text-lg h-11"
+          onClick={() => {
+            setSelectedRole("all");
+            setSearchTerm("");
+          }}
+        >
+          Reset Filters
+        </Button>
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -236,6 +243,7 @@ export default function AdminUsers() {
           columns={columns} 
           data={filteredUsers} 
           loading={loading} 
+          className="text-lg"
         />
       </div>
 
@@ -249,6 +257,7 @@ export default function AdminUsers() {
           <div className="space-y-4">
             <Input
               placeholder="Username"
+              className="text-lg"
               value={formData.userName}
               onChange={(e) =>
                 setFormData({ ...formData, userName: e.target.value })
@@ -257,6 +266,7 @@ export default function AdminUsers() {
             <Input
               type="email"
               placeholder="Email"
+              className="text-lg"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -266,6 +276,7 @@ export default function AdminUsers() {
               <Input
                 type="password"
                 placeholder="Password"
+                className="text-lg"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
@@ -278,10 +289,10 @@ export default function AdminUsers() {
                 setFormData({ ...formData, role: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="text-lg">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="text-lg">
                 <SelectItem value="admin">Admin</SelectItem>
                 <SelectItem value="seller">Seller</SelectItem>
                 <SelectItem value="store_keeper">Store Keeper</SelectItem>
@@ -290,7 +301,7 @@ export default function AdminUsers() {
                 <SelectItem value="factman">Factory Manager</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleSubmit} variant="primary" className="w-full">
+            <Button onClick={handleSubmit} variant="primary" className="w-full text-lg">
               {editingUser ? "Update" : "Create"}
             </Button>
           </div>

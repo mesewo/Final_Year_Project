@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Cart from "../server/models/Cart.js";
-import StoreProduct from "../server/models/StoreProduct.js";
+import Cart from "../models/Cart.js";
+import StoreProduct from "../models/StoreProduct.js";
 
 const MONGO_URI = "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Change this
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Order from "../server/models/Order.js";
-import StoreProduct from "../server/models/StoreProduct.js"; // You may need to create this model if not present
+import Order from "../models/Order.js";
+import StoreProduct from "../models/StoreProduct.js"; // You may need to create this model if not present
 
 const MONGO_URI = "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // <-- Change this
 

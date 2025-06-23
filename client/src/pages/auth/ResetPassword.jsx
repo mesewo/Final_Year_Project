@@ -1,33 +1,43 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Link, useNavigate } from "react-router-dom";
-import { forgotPassword } from "@/store/auth-slice";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { resetPassword } from "@/store/auth-slice";
 import { useDispatch } from "react-redux";
 
-function ForgotPassword() {
-  const [email, setEmail] = useState("");
+function ResetPassword() {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { token } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Forgot password submitted:", email);
     
-    dispatch(forgotPassword({ email })).then((data) => {
+    if (password !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    dispatch(resetPassword({ token, password })).then((data) => {
       const { payload } = data;
       
       if (payload?.success) {
         toast({
-          title: "Email sent",
-          description: "If this email exists, a password reset link has been sent",
+          title: "Password reset",
+          description: "Your password has been updated successfully",
           variant: "default",
         });
         navigate("/auth/login");
       } else {
         toast({
           title: "Error",
-          description: payload?.message || "Error sending password reset email",
+          description: payload?.message || "Error resetting password",
           variant: "destructive",
         });
       }
@@ -38,7 +48,7 @@ function ForgotPassword() {
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Forgot Password
+          Reset Password
         </h1>
         <p className="mt-2">
           Remember your password?{" "}
@@ -53,17 +63,31 @@ function ForgotPassword() {
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium">
-            Email address
+          <label htmlFor="password" className="block text-sm font-medium">
+            New Password
           </label>
           <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
+            id="password"
+            name="password"
+            type="password"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium">
+            Confirm New Password
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
@@ -72,11 +96,11 @@ function ForgotPassword() {
           type="submit"
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
-          Send Reset Link
+          Reset Password
         </button>
       </form>
     </div>
   );
 }
 
-export default ForgotPassword;
+export default ResetPassword;

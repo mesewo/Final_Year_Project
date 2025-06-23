@@ -1,6 +1,6 @@
 // add-stores.js
 import mongoose from "mongoose";
-import Store from "./models/Store.js"; // Adjust the path as needed
+import Store from "../models/Store.js"; // Adjust the path as needed
 
 // 1. Replace with your MongoDB connection string
 const MONGO_URI = "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
