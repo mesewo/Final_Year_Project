@@ -16,6 +16,7 @@ import {
   getAllOrdersForAdmin,
   getOrderDetailsForAdmin,
   resetOrderDetails,
+  updateOrderStatus,
 } from "@/store/admin/orders-slice";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
@@ -251,30 +252,48 @@ function AdminOrdersView() {
                     </Badge>
                   </TableCell>
                   <TableCell>Br {orderItem.totalAmount.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right flex flex-row gap-2 items-center">
+                    {/* Status Change Dropdown */}
+                    <Select
+                      value={orderItem.orderStatus}
+                      onValueChange={(newStatus) => {
+                        dispatch(updateOrderStatus({ id: orderItem._id, orderStatus: newStatus }))
+                          .then(() => dispatch(getAllOrdersForAdmin()));
+                      }}
+                      disabled={loading}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {/* View Details Button */}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleFetchOrderDetails(orderItem._id)}
+                          onClick={() => {
+                            handleFetchOrderDetails(orderItem._id);
+                            setOpenDetailsDialog(true);
+                          }}
                           disabled={loading}
                         >
                           View Details
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="w-full max-w-[95vw] h-[90vh] max-h-[90vh] overflow-hidden">
-                        <AdminOrderDetailsView orderDetails={orderDetails} />
-                        <div className="mt-4 flex justify-end">
-                          <Button 
-                            onClick={() => {
-                              setOpenDetailsDialog(false);
-                              dispatch(resetOrderDetails());
-                            }}
-                          >
-                            Close
-                          </Button>
-                        </div>
+                      <DialogContent>
+                        {orderDetails && orderDetails._id === orderItem._id ? (
+                          <AdminOrderDetailsView orderDetails={orderDetails} />
+                        ) : (
+                          <div className="p-8 text-center">Loading...</div>
+                        )}
                       </DialogContent>
                     </Dialog>
                   </TableCell>

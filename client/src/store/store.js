@@ -43,9 +43,10 @@ import StorekeeperDashboardSlice from "./store-keeper/dashboard-slice";
 import StoreKeeperStoreSlice from "./store-keeper/store-slice";
 import storeKeeperReportReducer from "./store-keeper/report-slice";
 
-import accountantReportsSlice from "./accountant/reports-slice";
-import accountantFinanceSlice from "./accountant/finance-slice";
-import accountantTransactionsReducer from "./accountant/transaction-slice";
+// import accountantReportsSlice from "./accountant/reports-slice";
+// import accountantFinanceSlice from "./accountant/finance-slice";
+// import accountantTransactionsReducer from "./accountant/transaction-slice";
+import accountantReducer from "@/store/admin/accountant-slice";
 
 import commonFeatureSlice from "./common-slice";
 import commonFeedbackSlice from "./common-slice/feedback-slice";
@@ -107,9 +108,10 @@ const store = configureStore({
     storeKeeperReports: storeKeeperReportReducer,
 
     // Accountant
-    accountantReports: accountantReportsSlice,
-    accountantFinance: accountantFinanceSlice,
-    accountantTransactions: accountantTransactionsReducer,
+    // // accountantReports: accountantReportsSlice,
+    // // accountantFinance: accountantFinanceSlice,
+    // // accountantTransactions: accountantTransactionsReducer,
+    accountant: accountantReducer,
 
     // Common
     commonFeature: commonFeatureSlice,

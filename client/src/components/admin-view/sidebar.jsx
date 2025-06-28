@@ -6,7 +6,8 @@ import {
   Users,
   FileText,
   Settings, 
-  MessageSquare
+  MessageSquare,
+  DollarSign
 } from "lucide-react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
@@ -54,6 +55,12 @@ const adminSidebarMenuItems = [
     label: "Settings",
     path: "/admin/settings",
     icon: <Settings className="w-5 h-5" />,
+  },
+  {
+    id: "accountant",
+    label: "Accountant",
+    path: "/admin/accountant",
+    icon: <DollarSign className="w-5 h-5" />,
   },
 ];
 

@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import AdminOrderDetailsView from "./order-details";
+import FactmanOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllOrdersForAdmin,
@@ -251,13 +251,39 @@ function factmanorderView() {
                     </Badge>
                   </TableCell>
                   <TableCell>Br {orderItem.totalAmount.toFixed(2)}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right flex flex-row gap-2 items-center">
+                    {/* Status Change Dropdown */}
+                    <Select
+                      value={orderItem.orderStatus}
+                      onValueChange={(newStatus) => {
+                        dispatch(updateOrderStatus({ id: orderItem._id, orderStatus: newStatus }))
+                          .then(() => handleRefresh());
+                      }}
+                      disabled={loading}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="inProcess">In Process</SelectItem>
+                        <SelectItem value="inShipping">In Shipping</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {/* View Details Button */}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleFetchOrderDetails(orderItem._id)}
+                          onClick={() => {
+                            handleFetchOrderDetails(orderItem._id);
+                            setOpenDetailsDialog(true);
+                          }}
                           disabled={loading}
                         >
                           View Details
@@ -265,7 +291,11 @@ function factmanorderView() {
                       </DialogTrigger>
                       <DialogContent size="xl">
                         <div className="p-4 max-h-[75vh] overflow-y-auto">
-                          <AdminOrderDetailsView orderDetails={orderDetails} />
+                          {orderDetails && orderDetails._id === orderItem._id ? (
+                            <FactmanOrderDetailsView orderDetails={orderDetails} />
+                          ) : (
+                            <div className="p-8 text-center">Loading...</div>
+                          )}
                           <div className="mt-4 flex justify-end">
                             <Button 
                               onClick={() => {

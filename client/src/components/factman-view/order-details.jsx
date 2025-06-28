@@ -1,44 +1,10 @@
-import { useState } from "react";
-import CommonForm from "../common/form";
+import { useSelector } from "react-redux";
 import { DialogContent, DialogTitle } from "../ui/dialog";
-import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllOrdersForAdmin,
-  getOrderDetailsForAdmin,
-  updateOrderStatus,
-} from "@/store/admin/orders-slice";
-import { useToast } from "../ui/use-toast";
-
-const initialFormData = {
-  status: "",
-};
 
 function FactmanOrderDetailsView({ orderDetails }) {
-  const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-  const { toast } = useToast();
-
-  function handleUpdateStatus(event) {
-    event.preventDefault();
-    const { status } = formData;
-
-    dispatch(
-      updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(getOrderDetailsForAdmin(orderDetails?._id));
-        dispatch(getAllOrdersForAdmin());
-        setFormData(initialFormData);
-        toast({
-          title: data?.payload?.message,
-        });
-      }
-    });
-  }
 
   // Badge color logic
   const getStatusBadgeColor = (status) => {
@@ -63,31 +29,33 @@ function FactmanOrderDetailsView({ orderDetails }) {
     <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-0">
       <div className="p-6">
         <DialogTitle>Order Details</DialogTitle>
-        <div className="grid gap-6">
-          <div className="grid gap-2">
-            <div className="flex mt-6 items-center justify-between">
-              <p className="font-medium">Order ID</p>
-              <Label>{orderDetails?._id}</Label>
-            </div>
-            <div className="flex mt-2 items-center justify-between">
-              <p className="font-medium">Order Date</p>
-              <Label>{orderDetails?.orderDate?.split("T")[0]}</Label>
-            </div>
-            <div className="flex mt-2 items-center justify-between">
-              <p className="font-medium">Order Price</p>
-              <Label>Br{orderDetails?.totalAmount}</Label>
-            </div>
-            <div className="flex mt-2 items-center justify-between">
-              <p className="font-medium">Payment method</p>
-              <Label>{orderDetails?.paymentMethod}</Label>
-            </div>
-            <div className="flex mt-2 items-center justify-between">
-              <p className="font-medium">Payment Status</p>
-              <Label>{orderDetails?.paymentStatus}</Label>
-            </div>
-            <div className="flex mt-2 items-center justify-between">
-              <p className="font-medium">Order Status</p>
-              <Label>
+        <Separator className="my-4" />
+        {/* Order Info Table */}
+        <table className="min-w-full mb-6">
+          <tbody>
+            <tr>
+              <td className="font-medium pr-4 py-2">Order ID</td>
+              <td>{orderDetails?._id}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Order Date</td>
+              <td>{orderDetails?.orderDate?.split("T")[0]}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Order Price</td>
+              <td>Br{orderDetails?.totalAmount}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Payment Method</td>
+              <td>{orderDetails?.paymentMethod}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Payment Status</td>
+              <td>{orderDetails?.paymentStatus}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Order Status</td>
+              <td>
                 <Badge
                   className={`py-1 px-3 capitalize ${getStatusBadgeColor(
                     orderDetails?.orderStatus
@@ -95,69 +63,68 @@ function FactmanOrderDetailsView({ orderDetails }) {
                 >
                   {orderDetails?.orderStatus}
                 </Badge>
-              </Label>
-            </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <Separator className="my-4" />
+        {/* Order Items Table */}
+        <div className="font-medium mb-2">Order Items</div>
+        {orderDetails?.orderItems && orderDetails?.orderItems.length > 0 ? (
+          <table className="min-w-full border mb-6">
+            <thead>
+              <tr>
+                <th className="text-left px-2 py-1 border">Title</th>
+                <th className="text-left px-2 py-1 border">Quantity</th>
+                <th className="text-left px-2 py-1 border">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderDetails.orderItems.map((item, idx) => (
+                <tr key={item._id || idx}>
+                  <td className="border px-2 py-1">{item.title}</td>
+                  <td className="border px-2 py-1">{item.quantity}</td>
+                  <td className="border px-2 py-1">Br{item.price}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-gray-500 text-sm mb-6">
+            No items in this order.
           </div>
-          <Separator />
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <div className="font-medium">Order Details</div>
-              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0 ? (
-                <ul className="grid gap-3">
-                  {orderDetails.cartItems.map((item, idx) => (
-                    <li
-                      key={item._id || idx}
-                      className="flex items-center justify-between"
-                    >
-                      <span>Title: {item.title}</span>
-                      <span>Quantity: {item.quantity}</span>
-                      <span>Price: Br{item.price}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500 text-sm">
-                  No items in this order.
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <div className="font-medium">Shipping Info</div>
-              <div className="grid gap-0.5 text-muted-foreground">
-                <span>{user.userName}</span>
-                <span>{orderDetails?.addressInfo?.address}</span>
-                <span>{orderDetails?.addressInfo?.city}</span>
-                <span>{orderDetails?.addressInfo?.pincode}</span>
-                <span>{orderDetails?.addressInfo?.phone}</span>
-                <span>{orderDetails?.addressInfo?.notes}</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <CommonForm
-              formControls={[
-                {
-                  label: "Order Status",
-                  name: "status",
-                  componentType: "select",
-                  options: [
-                    { id: "pending", label: "Pending" },
-                    { id: "inProcess", label: "In Process" },
-                    { id: "inShipping", label: "In Shipping" },
-                    { id: "delivered", label: "Delivered" },
-                    { id: "rejected", label: "Rejected" },
-                  ],
-                },
-              ]}
-              formData={formData}
-              setFormData={setFormData}
-              buttonText={"Update Order Status"}
-              onSubmit={handleUpdateStatus}
-            />
-          </div>
-        </div>
+        )}
+        <Separator className="my-4" />
+        {/* Shipping Info Table */}
+        <div className="font-medium mb-2">Shipping Info</div>
+        <table className="min-w-full">
+          <tbody>
+            <tr>
+              <td className="font-medium pr-4 py-2">Name</td>
+              <td>{user.userName}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Address</td>
+              <td>{orderDetails?.addressInfo?.address}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">City</td>
+              <td>{orderDetails?.addressInfo?.city}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Pincode</td>
+              <td>{orderDetails?.addressInfo?.pincode}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Phone</td>
+              <td>{orderDetails?.addressInfo?.phone}</td>
+            </tr>
+            <tr>
+              <td className="font-medium pr-4 py-2">Notes</td>
+              <td>{orderDetails?.addressInfo?.notes}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </DialogContent>
   );

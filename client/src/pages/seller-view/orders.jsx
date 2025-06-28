@@ -23,6 +23,9 @@ export default function SellerOrders() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannedOrder, setScannedOrder] = useState(null);
 
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
+
   const { toast } = useToast();
 
   const handleScanOrderId = async (orderId) => {
@@ -48,6 +51,15 @@ export default function SellerOrders() {
     }
   };
 
+  const handleStatusChange = (orderId, newStatus, currentStatus) => {
+    // Prevent changing status if already delivered (disable)
+    if (currentStatus === "delivered" && newStatus !== "delivered") {
+      setPendingStatusChange({ orderId, newStatus });
+      setConfirmDialogOpen(true);
+      return;
+    }
+    dispatch(updateOrderStatus({ orderId, status: newStatus }));
+  };
 
   // Filters
   const [search, setSearch] = useState("");
@@ -65,7 +77,7 @@ export default function SellerOrders() {
     { value: "processing", label: "Processing" },
     { value: "shipped", label: "Shipped" },
     { value: "delivered", label: "Delivered" },
-    { value: "cancelled", label: "Cancelled" },
+    // { value: "cancelled", label: "Cancelled" },
   ];
 
   const statusVariant = {
@@ -73,11 +85,7 @@ export default function SellerOrders() {
     processing: "info",
     shipped: "warning",
     delivered: "success",
-    cancelled: "destructive"
-  };
-
-  const handleStatusChange = (orderId, newStatus) => {
-    dispatch(updateOrderStatus({ orderId, status: newStatus }));
+    // cancelled: "destructive"
   };
 
   // Always use an array for mapping, and sort by newest first
@@ -255,7 +263,8 @@ export default function SellerOrders() {
                         {statusOptions.map((option) => (
                           <DropdownMenuItem
                             key={option.value}
-                            onClick={() => handleStatusChange(order._id, option.value)}
+                            onClick={() => handleStatusChange(order._id, option.value, order.status || order.orderStatus)}
+                            disabled={order.status === "delivered" && option.value !== "delivered"}
                           >
                             {option.label}
                           </DropdownMenuItem>
@@ -322,6 +331,38 @@ export default function SellerOrders() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Status Change Dialog */}
+      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <DialogContent className="p-6">
+          <h2 className="text-lg font-semibold mb-4">Confirm Status Change</h2>
+          <p className="text-sm text-gray-700 mb-4">
+            This order has already been delivered. Changing the status will require confirmation.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (pendingStatusChange) {
+                  dispatch(updateOrderStatus({
+                    orderId: pendingStatusChange.orderId,
+                    status: pendingStatusChange.newStatus
+                  }));
+                  setPendingStatusChange(null);
+                }
+                setConfirmDialogOpen(false);
+              }}
+            >
+              Confirm
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

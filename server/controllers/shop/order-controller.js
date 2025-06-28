@@ -11,10 +11,10 @@ export const createOrder = async (req, res) => {
   try {
     const { userId, cartId, cartItems, addressInfo, paymentMethod, isBulk } = req.body;
 
-    // Group cartItems by storeId only
+    // Group cartItems by storeId and sellerId
     const ordersMap = {};
     for (const item of cartItems) {
-      const key = `${item.storeId}`;
+      const key = `${item.storeId}_${item.sellerId}`;
       if (!ordersMap[key]) ordersMap[key] = [];
       ordersMap[key].push(item);
     }
@@ -22,12 +22,12 @@ export const createOrder = async (req, res) => {
     const createdOrders = [];
 
     for (const [key, items] of Object.entries(ordersMap)) {
-      const { storeId } = items[0];
+      const { storeId, sellerId } = items[0];
       const store = await Store.findById(storeId);
       if (!store || !store.assignedSellers || store.assignedSellers.length === 0) {
         return res.status(400).json({ message: "No seller assigned to this store" });
       }
-      const sellerId = store.assignedSellers[0]; // assign to first seller
+      // const sellerId = store.assignedSellers[0]; // assign to first seller
 
       const orderItems = items.map((item) => ({
         productId: item.productId,

@@ -15,6 +15,7 @@ import adminUsersRouter from "./routes/admin/users-routes.js";
 import adminReportsRouter from "./routes/admin/reports-routes.js";
 import adminFeedbackRouter from "./routes/admin/feedback-routes.js";
 import adminSettingsRouter from "./routes/admin/settings-routes.js";
+import accountantRoutes from "./routes/admin/accountant-routes.js";
 
 import shopProductsRouter from "./routes/shop/products-routes.js";
 import shopCartRouter from "./routes/shop/cart-routes.js";
@@ -95,6 +96,7 @@ app.use("/api/admin/users", adminUsersRouter);
 app.use("/api/admin/reports", adminReportsRouter);
 app.use("/api/admin/feedback", adminFeedbackRouter);
 app.use("/api/admin/settings", adminSettingsRouter);
+app.use("/api/admin/accountant", accountantRoutes);
 
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
@@ -132,7 +134,7 @@ app.use("/api/storekeeper", storekeeperDashboardRoutes);
 app.use("/api/product-requests", productRequestRoutes);
 app.use("/api/storekeeper/reports", storeKeeperReportRoutes);
 app.use("/api/notifications", notificationsRouter);
-app.use("/api/accountant", accountantRouter);
+// app.use("/api/accountant", accountantRouter);
 
 app.use("/api/payment", paymentroute);
 app.use("/api/payment/verify-qr", verifyQRRoutes);

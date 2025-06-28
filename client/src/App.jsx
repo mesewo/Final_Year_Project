@@ -10,7 +10,7 @@ import FactmanLayout from "./components/factman-view/layout";
 import ShoppingLayout from "./components/shopping-view/layout";
 import StoreKeeperLayout from "./components/store-keeper-view/layout";
 import SellerLayout from "./components/seller-view/layout";
-import AccountantLayout from "./components/accountant-view/Layout";
+// import AccountantLayout from "./components/accountant-view/Layout";
 
 // Auth pages
 import AuthLogin from "./pages/auth/login";
@@ -26,6 +26,7 @@ import AdminFeedback from "./pages/admin-view/feedback";
 import AdminReports from "./pages/admin-view/reports";
 import SystemSettings from "./pages/admin-view/settings";
 import AdminUsers from "./pages/admin-view/users";
+import AccountantDashboard from "@/pages/admin-view/accountant";
 
 // Factman pages
 import FactmanProducts from "./pages/factman-view/products";
@@ -45,10 +46,10 @@ import StorekeeperProductRequests from "./pages/store-keeper-view/product-reques
 import StoreKeeperReports from "./pages/store-keeper-view/reports";
 
 // Accountant pages
-import AccountantDashboard from "./pages/accountant-view/dashboard";
-import AccountantFinances from "./pages/accountant-view/finances";
-import AccountantReports from "./pages/accountant-view/reports";
-import AccountantTransaction from "./pages/accountant-view/Transaction";
+// // import AccountantDashboard from "./pages/accountant-view/dashboard";
+// // import AccountantFinances from "./pages/accountant-view/finances";
+// // import AccountantReports from "./pages/accountant-view/reports";
+// // import AccountantTransaction from "./pages/accountant-view/Transaction";
 
 // Shopping pages
 import ShoppingHome from "./pages/shopping-view/home";
@@ -80,6 +81,7 @@ import SellerRequestProducts from "./pages/seller-view/product-request";
 // Redux
 import { checkAuth } from "./store/auth-slice";
 import BulkRequest from "./pages/shopping-view/BulkRequestPage";
+import Farewell from "@/pages/farewell";
 
 function App() {
   const dispatch = useDispatch();
@@ -137,6 +139,7 @@ function App() {
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="/admin/accountant" element={<AccountantDashboard />} />
         </Route>
 
         {/* Factman Routes */}
@@ -205,7 +208,7 @@ function App() {
         </Route>
 
         {/* Accountant Routes */}
-        <Route
+        {/* <Route
           path="/accountant"
           element={
             <CheckAuth
@@ -216,12 +219,12 @@ function App() {
               <AccountantLayout />
             </CheckAuth>
           }
-        >
-          <Route path="dashboard" element={<AccountantDashboard />} />
-          <Route path="finance" element={<AccountantFinances />} />
-          <Route path="transactions" element={<AccountantTransaction />} />
-          <Route path="reports" element={<AccountantReports />} />
-        </Route>
+        > */}
+          {/* <Route path="dashboard" element={<AccountantDashboard />} /> */}
+          {/* <Route path="finance" element={<AccountantFinances />} /> */}
+          {/* <Route path="transactions" element={<AccountantTransaction />} /> */}
+          {/* <Route path="reports" element={<AccountantReports />} /> */}
+        {/* </Route> */}
 
         {/* Shopping Routes */}
         <Route
@@ -248,6 +251,7 @@ function App() {
 
         {/* Other Pages */}
         <Route path="/unauth-page" element={<UnauthPage />} />
+        <Route path="/farewell" element={<Farewell />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

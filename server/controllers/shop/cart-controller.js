@@ -4,25 +4,25 @@ import StoreProduct from "../../models/StoreProduct.js";
 // Add to Cart
 export const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity, isBulk } = req.body;
+    const { userId, productId, quantity, isBulk, storeId } = req.body;
 
-    if (!userId || !productId || quantity <= 0) {
+    if (!userId || !productId || !storeId || quantity <= 0) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided!",
       });
     }
 
-     const storeProduct = await StoreProduct.findOne({ product: productId });
-      if (!storeProduct) {
-        return res.status(404).json({
-          success: false,
-          message: "StoreProduct mapping not found for this product",
-        });
-      }
+    // Use both productId and storeId to find the correct StoreProduct
+    const storeProduct = await StoreProduct.findOne({ product: productId, store: storeId });
+    if (!storeProduct) {
+      return res.status(404).json({
+        success: false,
+        message: "StoreProduct mapping not found for this product in this store",
+      });
+    }
 
-      const storeId = storeProduct.store;
-      const sellerId = storeProduct.seller;
+    const sellerId = storeProduct.seller;
 
 
     if (!storeId || !sellerId) {

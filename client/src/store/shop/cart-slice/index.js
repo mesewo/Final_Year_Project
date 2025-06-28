@@ -9,7 +9,7 @@ const initialState = {
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity, isBulk }, thunkAPI) => {
+  async ({ userId, productId, quantity, isBulk, storeId, sellerId }, thunkAPI) => {
     const response = await axios.post(
       "http://localhost:5000/api/shop/cart/add",
       {
@@ -17,6 +17,8 @@ export const addToCart = createAsyncThunk(
         productId,
         quantity,
         isBulk,
+        storeId,   // <-- add this
+        sellerId,  // <-- add this (optional, backend can get from StoreProduct)
       }
     );
 

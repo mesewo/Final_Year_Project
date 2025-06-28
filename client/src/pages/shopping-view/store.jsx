@@ -77,11 +77,19 @@ function StorePage() {
   }
 
   function handleAddtoCart(getCurrentProductId) {
+    // Find the product object from the current store's products
+    const productObj = currentStoreProducts.find(
+      (p) => p._id === getCurrentProductId || p.id === getCurrentProductId
+    );
+    if (!productObj) return;
+
     dispatch(
       addToCart({
         userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
+        sellerId: productObj.seller || productObj.sellerId, // <-- Attach seller
+        storeId: productObj.store || productObj.storeId,     // <-- Attach store
       })
     ).then((data) => {
       if (data?.payload?.success) {

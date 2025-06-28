@@ -110,7 +110,7 @@ export default function SecuritySection() {
         variant: "destructive",
       });
       await dispatch(logoutUser()); // <-- log out the user
-      navigate("/auth/login", { replace: true }); // <-- redirect to login
+      navigate("/farewell", { replace: true }); // <-- update this line
     } catch (err) {
       toast({ title: "Failed to delete account.", variant: "destructive" });
     }

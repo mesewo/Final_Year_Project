@@ -19,6 +19,8 @@ const Orders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState(null); // {orderId, newStatus}
 
   useEffect(() => {
     if (user?.id) {
