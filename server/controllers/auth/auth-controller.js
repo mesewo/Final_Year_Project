@@ -393,7 +393,7 @@ export const loginUser = async (req, res) => {
 export const googleLogin = async (req, res) => {
   try {
     const { email, name, googleId } = req.body;
-    console.log("Google login payload:", req.body);
+    // console.log("Google login payload:", req.body);
 
     // Validate required fields
     if (!email || !googleId) {

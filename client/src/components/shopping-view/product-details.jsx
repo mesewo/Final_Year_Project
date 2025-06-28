@@ -135,7 +135,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
     const userOrder = userOrders?.find(order => {
       const items = order?.orderItems?.length ? order.orderItems : order?.cartItems || [];
       return (
-        ["delivered", "completed"].includes(order.orderStatus) &&
+        ["delivered", "completed", "approved", "confirmed"].includes(order.orderStatus) &&
         Array.isArray(items) &&
         items.some(item => String(item.productId) === String(productDetails?._id))
       );

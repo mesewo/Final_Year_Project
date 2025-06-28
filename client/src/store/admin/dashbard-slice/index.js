@@ -43,9 +43,13 @@ const dashboardSlice = createSlice({
         state.loading = false;
         state.stats = {
           totalProducts: action.payload?.stats?.totalProducts || 0,
+          productChange: action.payload?.stats?.productChange || 0,
           activeUsers: action.payload?.stats?.activeUsers || 0,
+          userChange: action.payload?.stats?.userChange || 0,
           pendingOrders: action.payload?.stats?.pendingOrders || 0,
+          pendingOrdersChange: action.payload?.stats?.pendingOrdersChange || 0,
           monthlyRevenue: action.payload?.stats?.monthlyRevenue || 0,
+          revenueChange: action.payload?.stats?.revenueChange || 0,
         };
         state.recentOrders = action.payload?.recentOrders || [];
       })

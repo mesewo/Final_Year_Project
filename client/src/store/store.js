@@ -20,6 +20,8 @@ import factmanDashboardSlice from "./factman/dashboard-slice";
 
 
 import shopProductsSlice from "./shop/products-slice";
+import userSlice from "./shop/user-slice";
+import storeSlice from "./shop/store-slice";
 import shopCartSlice from "./shop/cart-slice";
 import bulkCartReducer from "./shop/bulkcart-slice";
 import shopAddressSlice from "./shop/address-slice";
@@ -27,6 +29,9 @@ import shoppingOrderSlice from "./shop/order-slice";
 import shopSearchSlice from "./shop/search-slice";
 // import shopReviewSlice from "./shop/review-slice";
 import shopFeedbackSlice from "./shop/feedback-slice";
+import storesReducer from "./shop/store-slice";
+import { fetchAllStores } from "@/store/shop/store-slice";
+
 
 import sellerProductsSlice from "./seller/products-slice";
 import sellerOrdersSlice from "./seller/orders-slice";
@@ -78,6 +83,7 @@ const store = configureStore({
 
     // Buyer (shop)
     shopProducts: shopProductsSlice,
+    store: storeSlice,
     shopCart: shopCartSlice,
     bulkCart: bulkCartReducer,
     shopAddress: shopAddressSlice,
@@ -85,6 +91,8 @@ const store = configureStore({
     shopSearch: shopSearchSlice,
     // shopReview: shopReviewSlice,
     shopFeedback: shopFeedbackSlice,
+    stores: storesReducer,
+    user: userSlice,
 
     // Seller
     sellerProducts: sellerProductsSlice,

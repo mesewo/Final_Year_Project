@@ -4,16 +4,17 @@ import Product from "../../models/Product.js";
 import Notification from "../../models/Notification.js";
 import StoreProduct from "../../models/StoreProduct.js";
 import User from "../../models/User.js";
+import Store from "../../models/Store.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const createOrder = async (req, res) => {
   try {
     const { userId, cartId, cartItems, addressInfo, paymentMethod, isBulk } = req.body;
 
-    // Group cartItems by sellerId and storeId
+    // Group cartItems by storeId only
     const ordersMap = {};
     for (const item of cartItems) {
-      const key = `${item.sellerId}_${item.storeId}`;
+      const key = `${item.storeId}`;
       if (!ordersMap[key]) ordersMap[key] = [];
       ordersMap[key].push(item);
     }
@@ -21,7 +22,13 @@ export const createOrder = async (req, res) => {
     const createdOrders = [];
 
     for (const [key, items] of Object.entries(ordersMap)) {
-      const { sellerId, storeId } = items[0];
+      const { storeId } = items[0];
+      const store = await Store.findById(storeId);
+      if (!store || !store.assignedSellers || store.assignedSellers.length === 0) {
+        return res.status(400).json({ message: "No seller assigned to this store" });
+      }
+      const sellerId = store.assignedSellers[0]; // assign to first seller
+
       const orderItems = items.map((item) => ({
         productId: item.productId,
         title: item.title,
@@ -62,11 +69,10 @@ export const createOrder = async (req, res) => {
         paymentId: "",
         payerId: "",
         store: storeId,
-        seller: sellerId,
+        seller: sellerId, // always from store.assignedSellers
         tx_ref,
         type: orderType,
         storekeeper: storekeeperId,
-        // isQRVerified: false,
       });
 
       await order.save();

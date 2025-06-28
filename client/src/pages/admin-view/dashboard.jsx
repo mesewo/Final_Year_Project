@@ -9,16 +9,44 @@ import { fetchAdminDashboardStats } from "@/store/admin/dashbard-slice";
 export default function AdminDashboard() {
   const dispatch = useDispatch();
   const { stats, recentOrders, loading } = useSelector(state => state.adminDashboard);
-  console.log(recentOrders);
+
   useEffect(() => {
     dispatch(fetchAdminDashboardStats());
   }, [dispatch]);
 
   const statCards = [
-    { title: "Total Products", value: stats?.totalProducts, change: "+12%" },
-    { title: "Active Users", value: stats?.activeUsers, change: "+5%" },
-    { title: "Pending Orders", value: stats?.pendingOrders, change: "-3%" },
-    { title: "Monthly Revenue", value: `Br${stats?.monthlyRevenue}`, change: "+18%" },
+    {
+      title: "Total Products",
+      value: stats?.totalProducts,
+      change: stats?.productChange
+        ? `${stats.productChange > 0 ? "+" : ""}${stats.productChange.toFixed(2)}%`
+        : "0%",
+      path: "/admin/products"
+    },
+    {
+      title: "Active Users",
+      value: stats?.activeUsers,
+      change: stats?.userChange
+        ? `${stats.userChange > 0 ? "+" : ""}${stats.userChange.toFixed(2)}%`
+        : "0%",
+      path: "/admin/users"
+    },
+    {
+      title: "Pending Orders",
+      value: stats?.pendingOrders,
+      change: stats?.pendingOrdersChange
+        ? `${stats.pendingOrdersChange > 0 ? "+" : ""}${stats.pendingOrdersChange.toFixed(2)}%`
+        : "0%",
+      path: "/admin/orders"
+    },
+    {
+      title: "Monthly Revenue",
+      value: `Br${stats?.monthlyRevenue}`,
+      change: stats?.revenueChange
+        ? `${stats.revenueChange > 0 ? "+" : ""}${stats.revenueChange.toFixed(2)}%`
+        : "0%",
+      path: "/admin/reports"
+    },
   ];
 
   const recentOrdersColumns = [
@@ -35,7 +63,6 @@ export default function AdminDashboard() {
           : row.orderStatus === "rejected"
           ? "cancelled"
           : row.orderStatus;
-
         return <StatusBadge status={status} />;
       },
     },
@@ -43,19 +70,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* <h1 className="text-2xl font-bold">Admin Dashboard</h1> */}
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statCards.map((card, index) => (
-          <Card key={index}>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-              <div className="text-sm text-muted-foreground">{card.change}</div>
-            </CardContent>
-          </Card>
+          <Link to={card.path} key={index} className="hover:opacity-80 transition">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{card.value}</div>
+                <div className="text-sm text-muted-foreground">{card.change}</div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

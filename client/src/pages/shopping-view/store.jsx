@@ -3,50 +3,32 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { fetchPublicStoreProducts, fetchProductDetails } from "@/store/shop/products-slice";
+import { fetchStoreById } from "@/store/shop/store-slice"; // <-- import the thunk
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { useToast } from "@/components/ui/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 
-// Example categories, replace with your actual categories
 const categories = [
   { id: "men", label: "Men" },
   { id: "women", label: "Women" },
   { id: "kids", label: "Kids" },
 ];
 
-// Store images and data
-const storeData = {
-  "682ccdd83de974f948889f1f": {
-    name: "Maraki",
-    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
-    description: "Premium fashion for the modern individual"
-  },
-  "682ccde53de974f948889f23": {
-    name: "Azezo",
-    image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
-    description: "Trendy styles for every occasion"
-  },
-  default: {
-    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=80",
-    name: "Our Store",
-    description: "Quality products for everyone"
-  }
-};
-
 function StorePage() {
-  const { storeId } = useParams(); 
+  const { storeId } = useParams();
   const dispatch = useDispatch();
   const { storeProducts, isLoading, productDetails } = useSelector((state) => state.shopProducts);
+  const { storeInfo, status: storeStatus } = useSelector((state) => state.store);
   const { user } = useSelector((state) => state.auth);
   const { toast } = useToast();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
-  // Sidebar filter state
   const [filters, setFilters] = useState({ category: [] });
-  const [searchValue, setSearchValue] = useState(""); // Search state
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     if (storeId) {
+      dispatch(fetchStoreById(storeId));
       dispatch(fetchPublicStoreProducts(storeId));
     }
   }, [dispatch, storeId]);
@@ -63,9 +45,6 @@ function StorePage() {
       return true;
     });
   }
-
-  // Get current store data
-  const currentStore = storeData[storeId] || storeData.default;
 
   // Filter products for this store
   let currentStoreProducts = uniqueById(
@@ -112,7 +91,6 @@ function StorePage() {
     });
   }
 
-  // Sidebar filter UI
   function SidebarFilters() {
     return (
       <div className="w-64 pr-6">
@@ -141,20 +119,27 @@ function StorePage() {
     );
   }
 
+  if (storeStatus === "loading") {
+    return <div className="p-8 text-center">Loading store...</div>;
+  }
+  if (storeStatus === "failed" || !storeInfo) {
+    return <div className="p-8 text-center text-red-600">Store not found.</div>;
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Store Banner */}
         <div className="relative rounded-xl overflow-hidden mb-8 h-64">
           <img 
-            src={currentStore.image} 
-            alt={currentStore.name} 
+            src={storeInfo.image || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"} 
+            alt={storeInfo.name} 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
             <div>
-              <h1 className="text-4xl font-bold text-white">{currentStore.name}</h1>
-              <p className="text-gray-200 mt-2">{currentStore.description}</p>
+              <h1 className="text-4xl font-bold text-white">{storeInfo.name}</h1>
+              <p className="text-gray-200 mt-2">{storeInfo.description}</p>
             </div>
           </div>
         </div>

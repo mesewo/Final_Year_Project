@@ -500,6 +500,7 @@ export default function SellerProductRequest() {
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
+               {/* <opition value="delivered">Delivered</opition>  */}
               </select>
               {requestCategories.map(cat => (
                 <button

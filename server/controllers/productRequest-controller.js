@@ -389,6 +389,19 @@ export const markRequestDelivered = async (req, res) => {
     }
     request.status = "delivered";
     await request.save();
+
+    // Also update the related Order (if exists)
+    const order = await Order.findOne({
+      userId: request.requestedBy,
+      "orderItems.productId": request.product,
+      orderStatus: "approved"
+    });
+    if (order) {
+      order.orderStatus = "delivered";
+      order.orderUpdateDate = new Date();
+      await order.save();
+    }
+
     res.json({ success: true, request });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error" });

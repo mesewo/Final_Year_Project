@@ -3,13 +3,14 @@ import Store from '../../models/Store.js';
 import User from '../../models/User.js';
 // Create a new store
 export const createStore = async (req, res) => {
-  const { name, location, description, assignedSellers } = req.body;
+  const { name, location, description, assignedSellers, image } = req.body;
 
   try {
     const store = new Store({
       name,
       location,
       description,
+      image, // <-- add this line
       createdBy: req.user.id,
       assignedSellers,
     });

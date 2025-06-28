@@ -67,7 +67,8 @@ function MenuItems() {
 }
 
 function HeaderRightContent() {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth); // for cart logic
+  const profileUser = useSelector((state) => state.user.user); // for avatar & username
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
@@ -80,11 +81,11 @@ function HeaderRightContent() {
   }
 
   useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
-    dispatch(fetchBulkCartItems(user?.id));
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+      dispatch(fetchBulkCartItems(user.id));
+    }
   }, [dispatch, user?.id]);
-
-  console.log(cartItems, "group 6");
 
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
@@ -131,13 +132,20 @@ function HeaderRightContent() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="bg-black">
-            <AvatarFallback className="bg-black text-white font-extrabold">
-              {user?.userName[0].toUpperCase()}
-            </AvatarFallback>
+            {profileUser?.profile?.avatar && (
+              <img
+                src={profileUser.profile.avatar}
+                alt={profileUser.userName}
+                className="object-cover w-full h-full"
+                onError={e => { e.target.onerror = null; e.target.src = "/default-avatar.png"; }}
+              />
+            )}
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" className="w-56">
-          <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            Logged in as {profileUser?.userName}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate("/shop/account")}>
             <UserCog className="mr-2 h-4 w-4" />

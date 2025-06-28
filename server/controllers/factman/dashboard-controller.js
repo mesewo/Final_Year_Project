@@ -4,66 +4,60 @@ import Order from "../../models/Order.js";
 
 export const getDashboardStats = async (req, res) => {
   try {
+    // Current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    // Products
     const totalProducts = await Product.countDocuments();
-    const lastMonthProducts = await Product.countDocuments({
-    createdAt: {
-      $gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-      $lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-     },
-   });
-  const productChange = lastMonthProducts
-    ? ((totalProducts - lastMonthProducts) / lastMonthProducts) * 100
-    : 0;
-
-  const activeUsers = await User.countDocuments({
-    role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance", "factman"] },
-  });
-  const lastMonthUsers = await User.countDocuments({
-    role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance", "factman"] },
-    createdAt: {
-      $gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-      $lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    },
-  });
-  const userChange = lastMonthUsers
-    ? ((activeUsers - lastMonthUsers) / lastMonthUsers) * 100
-    : 0;
-
-
-    const pendingOrders = await Order.countDocuments({ orderStatus: "pending" });
-    const lastMonthPendingOrders = await Order.countDocuments({
-      orderStatus: "pending",
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-        $lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      },
+    const prevProducts = await Product.countDocuments({
+      createdAt: { $gte: startOfPrevMonth, $lt: startOfMonth }
     });
-    const pendingOrdersChange = lastMonthPendingOrders
-      ? ((pendingOrders - lastMonthPendingOrders) / lastMonthPendingOrders) * 100
+    const productChange = prevProducts
+      ? ((totalProducts - prevProducts) / prevProducts) * 100
       : 0;
 
+    // Users
+    const activeUsers = await User.countDocuments({
+      role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance", "factman"] },
+    });
+    const prevUsers = await User.countDocuments({
+      role: { $in: ["buyer", "user", "seller", "store_keeper", "accountant", "assistance", "factman"] },
+      createdAt: { $gte: startOfPrevMonth, $lt: startOfMonth }
+    });
+    const userChange = prevUsers
+      ? ((activeUsers - prevUsers) / prevUsers) * 100
+      : 0;
 
-    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const lastMonthStart = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
-    const lastMonthEnd = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+    // Orders
+    const pendingOrders = await Order.countDocuments({ orderStatus: "pending" });
+    const prevPendingOrders = await Order.countDocuments({
+      orderStatus: "pending",
+      createdAt: { $gte: startOfPrevMonth, $lt: startOfMonth }
+    });
+    const pendingOrdersChange = prevPendingOrders
+      ? ((pendingOrders - prevPendingOrders) / prevPendingOrders) * 100
+      : 0;
 
-    const monthlyRevenueAgg = await Order.aggregate([
+    // Revenue
+    const monthlyRevenueData = await Order.aggregate([
       { $match: { createdAt: { $gte: startOfMonth } } },
       { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
-    const monthlyRevenue = monthlyRevenueAgg[0]?.total || 0;
+    const monthlyRevenue = monthlyRevenueData[0]?.total || 0;
 
-    const lastMonthRevenueAgg = await Order.aggregate([
-      { $match: { createdAt: { $gte: lastMonthStart, $lt: lastMonthEnd } } },
+    const prevRevenueData = await Order.aggregate([
+      { $match: { createdAt: { $gte: startOfPrevMonth, $lt: startOfMonth } } },
       { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
-    const lastMonthRevenue = lastMonthRevenueAgg[0]?.total || 0;
-
-    const revenueChange = lastMonthRevenue
-      ? ((monthlyRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+    const prevRevenue = prevRevenueData[0]?.total || 0;
+    const revenueChange = prevRevenue
+      ? ((monthlyRevenue - prevRevenue) / prevRevenue) * 100
       : 0;
 
     const recentOrders = await Order.find().sort({ createdAt: -1 }).limit(5).lean();
+
     res.status(200).json({
       success: true,
       stats: {

@@ -124,7 +124,8 @@ const UserSchema = new mongoose.Schema({
       state: String,
       country: String,
       zipCode: String
-    }
+    },
+    avatar: String // <-- Add this line for profile image URL
   },
   sellerProfile: {
     storeName: String,

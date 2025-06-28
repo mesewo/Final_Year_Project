@@ -14,7 +14,15 @@ export const submitFeedback = async (req, res) => {
       $or: [
           { "cartItems.productId": productId },
           { "orderItems.productId": productId }
-      ]
+      ],
+      orderStatus: { $in: ["delivered", "approved", "confirmed"] }
+    });
+
+    console.log("Feedback check:", {
+      orderId,
+      userId,
+      productId,
+      foundOrder: order
     });
 
     if (!order) {

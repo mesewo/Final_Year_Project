@@ -19,21 +19,22 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
+import { fetchAllStores } from "@/store/shop/store-slice";
 
-const stores = [
-  {
-    id: "azezo",
-    name: "Azezo",
-    image: "https://c8.alamy.com/comp/C3626F/clothes-market-stall-old-town-harar-ethiopia-africa-C3626F.jpg",
-    storeId: "682ccde53de974f948889f23",
-  },
-  {
-    id: "maraki",
-    name: "Maraki",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf073vps5yYWYCkcS-6bn3HiZxUh0Rsy8tpQ&s",
-    storeId: "682ccdd83de974f948889f1f",
-  },
-];
+// const stores = [
+//   {
+//     id: "azezo",
+//     name: "Azezo",
+//     image: "https://c8.alamy.com/comp/C3626F/clothes-market-stall-old-town-harar-ethiopia-africa-C3626F.jpg",
+//     storeId: "682ccde53de974f948889f23",
+//   },
+//   {
+//     id: "maraki",
+//     name: "Maraki",
+//     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf073vps5yYWYCkcS-6bn3HiZxUh0Rsy8tpQ&s",
+//     storeId: "682ccdd83de974f948889f1f",
+//   },
+// ];
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -46,6 +47,7 @@ function ShoppingHome() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { stores, status: storesStatus } = useSelector((state) => state.stores);
 
   function handleNavigateToStore(store) {
     navigate(`/shop/store/${store.storeId}`);
@@ -97,6 +99,10 @@ function ShoppingHome() {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchAllStores());
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Banner */}
@@ -144,26 +150,32 @@ function ShoppingHome() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Our Stores</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-7xl mx-auto">
-            {stores.map((store) => (
-              <Card
-                key={store.id}
-                onClick={() => handleNavigateToStore(store)}
-                className="w-full cursor-pointer transition-transform duration-300 border-0 shadow-lg hover:scale-105 hover:shadow-2xl bg-white rounded-2xl overflow-hidden"
-              >
-                <div className="relative h-80 w-full">
-                  <img
-                    src={store.image}
-                    alt={store.name}
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                  <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent px-6 py-4 flex items-end rounded-b-2xl">
-                    <h3 className="text-white text-3xl font-bold drop-shadow-lg">
-                      {store.name}
-                    </h3>
+            {storesStatus === "loading" ? (
+              <div>Loading stores...</div>
+            ) : stores.length === 0 ? (
+              <div>No stores found.</div>
+            ) : (
+              stores.map((store) => (
+                <Card
+                  key={store._id}
+                  onClick={() => navigate(`/shop/store/${store._id}`)}
+                  className="w-full cursor-pointer transition-transform duration-300 border-0 shadow-lg hover:scale-105 hover:shadow-2xl bg-white rounded-2xl overflow-hidden"
+                >
+                  <div className="relative h-80 w-full">
+                    <img
+                      src={store.image || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"}
+                      alt={store.name}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
+                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent px-6 py-4 flex items-end rounded-b-2xl">
+                      <h3 className="text-white text-3xl font-bold drop-shadow-lg">
+                        {store.name}
+                      </h3>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -222,19 +234,19 @@ function ShoppingHome() {
                     Perfect for businesses, events, and organizations.
                   </p>
                   <ul className="mb-6 space-y-2">
-  <li className="flex items-center gap-2">
-    <CheckCircle className="w-5 h-5" />
-    <span>Volume discounts available</span>
-  </li>
-  <li className="flex items-center gap-2">
-    <CheckCircle className="w-5 h-5" />
-    <span>Dedicated account manager</span>
-  </li>
-  <li className="flex items-center gap-2">
-    <CheckCircle className="w-5 h-5" />
-    <span>Custom packaging options</span>
-  </li>
-</ul>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Volume discounts available</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Dedicated account manager</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Custom packaging options</span>
+                    </li>
+                  </ul>
                   <Button 
                     className="mt-4 bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg font-bold w-full md:w-auto"
                     size="lg"

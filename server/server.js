@@ -24,6 +24,8 @@ import shopSearchRouter from "./routes/shop/search-routes.js";
 // import shopReviewRouter from "./routes/shop/review-routes.js";
 import bulkCartRoutes from "./routes/shop/bulk-cart-routes.js";
 import shopFeedbackRouter from "./routes/shop/feedback-routes.js";
+import shopStoreRouter from "./routes/shop/store-routes.js";
+import shopUserRouter from "./routes/shop/user-routes.js";
 
 import factmanDashboardRouter from "./routes/factman/dashboard-routes.js";
 import factmanProductsRouter from "./routes/factman/products-routes.js";
@@ -40,7 +42,7 @@ import sellerDashboardRouter from "./routes/seller/dashboard-routes.js";
 import sellerReportRoutes from "./routes/seller/reports-routes.js";
 import sellerStoreRoutes from "./routes/seller/store-routes.js";
 import sellerRequestsRoutes from "./routes/seller/requests-routes.js";
-
+//KO2RSchSqCkwNLnV 
 import storeKeeperStoreRoutes from "./routes/store-keeper/store-routes.js";
 import storeKeeeperUserRoutes from "./routes/store-keeper/user-routes.js";
 import storekeeperDashboardRoutes from "./routes/store-keeper/dashboard-routes.js";
@@ -101,7 +103,9 @@ app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
 // app.use("/api/shop/review", shopReviewRouter);
+app.use("/api/shop/users", shopUserRouter);
 app.use("/api/shop/feedback", shopFeedbackRouter);
+app.use("/api/shop/stores", shopStoreRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 

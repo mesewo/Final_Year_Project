@@ -19,7 +19,7 @@ export default function StoreKeeperStores() {
 
   const [open, setOpen] = useState(false);
   const [editingStore, setEditingStore] = useState(null);
-  const [formData, setFormData] = useState({ name: "", location: "", assignedSellers: [] });
+  const [formData, setFormData] = useState({ name: "", location: "", assignedSellers: [], image: "" });
   const [searchTerm, setSearchTerm] = useState("");
   const [availableSellers, setAvailableSellers] = useState([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function StoreKeeperStores() {
   );
 
   const resetForm = () => {
-    setFormData({ name: "", location: "", assignedSellers: [] });
+    setFormData({ name: "", location: "", assignedSellers: [], image: "" });
     setEditingStore(null);
   };
 
@@ -77,6 +77,7 @@ export default function StoreKeeperStores() {
       name: formData.name,
       location: formData.location,
       assignedSellers: formData.assignedSellers,
+      image: formData.image, // <-- add this line
     };
 
     const action = editingStore
@@ -97,6 +98,7 @@ export default function StoreKeeperStores() {
       name: store.name,
       location: store.location,
       assignedSellers: store.assignedSellers || [],
+      image: store.image || "",
     });
     setOpen(true);
   };
@@ -232,6 +234,11 @@ export default function StoreKeeperStores() {
               placeholder="Location"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            />
+            <Input
+              placeholder="Image URL"
+              value={formData.image || ""}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
             />
 
             {/* Seller Assignment UI */}
