@@ -35,9 +35,9 @@ function ProductImageUpload({
 
   function handleRemoveImage() {
     setImageFile(null);
-    setUploadedImageUrl("");  // Reset URL when removing image
+    setUploadedImageUrl(""); // Reset URL when removing image
     if (inputRef.current) {
-      inputRef.current.value = "";  // Reset input field
+      inputRef.current.value = ""; // Reset input field
     }
   }
 
@@ -48,7 +48,7 @@ function ProductImageUpload({
       data.append("my_file", imageFile);
 
       const response = await axios.post(
-        "http://localhost:5000/api/admin/products/upload-image",
+        `${import.meta.env.VITE_API_URL}/api/admin/products/upload-image`,
         data
       );
 
@@ -88,7 +88,7 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode || imageLoadingState}  // Disable while uploading
+          disabled={isEditMode || imageLoadingState} // Disable while uploading
         />
         {!imageFile ? (
           <Label

@@ -45,7 +45,7 @@ import sellerStoreRoutes from "./routes/seller/store-routes.js";
 import sellerRequestsRoutes from "./routes/seller/requests-routes.js";
 import sellerSettingRoutes from "./routes/seller/settings-routes.js";
 
-//KO2RSchSqCkwNLnV 
+//KO2RSchSqCkwNLnV
 import storeKeeperStoreRoutes from "./routes/store-keeper/store-routes.js";
 import storeKeeeperUserRoutes from "./routes/store-keeper/user-routes.js";
 import storekeeperDashboardRoutes from "./routes/store-keeper/dashboard-routes.js";
@@ -64,9 +64,7 @@ import paymentVerify from "./routes/payment/paymentVerify.js";
 
 // Create a database connection
 mongoose
-  .connect(
-    "mongodb+srv://abrshmelkamu3:v1DyNH0TFNv8QUcr@cluster0.l1r1qbo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 
@@ -75,7 +73,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLINET_URL,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: [
       "Content-Type",

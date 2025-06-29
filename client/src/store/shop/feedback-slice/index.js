@@ -9,7 +9,9 @@ export const getAllFeedback = createAsyncThunk(
       const response = await axios.get("/api/shop/feedback");
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch feedback");
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch feedback"
+      );
     }
   }
 );
@@ -19,10 +21,14 @@ export const getFeedbackDetails = createAsyncThunk(
   "shopFeedback/getFeedbackDetails",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/shop/feedback/${id}`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/shop/feedback/${id}`
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch feedback details");
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch feedback details"
+      );
     }
   }
 );
@@ -31,7 +37,10 @@ export const addFeedback = createAsyncThunk(
   "shopFeedback/addFeedback",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/shop/feedback/submit", formData);
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/shop/feedback/submit`,
+        formData
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to add feedback");

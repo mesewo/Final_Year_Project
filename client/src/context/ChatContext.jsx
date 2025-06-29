@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import { createContext, useContext, useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 const ChatContext = createContext();
 
@@ -12,10 +12,10 @@ export const ChatProvider = ({ children }) => {
 
   // Initialize socket connection
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const newSocket = io('http://localhost:5000', {
+    const token = localStorage.getItem("token");
+    const newSocket = io(`${import.meta.env.VITE_API_URL}`, {
       auth: { token },
-      withCredentials: true
+      withCredentials: true,
     });
 
     setSocket(newSocket);
@@ -27,30 +27,30 @@ export const ChatProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('active_chats', (chats) => {
+    socket.on("active_chats", (chats) => {
       setActiveChats(chats);
     });
 
-    socket.on('new_customer', (customerId) => {
-      setActiveChats(prev => [...prev, customerId]);
+    socket.on("new_customer", (customerId) => {
+      setActiveChats((prev) => [...prev, customerId]);
     });
 
-    socket.on('customer_disconnected', (customerId) => {
-      setActiveChats(prev => prev.filter(id => id !== customerId));
+    socket.on("customer_disconnected", (customerId) => {
+      setActiveChats((prev) => prev.filter((id) => id !== customerId));
     });
 
-    socket.on('new_message', (data) => {
+    socket.on("new_message", (data) => {
       if (currentChat?.customerId !== data.customerId) {
-        setUnreadCount(prev => prev + 1);
+        setUnreadCount((prev) => prev + 1);
       }
-      setMessages(prev => [...prev, data.message]);
+      setMessages((prev) => [...prev, data.message]);
     });
 
     return () => {
-      socket.off('active_chats');
-      socket.off('new_customer');
-      socket.off('customer_disconnected');
-      socket.off('new_message');
+      socket.off("active_chats");
+      socket.off("new_customer");
+      socket.off("customer_disconnected");
+      socket.off("new_message");
     };
   }, [socket, currentChat]);
 
@@ -66,13 +66,13 @@ export const ChatProvider = ({ children }) => {
 
     if (currentChat) {
       // Support agent sending to customer
-      socket.emit('support_message', {
+      socket.emit("support_message", {
         customerId: currentChat.customerId,
-        text
+        text,
       });
     } else {
       // Customer sending to support
-      socket.emit('customer_message', { text });
+      socket.emit("customer_message", { text });
     }
   };
 
@@ -85,7 +85,7 @@ export const ChatProvider = ({ children }) => {
         messages,
         unreadCount,
         joinChat,
-        sendMessage
+        sendMessage,
       }}
     >
       {children}

@@ -3,9 +3,9 @@ import multer from "multer";
 import streamifier from "streamifier";
 
 cloudinary.v2.config({
-  cloud_name: "dpguil2cm",     // Your Cloudinary cloud name
-  api_key: "631937375588527", // Your Cloudinary API key
-  api_secret: "sGaPh8_IhhkpQ67ps5ubK4xFzzc", // Your Cloudinary API secret
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,     // Your Cloudinary cloud name
+  api_key: process.env.CLOUDINARY_API_KEY, // Your Cloudinary API key
+  api_secret: process.env.CLOUDINARY_API_SECRET, // Your Cloudinary API secret
 });
 
 const storage = multer.memoryStorage();

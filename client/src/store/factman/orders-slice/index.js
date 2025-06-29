@@ -11,7 +11,7 @@ export const getAllOrdersForFactman = createAsyncThunk(
   "/order/getAllOrdersForFactman",
   async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/factman/orders/get`
+      `${import.meta.env.VITE_API_URL}/api/factman/orders/get`
     );
 
     return response.data;
@@ -22,7 +22,7 @@ export const getOrderDetailsForFactman = createAsyncThunk(
   "/order/getOrderDetailsForFactman",
   async (id) => {
     const response = await axios.get(
-      `http://localhost:5000/api/factman/orders/details/${id}`
+      `${import.meta.env.VITE_API_URL}/api/factman/orders/details/${id}`
     );
 
     return response.data;
@@ -33,7 +33,7 @@ export const updateOrderStatus = createAsyncThunk(
   "/order/updateOrderStatus",
   async ({ id, orderStatus }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/factman/orders/update/${id}`,
+      `${import.meta.env.VITE_API_URL}/api/factman/orders/update/${id}`,
       {
         orderStatus,
       }

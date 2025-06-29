@@ -22,13 +22,11 @@ export default function ShoppingCheckout() {
   const isBulkCheckout = useSelector((state) => state.shopCart.isBulk);
   const { toast } = useToast();
 
-
   useEffect(() => {
     if (!cartItems?.items?.length) {
       navigate("/");
     }
   }, [cartItems, navigate]);
-
 
   const totalCartAmount =
     cartItems?.items?.reduce(
@@ -83,13 +81,15 @@ export default function ShoppingCheckout() {
         totalAmount: totalCartAmount,
         orderDate: new Date(),
         orderUpdateDate: new Date(),
-        ...(isBulkCheckout && {isBulk: true}),
+        ...(isBulkCheckout && { isBulk: true }),
       };
 
       const orderResponse = await dispatch(createNewOrder(orderData)).unwrap();
       console.log("Order Response:", orderResponse);
 
-      const orderId = Array.isArray(orderResponse.orderIds) ? orderResponse.orderIds[0] : orderResponse.orderId;
+      const orderId = Array.isArray(orderResponse.orderIds)
+        ? orderResponse.orderIds[0]
+        : orderResponse.orderId;
       if (!orderId) {
         toast({
           title: "Order ID not found after order creation.",
@@ -102,7 +102,7 @@ export default function ShoppingCheckout() {
       const tx_ref = orderResponse.tx_refs[0];
 
       const response = await fetch(
-        "http://localhost:5000/api/payment/initiate",
+        `${import.meta.env.VITE_API_URL}/api/payment/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -110,7 +110,7 @@ export default function ShoppingCheckout() {
             amount: totalCartAmount,
             currency: "ETB",
             email: user.email,
-            first_name: user.firstName ,
+            first_name: user.firstName,
             last_name: user.lastName,
             tx_ref,
             orderId,

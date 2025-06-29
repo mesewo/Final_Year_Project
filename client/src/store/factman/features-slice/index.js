@@ -10,19 +10,18 @@ export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/factman/feature/get`
+      `${import.meta.env.VITE_API_URL}/api/factman/feature/get`
     );
 
     return response.data;
   }
 );
 
-
 export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
     const response = await axios.post(
-      `http://localhost:5000/api/factman/feature/add`,
+      `${import.meta.env.VITE_API_URL}/api/factman/feature/add`,
       { image }
     );
 
@@ -32,11 +31,12 @@ export const addFeatureImage = createAsyncThunk(
 export const deleteFeatureImage = createAsyncThunk(
   "/order/deleteFeatureImage",
   async (id) => {
-    const response = await axios.delete(`http://localhost:5000/api/factman/feature/delete/${id}`);
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_URL}/api/factman/feature/delete/${id}`
+    );
     return response.data;
   }
 );
-
 
 const factmanFeaturesSlice = createSlice({
   name: "commonSlice",

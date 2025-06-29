@@ -30,7 +30,7 @@ function FactmanFeatures() {
   }
 
   function handleDeleteFeatureImage(id) {
-    fetch(`http://localhost:5000/api/common/feature/delete/${id}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/common/feature/delete/${id}`, {
       method: "DELETE",
     })
       .then((res) => res.json())

@@ -6,7 +6,11 @@ import axios from "axios";
 export const requestProduct = createAsyncThunk(
   "productRequest/requestProduct",
   async (payload) => {
-    const res = await axios.post("http://localhost:5000/api/product-requests/request", payload, { withCredentials: true });
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/product-requests/request`,
+      payload,
+      { withCredentials: true }
+    );
     return res.data;
   }
 );
@@ -14,7 +18,9 @@ export const requestProduct = createAsyncThunk(
 export const fetchMyRequests = createAsyncThunk(
   "productRequest/fetchMyRequests",
   async () => {
-    const res = await axios.get("/api/product-requests/me", { withCredentials: true });
+    const res = await axios.get("/api/product-requests/me", {
+      withCredentials: true,
+    });
     return res.data;
   }
 );
@@ -23,7 +29,9 @@ export const fetchMyRequests = createAsyncThunk(
 export const fetchAllRequests = createAsyncThunk(
   "productRequest/fetchAllRequests",
   async () => {
-    const res = await axios.get("/api/product-requests", { withCredentials: true });
+    const res = await axios.get("/api/product-requests", {
+      withCredentials: true,
+    });
     return res.data;
   }
 );
@@ -138,7 +146,7 @@ const productRequestSlice = createSlice({
           r._id === updated._id ? updated : r
         );
       })
-      .addCase(fetchProductRequestTrend.pending, state => {
+      .addCase(fetchProductRequestTrend.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchProductRequestTrend.fulfilled, (state, action) => {
@@ -162,7 +170,7 @@ const productRequestSlice = createSlice({
         );
       })
       .addCase(fetchAllBulkOrders.fulfilled, (state, action) => {
-        state.bulkOrders = action.payload
+        state.bulkOrders = action.payload;
       })
       .addCase(markRequestDelivered.fulfilled, (state, action) => {
         const updated = action.payload.request;

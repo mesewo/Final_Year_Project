@@ -16,21 +16,21 @@ export default function PaymentSuccess() {
   const [paymentRef, setPaymentRef] = useState(null);
 
   useEffect(() => {
-      let tx_ref = searchParams.get("tx_ref");
+    let tx_ref = searchParams.get("tx_ref");
     // const orderId = searchParams.get("orderId");
     if (!tx_ref) {
-        tx_ref = localStorage.getItem("last_tx_ref"); // fallback for test/demo mode
-      }
+      tx_ref = localStorage.getItem("last_tx_ref"); // fallback for test/demo mode
+    }
     if (!tx_ref /*|| !orderId*/) {
       setError("Missing transaction reference");
       setStatus(null);
       return;
     }
 
-    fetch("http://localhost:5000/api/payment-verify/verify", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/payment-verify/verif`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reference: tx_ref/*, orderId*/ }),
+      body: JSON.stringify({ reference: tx_ref /*, orderId*/ }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -40,7 +40,7 @@ export default function PaymentSuccess() {
         } else {
           setStatus(null);
           setPaymentRef(tx_ref);
-          localStorage.removeItem("last_tx_ref")
+          localStorage.removeItem("last_tx_ref");
           dispatch(clearBulkCart());
           localStorage.removeItem("cart");
         }
@@ -52,7 +52,6 @@ export default function PaymentSuccess() {
   }, [searchParams]);
 
   useEffect(() => {
-    
     // dispatch(clearCart());
     // Optionally, clear localStorage if you store cart there
     // localStorage.removeItem("cart");

@@ -17,7 +17,9 @@ export default function BulkCheckout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { currentSelectedAddress: reduxSelectedAddress } = useSelector((state) => state.shopCart);
+  const { currentSelectedAddress: reduxSelectedAddress } = useSelector(
+    (state) => state.shopCart
+  );
   const { bulkCartItems } = useSelector((state) => state.bulkCart);
 
   // Fetch bulk cart on mount
@@ -28,7 +30,9 @@ export default function BulkCheckout() {
   }, [dispatch, user?.id]);
 
   // Address selection state
-  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(reduxSelectedAddress || null);
+  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(
+    reduxSelectedAddress || null
+  );
 
   // Address input state (prefill from selected address if available)
   const [addressInfo, setAddressInfo] = useState({
@@ -71,7 +75,8 @@ export default function BulkCheckout() {
 
   // Calculate totals
   const subtotal = bulkCartItems.reduce(
-    (sum, item) => sum + (item.salePrice > 0 ? item.salePrice : item.price) * item.quantity,
+    (sum, item) =>
+      sum + (item.salePrice > 0 ? item.salePrice : item.price) * item.quantity,
     0
   );
   const discount = (subtotal * BULK_DISCOUNT_PERCENT) / 100;
@@ -80,10 +85,16 @@ export default function BulkCheckout() {
   // Payment handler
   const handleChapaPayment = async () => {
     if (!bulkCartItems.length) {
-      return toast({ title: "Your bulk cart is empty.", variant: "destructive" });
+      return toast({
+        title: "Your bulk cart is empty.",
+        variant: "destructive",
+      });
     }
     if (!user?.id) {
-      return toast({ title: "User not found. Please login.", variant: "destructive" });
+      return toast({
+        title: "User not found. Please login.",
+        variant: "destructive",
+      });
     }
     if (!isAddressValid) {
       return toast({
@@ -112,32 +123,32 @@ export default function BulkCheckout() {
           { withCredentials: true }
         );
         if (!res.data.success) {
-            // Check for pending request message
-            if (
+          // Check for pending request message
+          if (
             res.data.message &&
             res.data.message.toLowerCase().includes("pending request")
-            ) {
+          ) {
             toast({
-                title: "Pending Order",
-                description: "You already have a pending order for this product.",
-                variant: "destructive",
+              title: "Pending Order",
+              description: "You already have a pending order for this product.",
+              variant: "destructive",
             });
-            } else {
+          } else {
             toast({
-                title: res.data.message || "Failed to create product request.",
-                variant: "destructive",
+              title: res.data.message || "Failed to create product request.",
+              variant: "destructive",
             });
-            }
-            return;
-        }      
-    }
+          }
+          return;
+        }
+      }
 
       // 2. Generate a tx_ref for the payment
       const tx_ref = `bulk_${Date.now()}_${user.id}`;
 
       // 3. Initiate Chapa payment
       const paymentResponse = await fetch(
-        "http://localhost:5000/api/payment/initiate",
+        `${import.meta.env.VITE_API_URL}pi/payment/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -182,7 +193,9 @@ export default function BulkCheckout() {
       </div>
       <h1 className="text-3xl font-bold mb-8 text-center">Bulk Checkout</h1>
       {bulkCartItems.length === 0 ? (
-        <div className="text-center text-gray-500">Your bulk cart is empty.</div>
+        <div className="text-center text-gray-500">
+          Your bulk cart is empty.
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
           {/* Address selection and input */}
@@ -199,10 +212,15 @@ export default function BulkCheckout() {
               {bulkCartItems.map((item) => (
                 <li key={item.productId} className="flex justify-between mb-2">
                   <span>
-                    {item.title} <span className="text-gray-500">x {item.quantity}</span>
+                    {item.title}{" "}
+                    <span className="text-gray-500">x {item.quantity}</span>
                   </span>
                   <span>
-                    Br{((item.salePrice > 0 ? item.salePrice : item.price) * item.quantity).toLocaleString()}
+                    Br
+                    {(
+                      (item.salePrice > 0 ? item.salePrice : item.price) *
+                      item.quantity
+                    ).toLocaleString()}
                   </span>
                 </li>
               ))}

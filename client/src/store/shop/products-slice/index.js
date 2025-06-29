@@ -20,7 +20,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
     });
 
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/get?${query}`
+      `${import.meta.env.VITE_API_URL}/api/shop/products/get?${query}`
     );
 
     console.log(result);
@@ -33,19 +33,20 @@ export const fetchProductDetails = createAsyncThunk(
   "/products/fetchProductDetails",
   async (id) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/get/${id}`
+      `${import.meta.env.VITE_API_URL}/api/shop/products/get/${id}`
     );
 
     return result?.data;
   }
 );
 
-
 export const fetchPublicStoreProducts = createAsyncThunk(
   "/products/fetchPublicStoreProductsByStore",
   async (storeId) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/public-store/${storeId}/products`
+      `${
+        import.meta.env.VITE_API_URL
+      }/api/shop/products/public-store/${storeId}/products`
     );
     return result.data.data;
   }
@@ -57,12 +58,13 @@ export const fetchStoreProductStock = createAsyncThunk(
   "/products/fetchStoreProductStock",
   async ({ productId, storeId }) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/products/store-product-stock/${productId}/${storeId}`
+      `${
+        import.meta.env.VITE_API_URL
+      }/api/shop/products/store-product-stock/${productId}/${storeId}`
     );
     return result.data;
   }
 );
-
 
 const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
@@ -107,7 +109,6 @@ const shoppingProductSlice = createSlice({
         state.isLoading = false;
         state.storeProducts = [];
       });
-      
   },
 });
 

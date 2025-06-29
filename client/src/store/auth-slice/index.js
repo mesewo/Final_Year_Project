@@ -5,9 +5,9 @@ const initialState = {
   isAuthenticated: false,
   isLoading: true,
   user: null,
-  forgotPasswordStatus: 'idle', // 'idle' | 'pending' | 'success' | 'failed'
-  resetPasswordStatus: 'idle',  // 'idle' | 'pending' | 'success' | 'failed'
-  error: null
+  forgotPasswordStatus: "idle", // 'idle' | 'pending' | 'success' | 'failed'
+  resetPasswordStatus: "idle", // 'idle' | 'pending' | 'success' | 'failed'
+  error: null,
 };
 
 export const registerUser = createAsyncThunk(
@@ -15,7 +15,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
         formData,
         { withCredentials: true }
       );
@@ -31,7 +31,7 @@ export const loginUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
         formData,
         { withCredentials: true }
       );
@@ -47,7 +47,7 @@ export const loginWithGoogle = createAsyncThunk(
   async (googleData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/google",
+        `${import.meta.env.VITE_API_URL}/api/auth/google`,
         googleData,
         { withCredentials: true }
       );
@@ -63,7 +63,7 @@ export const forgotPassword = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
+        `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
         { email },
         { withCredentials: true }
       );
@@ -79,7 +79,7 @@ export const resetPassword = createAsyncThunk(
   async ({ token, password }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/reset-password",
+        `${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
         { token, password },
         { withCredentials: true }
       );
@@ -95,7 +95,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/logout",
+        `${import.meta.env.VITE_API_URL}/api/auth/logout`,
         {},
         { withCredentials: true }
       );
@@ -111,11 +111,12 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/auth/check-auth",
+        `${import.meta.env.VITE_API_URL}/api/auth/check-auth`,
         {
           withCredentials: true,
           headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, proxy-revalidate",
           },
         }
       );
@@ -132,9 +133,9 @@ const authSlice = createSlice({
     user: null,
     isAuthenticated: false,
     isLoading: true,
-    forgotPasswordStatus: 'idle', // 'idle' | 'pending' | 'success' | 'failed'
-    resetPasswordStatus: 'idle',  // 'idle' | 'pending' | 'success' | 'failed'
-    error: null
+    forgotPasswordStatus: "idle", // 'idle' | 'pending' | 'success' | 'failed'
+    resetPasswordStatus: "idle", // 'idle' | 'pending' | 'success' | 'failed'
+    error: null,
   },
   reducers: {
     setUser(state, action) {
@@ -144,10 +145,10 @@ const authSlice = createSlice({
       state.error = null;
     },
     resetPasswordStatus: (state) => {
-      state.resetPasswordStatus = 'idle';
+      state.resetPasswordStatus = "idle";
     },
     resetForgotPasswordStatus: (state) => {
-      state.forgotPasswordStatus = 'idle';
+      state.forgotPasswordStatus = "idle";
     },
   },
   extraReducers: (builder) => {
@@ -211,33 +212,37 @@ const authSlice = createSlice({
 
       // Forgot Password
       .addCase(forgotPassword.pending, (state) => {
-        state.forgotPasswordStatus = 'pending';
+        state.forgotPasswordStatus = "pending";
         state.error = null;
       })
       .addCase(forgotPassword.fulfilled, (state, action) => {
-        state.forgotPasswordStatus = action.payload.success ? 'success' : 'failed';
+        state.forgotPasswordStatus = action.payload.success
+          ? "success"
+          : "failed";
         if (!action.payload.success) {
           state.error = action.payload.message || "Failed to send reset email";
         }
       })
       .addCase(forgotPassword.rejected, (state, action) => {
-        state.forgotPasswordStatus = 'failed';
+        state.forgotPasswordStatus = "failed";
         state.error = action.payload?.message || "Failed to send reset email";
       })
 
       // Reset Password
       .addCase(resetPassword.pending, (state) => {
-        state.resetPasswordStatus = 'pending';
+        state.resetPasswordStatus = "pending";
         state.error = null;
       })
       .addCase(resetPassword.fulfilled, (state, action) => {
-        state.resetPasswordStatus = action.payload.success ? 'success' : 'failed';
+        state.resetPasswordStatus = action.payload.success
+          ? "success"
+          : "failed";
         if (!action.payload.success) {
           state.error = action.payload.message || "Password reset failed";
         }
       })
       .addCase(resetPassword.rejected, (state, action) => {
-        state.resetPasswordStatus = 'failed';
+        state.resetPasswordStatus = "failed";
         state.error = action.payload?.message || "Password reset failed";
       })
 
@@ -273,11 +278,11 @@ const authSlice = createSlice({
   },
 });
 
-export const { 
+export const {
   setUser,
   clearAuthError,
   resetPasswordStatus,
-  resetForgotPasswordStatus 
+  resetForgotPasswordStatus,
 } = authSlice.actions;
 
 export default authSlice.reducer;

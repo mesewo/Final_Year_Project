@@ -10,7 +10,7 @@ export const addToBulkCart = createAsyncThunk(
   "bulkCart/addToBulkCart",
   async ({ userId, productId, quantity }, thunkAPI) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/bulk-cart/add",
+      `${import.meta.env.VITE_API_URL}/api/shop/bulk-cart/add`,
       {
         userId,
         productId,
@@ -21,22 +21,13 @@ export const addToBulkCart = createAsyncThunk(
   }
 );
 
-// export const clearBulkCart = createAsyncThunk(
-//   "bulkCart/clearBulkCart",
-//     async (userId) => {
-//     const response = await axios.delete(
-//         `http://localhost:5000/api/shop/bulk-cart/clear/${userId}`
-//     );
-//     return response.data;
-//     }
-// );
 
 
 export const fetchBulkCartItems = createAsyncThunk(
   "bulkCart/fetchBulkCartItems",
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/bulk-cart/get/${userId}`
+      `${import.meta.env.VITE_API_URL}/api/shop/bulk-cart/get/${userId}`
     );
     return response.data;
   }
@@ -46,7 +37,9 @@ export const deleteBulkCartItem = createAsyncThunk(
   "bulkCart/deleteBulkCartItem",
   async ({ userId, productId }) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/shop/bulk-cart/${userId}/${productId}`
+      `${
+        import.meta.env.VITE_API_URL
+      }/api/shop/bulk-cart/${userId}/${productId}`
     );
     return response.data;
   }
@@ -56,7 +49,7 @@ export const updateBulkCartQuantity = createAsyncThunk(
   "bulkCart/updateBulkCartQuantity",
   async ({ userId, productId, quantity }) => {
     const response = await axios.put(
-      "http://localhost:5000/api/shop/bulk-cart/update-cart",
+      `${import.meta.env.VITE_API_URL}/api/shop/bulk-cart/update-cart`,
       {
         userId,
         productId,
