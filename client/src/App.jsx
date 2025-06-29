@@ -9,7 +9,7 @@ import FactmanLayout from "./components/factman-view/layout";
 import ShoppingLayout from "./components/shopping-view/layout";
 import StoreKeeperLayout from "./components/store-keeper-view/layout";
 import SellerLayout from "./components/seller-view/layout";
-import AccountantLayout from "./components/accountant-view/Layout";
+// import AccountantLayout from "./components/accountant-view/Layout";
 
 // Auth pages
 import AuthLogin from "./pages/auth/login";
@@ -45,10 +45,10 @@ import StoreKeeperReports from "./pages/store-keeper-view/reports";
 import StorekeeperSettings from "./pages/store-keeper-view/settings";
 
 // Accountant pages
-import AccountantDashboard from "./pages/accountant-view/dashboard";
-import AccountantFinances from "./pages/accountant-view/finances";
-import AccountantReports from "./pages/accountant-view/reports";
-import AccountantTransaction from "./pages/accountant-view/Transaction";
+// import AccountantDashboard from "./pages/accountant-view/dashboard";
+// import AccountantFinances from "./pages/accountant-view/finances";
+// import AccountantReports from "./pages/accountant-view/reports";
+// import AccountantTransaction from "./pages/accountant-view/Transaction";
 
 // Shopping pages
 import ShoppingHome from "./pages/shopping-view/home";
@@ -223,7 +223,7 @@ function App() {
         </Route>
 
         {/* Accountant Routes */}
-        <Route
+        {/* <Route
           path="/accountant"
           element={
             <CheckAuth
@@ -239,7 +239,7 @@ function App() {
           <Route path="finance" element={<AccountantFinances />} />
           <Route path="transactions" element={<AccountantTransaction />} />
           <Route path="reports" element={<AccountantReports />} />
-        </Route>
+        </Route> */}
 
         {/* Shopping Routes (protected) */}
         <Route

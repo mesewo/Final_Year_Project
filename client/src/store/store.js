@@ -8,6 +8,7 @@ import adminReportsReducer from "./admin/reports-slice";
 import adminFeedbackReducer from "./admin/feedback-slice";
 import adminFeaturesReducer from "./admin/features-slice";
 import adminSettingsReducer from "./admin/settings-slice";
+import accountantReducer from "@/store/admin/accountant-slice";
 
 import factmanProductsSlice from "./factman/products-slice";
 import factmanOrdersSlice from "./factman/orders-slice";
@@ -45,10 +46,6 @@ import StoreKeeperStoreSlice from "./store-keeper/store-slice";
 import storeKeeperReportReducer from "./store-keeper/report-slice";
 import storekeeperSettingsReducer from "./store-keeper/settings-slice";
 
-// import accountantReportsSlice from "./accountant/reports-slice";
-// import accountantFinanceSlice from "./accountant/finance-slice";
-// import accountantTransactionsReducer from "./accountant/transaction-slice";
-import accountantReducer from "@/store/admin/accountant-slice";
 
 import commonFeatureSlice from "./common-slice";
 import commonFeedbackSlice from "./common-slice/feedback-slice";
@@ -72,6 +69,7 @@ const store = configureStore({
     settings: adminSettingsReducer,
     adminFeedback: adminFeedbackReducer,
     adminFeatures: adminFeaturesReducer,
+    accountant: accountantReducer,
 
     // Factman
     factmanProducts: factmanProductsSlice,
@@ -82,7 +80,6 @@ const store = configureStore({
     factmanFeedback: factmanFeedbackSlice,
     factmanSettings: factmanSettingsSlice,
     factmanFeatures: factmanFeaturesSlice,
-
 
     // Buyer (shop)
     shopProducts: shopProductsSlice,
@@ -111,19 +108,11 @@ const store = configureStore({
     storeKeeperReports: storeKeeperReportReducer,
     storekeeperSettings: storekeeperSettingsReducer,
 
-    // Accountant
-    // // accountantReports: accountantReportsSlice,
-    // // accountantFinance: accountantFinanceSlice,
-    // // accountantTransactions: accountantTransactionsReducer,
-    accountant: accountantReducer,
-
     // Common
     commonFeature: commonFeatureSlice,
     commonFeedback: commonFeedbackSlice,
     // Product Requests
     productRequest: productRequestSlice,
-    
-    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

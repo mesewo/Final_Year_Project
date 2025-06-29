@@ -56,7 +56,7 @@ import storeKeeperSettingsRoutes from "./routes/store-keeper/settings-routes.js"
 import commonFeatureRouter from "./routes/common/feature-routes.js";
 import productRequestRoutes from "./routes/productRequest-routes.js";
 import notificationsRouter from "./routes/notifications.js";
-import accountantRouter from "./routes/accountant/accountant.js";
+// import accountantRouter from "./routes/accountant/accountant.js";
 
 import paymentroute from "./routes/payment/payment.js";
 import verifyQRRoutes from "./routes/payment/verifyQr.js";
