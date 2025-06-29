@@ -50,12 +50,12 @@ const factmanSidebarMenuItems = [
     path: "/factman/feedback",
     icon: <MessageSquare className="w-5 h-5" />,
   },
-  // {
-  //   id: "settings",
-  //   label: "Settings",
-  //   path: "/factman/settings",
-  //   icon: <Settings className="w-5 h-5" />,
-  // },
+  {
+    id: "settings",
+    label: "Settings",
+    path: "/factman/settings",
+    icon: <Settings className="w-5 h-5" />,
+  },
   {
     id: "features",
     label: "Features",

@@ -1,7 +1,6 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Layouts
 import AuthLayout from "./components/auth/layout";
@@ -10,7 +9,7 @@ import FactmanLayout from "./components/factman-view/layout";
 import ShoppingLayout from "./components/shopping-view/layout";
 import StoreKeeperLayout from "./components/store-keeper-view/layout";
 import SellerLayout from "./components/seller-view/layout";
-// import AccountantLayout from "./components/accountant-view/Layout";
+import AccountantLayout from "./components/accountant-view/Layout";
 
 // Auth pages
 import AuthLogin from "./pages/auth/login";
@@ -26,7 +25,6 @@ import AdminFeedback from "./pages/admin-view/feedback";
 import AdminReports from "./pages/admin-view/reports";
 import SystemSettings from "./pages/admin-view/settings";
 import AdminUsers from "./pages/admin-view/users";
-import AccountantDashboard from "@/pages/admin-view/accountant";
 
 // Factman pages
 import FactmanProducts from "./pages/factman-view/products";
@@ -44,12 +42,13 @@ import StoreKeeperStore from "./pages/store-keeper-view/store";
 import InventoryManagement from "./pages/store-keeper-view/inventory";
 import StorekeeperProductRequests from "./pages/store-keeper-view/product-request";
 import StoreKeeperReports from "./pages/store-keeper-view/reports";
+import StorekeeperSettings from "./pages/store-keeper-view/settings";
 
 // Accountant pages
-// // import AccountantDashboard from "./pages/accountant-view/dashboard";
-// // import AccountantFinances from "./pages/accountant-view/finances";
-// // import AccountantReports from "./pages/accountant-view/reports";
-// // import AccountantTransaction from "./pages/accountant-view/Transaction";
+import AccountantDashboard from "./pages/accountant-view/dashboard";
+import AccountantFinances from "./pages/accountant-view/finances";
+import AccountantReports from "./pages/accountant-view/reports";
+import AccountantTransaction from "./pages/accountant-view/Transaction";
 
 // Shopping pages
 import ShoppingHome from "./pages/shopping-view/home";
@@ -63,7 +62,7 @@ import StorePage from "@/pages/shopping-view/store";
 import AboutPage from "@/pages/shopping-view/about";
 import ContactPage from "@/pages/shopping-view/contact";
 import BulkCheckout from "./pages/shopping-view/BulkCheckout";
-// import BulkRequest from "./pages/shopping-view/BulkRequestPage";
+import BulkRequest from "./pages/shopping-view/BulkRequestPage";
 
 // Other components
 import NotFound from "./pages/not-found";
@@ -77,11 +76,26 @@ import SellerOrders from "./pages/seller-view/orders";
 import SellerReports from "./pages/seller-view/reports";
 import SellerDashboard from "./pages/seller-view/dashboard";
 import SellerRequestProducts from "./pages/seller-view/product-request";
+import SellerSettings from "./pages/seller-view/settings";
+
+// Landing page
+import LandingPage from "./pages/landing-page/LandingPage";
 
 // Redux
 import { checkAuth } from "./store/auth-slice";
-import BulkRequest from "./pages/shopping-view/BulkRequestPage";
-import Farewell from "@/pages/farewell";
+
+// --- RootRedirect helper ---
+function RootRedirect({ isAuthenticated, user }) {
+  if (isAuthenticated && user) {
+    if (user.role === "admin") return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === "factman") return <Navigate to="/factman/dashboard" replace />;
+    if (user.role === "seller") return <Navigate to="/seller/dashboard" replace />;
+    if (user.role === "store_keeper") return <Navigate to="/storekeeper/dashboard" replace />;
+    if (user.role === "accountant") return <Navigate to="/accountant/dashboard" replace />;
+    return <Navigate to="/shop/home" replace />;
+  }
+  return <LandingPage />;
+}
 
 function App() {
   const dispatch = useDispatch();
@@ -96,12 +110,12 @@ function App() {
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
 
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Routes>
-        {/* Root Auth Check */}
+        {/* Root route: show landing page for unauth, redirect for roles */}
         <Route
           path="/"
-          element={<CheckAuth isAuthenticated={isAuthenticated} user={user} />}
+          element={<RootRedirect isAuthenticated={isAuthenticated} user={user} />}
         />
 
         {/* Auth Pages */}
@@ -139,7 +153,6 @@ function App() {
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route path="/admin/accountant" element={<AccountantDashboard />} />
         </Route>
 
         {/* Factman Routes */}
@@ -185,6 +198,7 @@ function App() {
           <Route path="request-products" element={<SellerRequestProducts />} />
           <Route path="orders" element={<SellerOrders />} />
           <Route path="reports" element={<SellerReports />} />
+          <Route path="settings" element={<SellerSettings />} />
         </Route>
 
         {/* Store Keeper Routes */}
@@ -205,10 +219,11 @@ function App() {
           <Route path="inventory" element={<InventoryManagement />} />
           <Route path="requests" element={<StorekeeperProductRequests />} />
           <Route path="reports" element={<StoreKeeperReports />} />
+          <Route path="settings" element={<StorekeeperSettings />} />
         </Route>
 
         {/* Accountant Routes */}
-        {/* <Route
+        <Route
           path="/accountant"
           element={
             <CheckAuth
@@ -219,14 +234,14 @@ function App() {
               <AccountantLayout />
             </CheckAuth>
           }
-        > */}
-          {/* <Route path="dashboard" element={<AccountantDashboard />} /> */}
-          {/* <Route path="finance" element={<AccountantFinances />} /> */}
-          {/* <Route path="transactions" element={<AccountantTransaction />} /> */}
-          {/* <Route path="reports" element={<AccountantReports />} /> */}
-        {/* </Route> */}
+        >
+          <Route path="dashboard" element={<AccountantDashboard />} />
+          <Route path="finance" element={<AccountantFinances />} />
+          <Route path="transactions" element={<AccountantTransaction />} />
+          <Route path="reports" element={<AccountantReports />} />
+        </Route>
 
-        {/* Shopping Routes */}
+        {/* Shopping Routes (protected) */}
         <Route
           path="/shop"
           element={
@@ -238,20 +253,21 @@ function App() {
           <Route path="home" element={<ShoppingHome />} />
           {/* <Route path="listing" element={<ShoppingListing />} /> */}
           <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="bulk-checkout" element={<BulkCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="payment-static-success" element={<PaymentStaticSuccess />} />
-          {/* <Route path="search" element={<SearchProducts />} /> */}
-          <Route path="store/:storeId" element={<StorePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
-          <Route path="bulk-request" element={<BulkRequest />} />
         </Route>
+
+        {/* Public Store Page Route */}
+        <Route path="/shop/store/:storeId" element={<StorePage />} />
+
+        {/* Public Bulk Product Page Route */}
+        <Route path="/shop/bulk-request" element={<BulkRequest />} />
 
         {/* Other Pages */}
         <Route path="/unauth-page" element={<UnauthPage />} />
-        <Route path="/farewell" element={<Farewell />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

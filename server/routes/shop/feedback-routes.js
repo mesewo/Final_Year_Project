@@ -1,5 +1,5 @@
 import express from "express";
-import { submitFeedback, getMyFeedback, getProductFeedback } from "../../controllers/shop/feedback-controller.js";
+import { submitFeedback, getMyFeedback, getProductFeedback, getAllFeedback } from "../../controllers/shop/feedback-controller.js";
 
 
 const router = express.Router();
@@ -9,6 +9,9 @@ router.post("/submit", submitFeedback);
 
 // Route to get feedback submitted by the logged-in user
 router.get("/my-feedback", getMyFeedback);
+
+// Route to get all feedback (for all products)
+router.get("/", getAllFeedback);
 
 router.get("/:productId", getProductFeedback);
 

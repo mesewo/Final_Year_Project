@@ -47,6 +47,30 @@ export const deleteSetting = createAsyncThunk("settings/deleteSetting", async (i
   }
 });
 
+export const updateAdminUsername = createAsyncThunk(
+  "settings/updateAdminUsername",
+  async ({ userId, newUsername }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put("/api/admin/settings/update-username", { userId, newUsername });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update username");
+    }
+  }
+);
+
+export const updateAdminPassword = createAsyncThunk(
+  "settings/updateAdminPassword",
+  async ({ userId, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put("/api/admin/settings/update-password", { userId, newPassword });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update password");
+    }
+  }
+);
+
 const settingsSlice = createSlice({
   name: "settings",
   initialState,

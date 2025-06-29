@@ -1,4 +1,6 @@
 import Setting from "../../models/Setting.js";
+import User from "../../models/User.js";
+import bcrypt from "bcryptjs";
 
 // Get all settings
 export const getAllSettings = async (req, res) => {
@@ -103,9 +105,48 @@ export const deleteSetting = async (req, res) => {
   }
 };
 
+// Update admin username
+export const updateAdminUsername = async (req, res) => {
+  try {
+    const { userId, newUsername } = req.body;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { userName: newUsername },
+      { new: true }
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json({ success: true, message: "Username updated", data: user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to update username" });
+  }
+};
+
+// Update admin password
+export const updateAdminPassword = async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body;
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    res.json({ success: true, message: "Password updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to update password" });
+  }
+};
+
 export default {
   getAllSettings,
   updateSetting,
   addSetting,
   deleteSetting,
+  updateAdminUsername,
+  updateAdminPassword,
 };

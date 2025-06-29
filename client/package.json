@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -28,7 +28,7 @@
     "clsx": "^2.1.1",
     "crypto": "^1.0.1",
     "dayjs": "^1.11.13",
-    "framer-motion": "^12.18.1",
+    "framer-motion": "^12.19.2",
     "html2pdf.js": "^0.10.3",
     "html5-qrcode": "^2.3.8",
     "jwt-decode": "^4.0.0",

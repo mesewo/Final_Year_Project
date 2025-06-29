@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { addFeedback, getFeedbackDetails } from "@/store/shop/feedback-slice";
 import { getAllOrdersByUserId } from "@/store/shop/order-slice";
 import { fetchStoreProductStock } from "@/store/shop/products-slice";
+import { useNavigate } from "react-router-dom";
 
 const MIN_BULK_QUANTITY = 10; // Minimum quantity for bulk requests
 
@@ -29,6 +30,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
   const [bulkQuantity, setBulkQuantity] = useState(MIN_BULK_QUANTITY || 10);
   const { toast } = useToast();
   const { bulkCartItems } = useSelector((state) => state.bulkCart);
+  const navigate = useNavigate();
 
   // Handle rating change
   function handleRatingChange(getRating) {
@@ -37,6 +39,10 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
 
   // Add to cart logic (normal cart)
   function handleAddToCart(getCurrentProductId, getTotalStock) {
+    if (!user?.id) {
+      navigate("/auth/login");
+      return;
+    }
     let getCartItems = cartItems.items || [];
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
@@ -53,11 +59,28 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
         }
       }
     }
+    
+    console.log("Adding to cart:", {
+      userId: user?.id,
+      productId: getCurrentProductId,
+      quantity: 1,
+      storeId: storeId,
+      // sellerId: optional
+    });
+
+    
+console.log("Adding to cart:", {
+  userId: user?.id, // or maybe user?._id
+});
+
+
     dispatch(
       addToCart({
         userId: user?.id,
         productId: getCurrentProductId,
         quantity: 1,
+        storeId: productDetails?.storeId || storeId,
+        sellerId: productDetails?.sellerId,
       })
     ).then((data) => {
       if (data?.payload?.success) {

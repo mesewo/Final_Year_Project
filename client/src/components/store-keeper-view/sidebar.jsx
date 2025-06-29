@@ -7,6 +7,7 @@ import {
   FileText,
   List,
   Store,
+  Settings,
 } from "lucide-react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +50,12 @@ const storekeeperSidebarMenuItems = [
     path: "/storekeeper/reports",
     icon: <FileText className="w-5 h-5" />,
   },
-  
+  {
+    id: "settings",
+    label: "Settings",
+    path: "/storekeeper/settings",
+    icon: <Settings className="w-5 h-5" />,
+  },
 ];
 
 function MenuItems({ setOpen }) {

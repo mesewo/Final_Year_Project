@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchSettings,
-  updateSetting,
-  addSetting,
-  deleteSetting,
-  updateAdminUsername,
-  updateAdminPassword,
-} from "@/store/admin/settings-slice";
+  updateSellerUsername,
+  updateSellerPassword,
+} from "@/store/seller/settings-slice";
 import { setUser } from "@/store/auth-slice";
 import {
   Tabs,
@@ -18,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Pencil, Trash2, Save, X, Eye, EyeOff, Copy as CopyIcon } from "lucide-react";
+import { Eye, EyeOff, Copy as CopyIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function getPasswordChecks(password) {
@@ -29,7 +25,6 @@ function getPasswordChecks(password) {
     special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
   };
 }
-
 function calculatePasswordStrength(password) {
   let strength = 0;
   if (password.length >= 8) strength += 1;
@@ -40,14 +35,11 @@ function calculatePasswordStrength(password) {
   return Math.min(strength, 5);
 }
 
-export default function SystemSettings() {
+export default function SellerSettings() {
   const dispatch = useDispatch();
-  const { settings, loading, error } = useSelector((state) => state.settings);
   const { user } = useSelector((state) => state.auth);
+  const { toast } = useToast();
   const [username, setUsername] = useState(user?.userName || "");
-  const [newSetting, setNewSetting] = useState({ key: "", value: "" });
-  const [editId, setEditId] = useState(null);
-  const [editValue, setEditValue] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -55,11 +47,10 @@ export default function SystemSettings() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
-    dispatch(fetchSettings());
-  }, [dispatch]);
+    setUsername(user?.userName || "");
+  }, [user?.userName]);
 
   // Password strength and checks
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -102,60 +93,22 @@ export default function SystemSettings() {
     return "Very Strong";
   };
 
-  const handleAddSetting = () => {
-    if (!newSetting.key.trim() || !newSetting.value.trim()) {
-      return toast({
-        title: "Please fill in both key and value fields",
-        variant: "destructive",
-      });
-    }
-    dispatch(addSetting(newSetting)).then((res) => {
-      if (res.meta.requestStatus === "fulfilled") {
-        toast({
-          title: "Setting added successfully",
-          variant: "default",
-        });
-        setNewSetting({ key: "", value: "" });
-      } else {
-        toast({
-          title: res.payload.message || "Failed to add setting",
-          variant: "destructive",
-        });
-      }
-    });
-  };
-
-  const handleUpdateSetting = (id) => {
-    dispatch(updateSetting({ id, key: settings.find(s => s._id === id).key, value: editValue })).then((res) => {
-      if (res.meta.requestStatus === "fulfilled") {
-        toast({ title: "Setting updated", variant: "default" });
-        setEditId(null);
-      } else {
-        toast({ title: res.payload.message || "Failed to update setting", variant: "destructive" });
-      }
-    });
-  };
-
-  const handleDeleteSetting = (id) => {
-    if (!confirm("Are you sure you want to delete this setting?")) return;
-    dispatch(deleteSetting(id)).then((res) => {
-      if (res.meta.requestStatus === "fulfilled") {
-        toast({ title: "Setting deleted", variant: "default" });
-      } else {
-        toast({ title: res.payload.message || "Failed to delete setting", variant: "destructive" });
-      }
-    });
-  };
-
   const handleChangeUsername = async () => {
     if (!username.trim()) {
       toast({ title: "Username cannot be empty", variant: "destructive" });
       return;
     }
-    const res = await dispatch(updateAdminUsername({ userId: user.id, newUsername: username }));
+    const res = await dispatch(updateSellerUsername({ userId: user.id, newUsername: username }));
     if (res.meta.requestStatus === "fulfilled" && res.payload) {
-      dispatch(setUser(res.payload)); // <-- update Redux user state
+      dispatch(setUser(res.payload));
       toast({ title: "Username updated!", variant: "default" });
+    }
+  };
+
+  const handleCopyPassword = () => {
+    if (newPassword) {
+      navigator.clipboard.writeText(newPassword);
+      toast({ title: "Password copied to clipboard!" });
     }
   };
 
@@ -166,7 +119,7 @@ export default function SystemSettings() {
     }
     setIsChanging(true);
     try {
-      await dispatch(updateAdminPassword({ userId: user.id, oldPassword, newPassword })).unwrap();
+      await dispatch(updateSellerPassword({ userId: user.id, newPassword })).unwrap();
       toast({ title: "Password updated successfully!" });
       setOldPassword("");
       setNewPassword("");
@@ -177,29 +130,13 @@ export default function SystemSettings() {
     setIsChanging(false);
   };
 
-  // Update username input if user changes (e.g. after update)
-  useEffect(() => {
-    setUsername(user?.userName || "");
-  }, [user?.userName]);
-
-  // Copy password to clipboard
-  const handleCopyPassword = () => {
-    if (newPassword) {
-      navigator.clipboard.writeText(newPassword);
-      toast({ title: "Password copied to clipboard!" });
-    }
-  };
-
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold text-gray-800">⚙️ System Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-800">⚙️ Settings</h1>
       <Tabs defaultValue="general" className="w-full">
         <TabsList className="gap-4 bg-muted p-2 rounded-xl">
           <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="keyvalue">Key-Value</TabsTrigger>
         </TabsList>
-
-        {/* General Tab: Username & Password */}
         <TabsContent value="general">
           <div className="bg-white p-6 rounded-xl shadow-sm space-y-6">
             <h2 className="text-xl font-semibold text-gray-700">General Settings</h2>
@@ -216,24 +153,22 @@ export default function SystemSettings() {
             </div>
             {/* Password Edit */}
             <div className="space-y-2 mt-6">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative w-full">
-                  <Input
-                    type={showOld ? "text" : "password"}
-                    placeholder="Old Password"
-                    value={oldPassword}
-                    onChange={e => setOldPassword(e.target.value)}
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
-                    onClick={() => setShowOld(v => !v)}
-                    tabIndex={-1}
-                  >
-                    {showOld ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
+              <div className="relative w-full">
+                <Input
+                  type={showOld ? "text" : "password"}
+                  placeholder="Old Password"
+                  value={oldPassword}
+                  onChange={e => setOldPassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400"
+                  onClick={() => setShowOld(v => !v)}
+                  tabIndex={-1}
+                >
+                  {showOld ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
               <div className="relative w-full mt-2">
                 <Input
@@ -364,102 +299,6 @@ export default function SystemSettings() {
                 {isChanging ? "Updating..." : "Change Password"}
               </Button>
             </div>
-          </div>
-        </TabsContent>
-
-        {/* Key-Value Tab */}
-        <TabsContent value="keyvalue">
-          <div className="bg-white p-6 rounded-xl shadow-sm space-y-6">
-            <h2 className="text-xl font-semibold text-gray-700">Key-Value Settings</h2>
-            {/* Add new setting */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Input
-                placeholder="Key"
-                value={newSetting.key}
-                onChange={(e) => setNewSetting({ ...newSetting, key: e.target.value })}
-              />
-              <Input
-                placeholder="Value"
-                value={newSetting.value}
-                onChange={(e) => setNewSetting({ ...newSetting, value: e.target.value })}
-              />
-              <Button onClick={handleAddSetting}>Add</Button>
-            </div>
-            {/* Settings table */}
-            {loading ? (
-              <p className="text-gray-600">Loading settings...</p>
-            ) : error ? (
-              <p className="text-red-500">{error}</p>
-            ) : (
-              <div className="overflow-x-auto border rounded-md">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-muted text-gray-600">
-                    <tr>
-                      <th className="text-left p-3">Key</th>
-                      <th className="text-left p-3">Value</th>
-                      <th className="text-left p-3">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {settings.map((setting) => (
-                      <tr key={setting._id} className="border-t hover:bg-gray-50">
-                        <td className="p-3 font-medium">{setting.key}</td>
-                        <td className="p-3">
-                          {editId === setting._id ? (
-                            <Input
-                              value={editValue}
-                              onChange={(e) => setEditValue(e.target.value)}
-                              className="w-full"
-                            />
-                          ) : (
-                            setting.value?.toString()
-                          )}
-                        </td>
-                        <td className="p-3 flex gap-2">
-                          {editId === setting._id ? (
-                            <>
-                              <Button
-                                size="sm"
-                                onClick={() => handleUpdateSetting(setting._id)}
-                              >
-                                <Save className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => setEditId(null)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setEditId(setting._id);
-                                  setEditValue(setting.value);
-                                }}
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleDeleteSetting(setting._id)}
-                              >
-                                <Trash2 className="w-4 h-4 text-red-500" />
-                              </Button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
           </div>
         </TabsContent>
       </Tabs>

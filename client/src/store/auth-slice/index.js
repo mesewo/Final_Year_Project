@@ -128,8 +128,18 @@ export const checkAuth = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    user: null,
+    isAuthenticated: false,
+    isLoading: true,
+    forgotPasswordStatus: 'idle', // 'idle' | 'pending' | 'success' | 'failed'
+    resetPasswordStatus: 'idle',  // 'idle' | 'pending' | 'success' | 'failed'
+    error: null
+  },
   reducers: {
+    setUser(state, action) {
+      state.user = action.payload;
+    },
     clearAuthError: (state) => {
       state.error = null;
     },
@@ -138,7 +148,7 @@ const authSlice = createSlice({
     },
     resetForgotPasswordStatus: (state) => {
       state.forgotPasswordStatus = 'idle';
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -264,6 +274,7 @@ const authSlice = createSlice({
 });
 
 export const { 
+  setUser,
   clearAuthError,
   resetPasswordStatus,
   resetForgotPasswordStatus 

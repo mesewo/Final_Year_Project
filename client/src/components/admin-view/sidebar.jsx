@@ -56,12 +56,12 @@ const adminSidebarMenuItems = [
     path: "/admin/settings",
     icon: <Settings className="w-5 h-5" />,
   },
-  {
-    id: "accountant",
-    label: "Accountant",
-    path: "/admin/accountant",
-    icon: <DollarSign className="w-5 h-5" />,
-  },
+  // {
+  //   id: "accountant",
+  //   label: "Accountant",
+  //   path: "/admin/accountant",
+  //   icon: <DollarSign className="w-5 h-5" />,
+  // },
 ];
 
 function MenuItems({ setOpen }) {

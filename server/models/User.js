@@ -152,11 +152,4 @@ const UserSchema = new mongoose.Schema({
     }
   }
 });
-
-// Method to generate username for Google users
-UserSchema.statics.generateUsername = function(name) {
-  const safeName = (name || 'user').replace(/\s+/g, '').toLowerCase();
-  return `${safeName}${Math.floor(1000 + Math.random() * 9000)}`;
-};
-
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+export default mongoose.model("User", UserSchema);

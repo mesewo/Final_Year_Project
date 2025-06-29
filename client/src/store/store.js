@@ -37,11 +37,13 @@ import sellerProductsSlice from "./seller/products-slice";
 import sellerOrdersSlice from "./seller/orders-slice";
 import sellerDashboardSlice from "./seller/dashboard-slice";
 import sellerReportsReducer from "./seller/reports-slice";
+import sellerSettingsReducer from "./seller/settings-slice";
 
 import StoreKeeperInventorySlice from "./store-keeper/inventory-slice";
 import StorekeeperDashboardSlice from "./store-keeper/dashboard-slice";
 import StoreKeeperStoreSlice from "./store-keeper/store-slice";
 import storeKeeperReportReducer from "./store-keeper/report-slice";
+import storekeeperSettingsReducer from "./store-keeper/settings-slice";
 
 // import accountantReportsSlice from "./accountant/reports-slice";
 // import accountantFinanceSlice from "./accountant/finance-slice";
@@ -100,12 +102,14 @@ const store = configureStore({
     sellerOrders: sellerOrdersSlice,
     sellerDashboard: sellerDashboardSlice,
     sellerReports: sellerReportsReducer,
+    sellerSettings: sellerSettingsReducer,
 
     // Store Keeper
     inventory: StoreKeeperInventorySlice,
     storeKeeperDashboard: StorekeeperDashboardSlice,
     storeKeeperStore: StoreKeeperStoreSlice,
     storeKeeperReports: storeKeeperReportReducer,
+    storekeeperSettings: storekeeperSettingsReducer,
 
     // Accountant
     // // accountantReports: accountantReportsSlice,

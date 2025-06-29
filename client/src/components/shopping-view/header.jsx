@@ -25,6 +25,8 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
+// If you use dark mode toggle, import it here
+// import DarkModeToggle from "./DarkModeToggle";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -78,6 +80,7 @@ function HeaderRightContent() {
 
   function handleLogout() {
     dispatch(logoutUser());
+    navigate("/"); // Redirect to landing page after logout
   }
 
   useEffect(() => {
@@ -100,7 +103,6 @@ function HeaderRightContent() {
           <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
             {cartItems?.items?.length || 0}
           </span>
-          {/* <span className="sr-only">User cart</span> */}
         </Button>
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
@@ -129,67 +131,95 @@ function HeaderRightContent() {
           bulkCartItems={bulkCartItems}
         />
       </Sheet>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Avatar className="bg-black">
-            {profileUser?.profile?.avatar && (
-              <img
-                src={profileUser.profile.avatar}
-                alt={profileUser.userName}
-                className="object-cover w-full h-full"
-                onError={e => { e.target.onerror = null; e.target.src = "/default-avatar.png"; }}
-              />
-            )}
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" className="w-56">
-          <DropdownMenuLabel>
-            Logged in as {profileUser?.userName}
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
-            <UserCog className="mr-2 h-4 w-4" />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Show profile only if logged in, otherwise show Sign In/Up */}
+      {!user?.id ? (
+        <div className="flex gap-2">
+          <Button
+            onClick={() => navigate("/auth/login")}
+            className="px-4 py-2 rounded border-2 border-blue-300 text-white font-semibold bg-blue-300 hover:bg-blue-400 transition"
+            variant="outline"
+          >
+            Sign In
+          </Button>
+          <Button
+            onClick={() => navigate("/auth/register")}
+            className="px-4 py-2 rounded border-2 border-blue-300 bg-white text-blue-300 font-semibold hover:bg-blue-50 transition"
+            variant="outline"
+          >
+            Sign Up
+          </Button>
+        </div>
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="bg-black">
+              {profileUser?.profile?.avatar && (
+                <img
+                  src={profileUser.profile.avatar}
+                  alt={profileUser.userName}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/default-avatar.png";
+                  }}
+                />
+              )}
+              {/* Optionally, fallback to initials */}
+              <AvatarFallback>
+                {profileUser?.userName?.[0]?.toUpperCase() || "?"}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" className="w-56">
+            <DropdownMenuLabel>
+              Logged in as {profileUser?.userName || user?.userName}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/shop/account")}>
+              <UserCog className="mr-2 h-4 w-4" />
+              Account
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {/* Uncomment if you want dark mode toggle */}
+      {/* <DarkModeToggle /> */}
     </div>
   );
 }
 
 function ShoppingHeader() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
-
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2">
-          <HousePlug className="h-6 w-6" />
-          <span className="font-bold">Abay Garment</span>
-        </Link>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle header menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-full max-w-xs">
+    <header className="sticky top-0 z-40 w-full border-b-4 border-blue-300 bg-background">
+      <div className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-md transition-colors">
+        <div className="flex h-16 items-center justify-between px-4 md:px-6">
+          <Link to="/shop/home" className="flex items-center gap-2">
+            <HousePlug className="h-6 w-6" />
+            <span className="font-bold">Abay Garment</span>
+          </Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="lg:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle header menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-full max-w-xs">
+              <MenuItems />
+              <HeaderRightContent />
+            </SheetContent>
+          </Sheet>
+          <div className="hidden lg:block">
             <MenuItems />
+          </div>
+          <div className="hidden lg:block">
             <HeaderRightContent />
-          </SheetContent>
-        </Sheet>
-        <div className="hidden lg:block">
-          <MenuItems />
-        </div>
-
-        <div className="hidden lg:block">
-          <HeaderRightContent />
+          </div>
         </div>
       </div>
     </header>

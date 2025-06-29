@@ -105,8 +105,34 @@ export const getProductFeedback = async (req, res) => {
   }
 };
 
+export const getAllFeedback = async (req, res) => {
+  try {
+    const { storeId } = req.query;
+    let filter = { status: "approved" };
+
+    if (storeId) {
+      const products = await Product.find({ storeId }).select("_id");
+      filter.product = { $in: products.map((p) => p._id.toString()) };
+    }
+
+    // Use .lean() to get plain JS objects
+    const feedbacks = await Feedback.find(filter).lean();
+    // Convert product field to string for all feedbacks
+    feedbacks.forEach(fb => {
+      if (fb.product && typeof fb.product !== "string") {
+        fb.product = fb.product.toString();
+      }
+    });
+
+    res.status(200).json({ success: true, data: feedbacks });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export default {
   submitFeedback,
   getMyFeedback,
   getProductFeedback,
+  getAllFeedback,
 };

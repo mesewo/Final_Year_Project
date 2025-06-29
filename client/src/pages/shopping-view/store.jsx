@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { fetchPublicStoreProducts, fetchProductDetails } from "@/store/shop/products-slice";
-import { fetchStoreById } from "@/store/shop/store-slice"; // <-- import the thunk
+import { fetchStoreById } from "@/store/shop/store-slice";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { useToast } from "@/components/ui/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { getAllFeedback } from "@/store/shop/feedback-slice";
 
 const categories = [
   { id: "men", label: "Men" },
@@ -36,6 +37,12 @@ function StorePage() {
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
+
+  useEffect(() => {
+    if (storeId) {
+      dispatch(getAllFeedback());
+    }
+  }, [dispatch, ]);
 
   function uniqueById(arr) {
     const seen = new Set();
@@ -88,8 +95,8 @@ function StorePage() {
         userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
-        sellerId: productObj.seller || productObj.sellerId, // <-- Attach seller
-        storeId: productObj.store || productObj.storeId,     // <-- Attach store
+        sellerId: productObj.seller || productObj.sellerId,
+        storeId: productObj.store || productObj.storeId,
       })
     ).then((data) => {
       if (data?.payload?.success) {

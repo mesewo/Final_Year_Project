@@ -4,6 +4,8 @@ import {
   updateSetting,
   addSetting,
   deleteSetting,
+  updateAdminUsername,
+  updateAdminPassword,
 } from "../../controllers/admin/settings-controller.js";
 
 const router = express.Router();
@@ -19,5 +21,11 @@ router.post("/add", addSetting);
 
 // Route to delete a specific setting
 router.delete("/delete/:id", deleteSetting);
+
+// Update admin username
+router.put("/update-username", updateAdminUsername);
+
+// Update admin password
+router.put("/update-password", updateAdminPassword);
 
 export default router;

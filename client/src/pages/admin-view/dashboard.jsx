@@ -21,7 +21,7 @@ export default function AdminDashboard() {
       change: stats?.productChange
         ? `${stats.productChange > 0 ? "+" : ""}${stats.productChange.toFixed(2)}%`
         : "0%",
-      path: "/admin/products"
+      // path: "/admin/products"
     },
     {
       title: "Active Users",

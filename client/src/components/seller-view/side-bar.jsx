@@ -3,7 +3,8 @@ import {
     ShoppingBasket,
     BadgeCheck,
     FileText, 
-    PackagePlus
+    PackagePlus,
+    Settings
   } from "lucide-react";
   import { Fragment } from "react";
   import { useNavigate } from "react-router-dom";
@@ -39,6 +40,12 @@ import {
       label: "Reports",
       path: "/seller/reports",
       icon: <FileText className="w-5 h-5" />,
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      path: "/seller/settings",
+      icon: <Settings className="w-5 h-5" />,
     },
   ];
   
