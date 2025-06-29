@@ -1,6 +1,9 @@
 import cloudinary from "cloudinary";
 import multer from "multer";
 import streamifier from "streamifier";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,     // Your Cloudinary cloud name
