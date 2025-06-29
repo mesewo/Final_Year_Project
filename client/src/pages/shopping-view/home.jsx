@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { 
+import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ShoppingBasket,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { 
+import {
   fetchAllFilteredProducts,
   fetchProductDetails,
 } from "@/store/shop/products-slice";
@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import { fetchAllStores } from "@/store/shop/store-slice";
+import AbayProjectSlider from "@/components/shopping-view/abayProjectSlider";
 
 // const stores = [
 //   {
@@ -124,7 +125,8 @@ function ShoppingHome() {
           onClick={() =>
             setCurrentSlide(
               (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) % featureImageList.length
+                (prevSlide - 1 + featureImageList.length) %
+                featureImageList.length
             )
           }
           className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
@@ -145,10 +147,17 @@ function ShoppingHome() {
         </Button>
       </div>
 
+      {/* Abay Project Slider */}
+      <div className="my-12">
+        <AbayProjectSlider />
+      </div>
+
       {/* Our Stores Section */}
       <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Our Stores</h2>
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+            Our Stores
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-7xl mx-auto">
             {storesStatus === "loading" ? (
               <div>Loading stores...</div>
@@ -163,7 +172,10 @@ function ShoppingHome() {
                 >
                   <div className="relative h-80 w-full">
                     <img
-                      src={store.image || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"}
+                      src={
+                        store.image ||
+                        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"
+                      }
                       alt={store.name}
                       className="w-full h-full object-cover rounded-2xl"
                     />
@@ -210,9 +222,12 @@ function ShoppingHome() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">Bulk & Corporate Orders</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                Bulk & Corporate Orders
+              </h2>
               <p className="text-gray-700 max-w-2xl mx-auto">
-                Special pricing and dedicated support for large quantity purchases
+                Special pricing and dedicated support for large quantity
+                purchases
               </p>
             </div>
             <Card
@@ -228,10 +243,13 @@ function ShoppingHome() {
                   />
                 </div>
                 <div className="md:w-1/2 p-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex flex-col justify-center">
-                  <h3 className="font-bold text-2xl mb-4">Request Bulk Products</h3>
+                  <h3 className="font-bold text-2xl mb-4">
+                    Request Bulk Products
+                  </h3>
                   <p className="mb-6 text-blue-100">
-                    Get wholesale pricing and priority processing when ordering in large quantities. 
-                    Perfect for businesses, events, and organizations.
+                    Get wholesale pricing and priority processing when ordering
+                    in large quantities. Perfect for businesses, events, and
+                    organizations.
                   </p>
                   <ul className="mb-6 space-y-2">
                     <li className="flex items-center gap-2">
@@ -247,7 +265,7 @@ function ShoppingHome() {
                       <span>Custom packaging options</span>
                     </li>
                   </ul>
-                  <Button 
+                  <Button
                     className="mt-4 bg-white text-blue-600 hover:bg-gray-100 px-8 py-6 text-lg font-bold w-full md:w-auto"
                     size="lg"
                   >
@@ -261,7 +279,6 @@ function ShoppingHome() {
       </section>
 
       {/* Newsletter Section */}
-      
 
       {/* Product Details Modal */}
       <ProductDetailsDialog

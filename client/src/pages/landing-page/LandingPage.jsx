@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import MagicalHeroImage from "@/components/MagicalHeroImage";
 import ShoppingHeader from "@/components/shopping-view/header";
 import Footer from "@/components/shopping-view/footer";
+import AbayProjectSlider from "@/components/shopping-view/abayProjectSlider"; // <-- Add this import
 
 const stores = [
   {
@@ -155,6 +156,11 @@ function LandingPage() {
         </Button>
       </div>
 
+      {/* Abay Project Slider */}
+      <div className="my-12">
+        <AbayProjectSlider />
+      </div>
+
       {/* Our Stores Section */}
       <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="container mx-auto px-4">
@@ -221,7 +227,7 @@ function LandingPage() {
               </motion.div>
             ))}
           </div>
-          </div>
+        </div>
       </section>
 
       {/* Store Sections with Product Tiles */}
