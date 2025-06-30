@@ -3,7 +3,7 @@ import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { Star } from "lucide-react";
 import { useSelector } from "react-redux";
- 
+
 // Helper to render stars
 function renderStars(rating) {
   const stars = [];
@@ -11,7 +11,11 @@ function renderStars(rating) {
   for (let i = 1; i <= 5; i++) {
     if (i <= rounded) {
       stars.push(
-        <Star key={i} className="w-5 h-5 text-yellow-400 inline" fill="currentColor" />
+        <Star
+          key={i}
+          className="w-5 h-5 text-yellow-400 inline"
+          fill="currentColor"
+        />
       );
     } else if (i - 0.5 === rounded) {
       stars.push(
@@ -23,7 +27,12 @@ function renderStars(rating) {
         />
       );
     } else {
-      stars.push(<Star key={i} className="w-5 h-5 text-gray-300 inline" />);
+      stars.push(
+        <Star
+          key={i}
+          className="w-5 h-5 text-gray-300 dark:text-gray-600 inline"
+        />
+      );
     }
   }
   return stars;
@@ -32,25 +41,14 @@ function renderStars(rating) {
 function ShoppingProductTile({ product, handleGetProductDetails }) {
   const { feedbackList } = useSelector((state) => state.shopFeedback);
 
-  console.log("feedbackList", feedbackList);
-  console.log("productId", product._id);
-  // console.log("item.product", item.product, typeof item.product);
-  // console.log("product._id", product._id, typeof product._id);
-
-  // Only show approved feedback for this product
   const approvedFeedback = Array.isArray(feedbackList)
-    ? feedbackList.filter((item) => {
-        // Debug log inside the filter
-        console.log("item.product", item.product, typeof item.product);
-        console.log("product._id", product._id, typeof product._id);
-        return (
+    ? feedbackList.filter(
+        (item) =>
           item.status === "approved" &&
           String(item.product) === String(product._id)
-        );
-      })
+      )
     : [];
 
-  // Calculate average feedback
   const avgRating =
     approvedFeedback.length > 0
       ? approvedFeedback.reduce((sum, item) => sum + item.rating, 0) /
@@ -69,7 +67,7 @@ function ShoppingProductTile({ product, handleGetProductDetails }) {
       : null;
 
   return (
-    <Card className="w-full max-w-sm mx-auto shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl overflow-hidden group bg-white">
+    <Card className="w-full max-w-sm mx-auto shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl overflow-hidden group bg-white dark:bg-gray-800 dark:text-white">
       <div
         onClick={() => handleGetProductDetails(product?._id)}
         className="cursor-pointer"
@@ -95,19 +93,23 @@ function ShoppingProductTile({ product, handleGetProductDetails }) {
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-1 truncate">{product?.title}</h2>
+          <h2 className="text-lg font-semibold mb-1 truncate">
+            {product?.title}
+          </h2>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground dark:text-gray-300">
               {categoryOptionsMap[product?.category]}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground dark:text-gray-300">
               {brandOptionsMap[product?.brand]}
             </span>
           </div>
           <div className="flex items-end gap-2 mb-2">
             <span
               className={`${
-                product?.salePrice > 0 ? "line-through text-gray-400" : "text-primary"
+                product?.salePrice > 0
+                  ? "line-through text-gray-400 dark:text-gray-500"
+                  : "text-primary"
               } text-base font-semibold`}
             >
               Br{product?.price}
@@ -120,7 +122,7 @@ function ShoppingProductTile({ product, handleGetProductDetails }) {
           </div>
           <div className="flex items-center gap-1 mt-2">
             {renderStars(avgRating)}
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
               {feedbackCount > 0
                 ? `${avgRating.toFixed(1)} · ${feedbackCount} review${
                     feedbackCount > 1 ? "s" : ""

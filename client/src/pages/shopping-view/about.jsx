@@ -1,4 +1,6 @@
 import { FaTshirt, FaShippingFast, FaHandsHelping } from "react-icons/fa";
+// import ProjectDetails from "@/components/shopping-view/ProjectDetails";
+
 
 export default function AboutPage() {
   return (
@@ -71,6 +73,13 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
+
+        {/* Other projects from abay industrial development S.C. */}
+
+        {/* <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-8 mb-16">
+          <h2 className="text-3xl font-bold mb-6">Other projects from abay industrial development S.C.</h2>
+          <ProjectDetails />
+        </div> */}
 
         {/* Team Section */}
         <div className="text-center mb-16">

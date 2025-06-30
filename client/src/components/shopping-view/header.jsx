@@ -25,8 +25,7 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
-// If you use dark mode toggle, import it here
-// import DarkModeToggle from "./DarkModeToggle";
+import DarkModeToggle from "./DarkModeToggle";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -187,8 +186,7 @@ function HeaderRightContent() {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-      {/* Uncomment if you want dark mode toggle */}
-      {/* <DarkModeToggle /> */}
+      <DarkModeToggle />
     </div>
   );
 }

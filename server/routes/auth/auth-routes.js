@@ -6,7 +6,9 @@ import {
   authMiddleware,
   googleLogin,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyEmailOTP,
+  resendOTP,
 } from "../../controllers/auth/auth-controller.js";
 
 const router = express.Router();
@@ -18,6 +20,8 @@ router.post("/logout", logoutUser);
 router.post("/google", googleLogin);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+router.post("/verify-email-otp", verifyEmailOTP);
+router.post("/resend-otp", resendOTP);
 
 // Protected route example using authMiddleware
 router.get("/check-auth", authMiddleware, (req, res) => {

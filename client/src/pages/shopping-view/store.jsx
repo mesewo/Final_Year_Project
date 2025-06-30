@@ -168,7 +168,7 @@ function StorePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <ShoppingHeader />
       <div className="container mx-auto px-4 py-8 flex-1">
         {/* Store Banner */}
@@ -193,7 +193,32 @@ function StorePage() {
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <SidebarFilters />
+          <div className="w-64 pr-6">
+            <h3 className="font-bold mb-4 text-lg">Filter by Category</h3>
+            <div className="space-y-2">
+              {categories.map((cat) => (
+                <label
+                  key={cat.id}
+                  className="flex items-center space-x-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.category.includes(cat.id)}
+                    onChange={(e) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        category: e.target.checked
+                          ? [...prev.category, cat.id]
+                          : prev.category.filter((c) => c !== cat.id),
+                      }));
+                    }}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                  <span className="text-gray-800 dark:text-gray-200">{cat.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
           {/* Main content */}
           <div className="flex-1">
@@ -204,68 +229,41 @@ function StorePage() {
                   placeholder="Search products..."
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
-                  className="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                  className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
                 />
                 <svg
                   className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
 
+            {/* Product Grid */}
             {isLoading ? (
               <div className="flex justify-center items-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
               </div>
             ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {intersectionProducts.length > 0 ? (
-                    intersectionProducts.map((productItem) => (
-                      <ShoppingProductTile
-                        key={productItem._id || productItem.id}
-                        product={productItem}
-                        handleGetProductDetails={handleGetProductDetails}
-                        handleAddtoCart={handleAddtoCart}
-                      />
-                    ))
-                  ) : (
-                    <div className="col-span-full py-12 text-center">
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1}
-                          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <h3 className="mt-2 text-lg font-medium text-gray-900">
-                        No products found
-                      </h3>
-                      <p className="mt-1 text-gray-500">
-                        Try adjusting your search or filter to find what you're
-                        looking for.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {intersectionProducts.length > 0 ? (
+                  intersectionProducts.map((productItem) => (
+                    <ShoppingProductTile
+                      key={productItem._id || productItem.id}
+                      product={productItem}
+                      handleGetProductDetails={handleGetProductDetails}
+                      handleAddtoCart={handleAddtoCart}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-12 text-center text-gray-600 dark:text-gray-300">
+                    <p>No products found</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -281,6 +279,7 @@ function StorePage() {
       <ShoppingFooter />
     </div>
   );
+
 }
 
 export default StorePage;
