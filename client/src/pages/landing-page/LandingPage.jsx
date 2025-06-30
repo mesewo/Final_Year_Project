@@ -139,7 +139,7 @@ function LandingPage() {
         {/* Centered Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 text-center px-4">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg animate-fade-in-up">
-            Welcome to Abay Industrial Shopping
+            Welcome to Abay Garment Shopping
           </h1>
           <p className="mt-4 text-lg md:text-2xl text-blue-100 font-medium max-w-2xl mx-auto animate-fade-in-up delay-150">
             Discover quality products, bulk deals, and more from Ethiopia’s

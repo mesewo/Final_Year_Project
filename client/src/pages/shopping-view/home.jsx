@@ -21,7 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import { fetchAllStores } from "@/store/shop/store-slice";
-import AbayProjectSlider from "@/components/shopping-view/abayProjectSlider";
+// import AbayProjectSlider from "@/components/shopping-view/abayProjectSlider";
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -106,7 +106,7 @@ function ShoppingHome() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent z-10" />
         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 text-center px-4">
           <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg animate-fade-in-up">
-            Welcome to Abay Industrial Shopping
+            Welcome to Abay Garment Shopping
           </h1>
           <p className="mt-4 text-lg md:text-2xl text-blue-100 font-medium max-w-2xl mx-auto animate-fade-in-up delay-150">
             Discover quality products, bulk deals, and more from Ethiopia’s
@@ -138,9 +138,9 @@ function ShoppingHome() {
       </div>
 
       {/* Abay Project Slider */}
-      <div className="my-12">
+      {/* <div className="my-12">
         <AbayProjectSlider />
-      </div>
+      </div> */}
 
       {/* Our Stores Section */}
       <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-black">
