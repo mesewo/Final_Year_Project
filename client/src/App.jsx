@@ -87,11 +87,16 @@ import { checkAuth } from "./store/auth-slice";
 // --- RootRedirect helper ---
 function RootRedirect({ isAuthenticated, user }) {
   if (isAuthenticated && user) {
-    if (user.role === "admin") return <Navigate to="/admin/dashboard" replace />;
-    if (user.role === "factman") return <Navigate to="/factman/dashboard" replace />;
-    if (user.role === "seller") return <Navigate to="/seller/dashboard" replace />;
-    if (user.role === "store_keeper") return <Navigate to="/storekeeper/dashboard" replace />;
-    if (user.role === "accountant") return <Navigate to="/accountant/dashboard" replace />;
+    if (user.role === "admin")
+      return <Navigate to="/admin/dashboard" replace />;
+    if (user.role === "factman")
+      return <Navigate to="/factman/dashboard" replace />;
+    if (user.role === "seller")
+      return <Navigate to="/seller/dashboard" replace />;
+    if (user.role === "store_keeper")
+      return <Navigate to="/storekeeper/dashboard" replace />;
+    if (user.role === "accountant")
+      return <Navigate to="/accountant/dashboard" replace />;
     return <Navigate to="/shop/home" replace />;
   }
   return <LandingPage />;
@@ -115,7 +120,9 @@ function App() {
         {/* Root route: show landing page for unauth, redirect for roles */}
         <Route
           path="/"
-          element={<RootRedirect isAuthenticated={isAuthenticated} user={user} />}
+          element={
+            <RootRedirect isAuthenticated={isAuthenticated} user={user} />
+          }
         />
 
         {/* Auth Pages */}
@@ -251,11 +258,15 @@ function App() {
           }
         >
           <Route path="home" element={<ShoppingHome />} />
+          <Route path="bulk-checkout" element={<BulkCheckout />} />
           {/* <Route path="listing" element={<ShoppingListing />} /> */}
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="payment-static-success" element={<PaymentStaticSuccess />} />
+          <Route
+            path="payment-static-success"
+            element={<PaymentStaticSuccess />}
+          />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
         </Route>

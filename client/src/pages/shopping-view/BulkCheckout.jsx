@@ -148,7 +148,7 @@ export default function BulkCheckout() {
 
       // 3. Initiate Chapa payment
       const paymentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}pi/payment/initiate`,
+        `${import.meta.env.VITE_API_URL}/api/payment/initiate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -185,6 +185,15 @@ export default function BulkCheckout() {
       });
     }
   };
+
+  // Example for a checkout handler
+  function handleBulkCheckout() {
+    if (!user?.id) {
+      navigate("/login");
+      return;
+    }
+    // ...rest of your checkout logic...
+  }
 
   return (
     <div className="container w-full min-h-screen mx-auto px-2 sm:px-4 py-8 ">

@@ -3,7 +3,7 @@ import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { Star } from "lucide-react";
 import { useSelector } from "react-redux";
-
+ 
 // Helper to render stars
 function renderStars(rating) {
   const stars = [];

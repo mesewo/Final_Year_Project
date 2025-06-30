@@ -122,7 +122,7 @@ function AuthLogin() {
       } else if (payload?.isBlocked) {
         toast({
           title: "Account Blocked",
-          description: payload?.message || "Your account is blocked. Please contact support.",
+          description: payload?.message || "Your account is blocked.",
           variant: "destructive",
         });
       } else {

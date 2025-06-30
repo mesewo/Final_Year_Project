@@ -76,7 +76,7 @@ export const addProductFormElements = [
       // { id: "levi", label: "Levi's" },
       // { id: "zara", label: "Zara" },
       // { id: "h&m", label: "H&M" },
-      {id: "abay", label: "ABAY"}
+      { id: "abay", label: "ABAY" },
     ],
   },
   {
@@ -109,11 +109,9 @@ export const addProductFormElements = [
 ];
 
 export const shoppingViewHeaderMenuItems = [
-
-
   // ...existing code...
 
-  { id: "home", label: "Home", path: "/shop/home" },
+  { id: "home", label: "Home", path: "/" },
   { id: "about", label: "About Us", path: "/shop/about" },
   { id: "contact", label: "Contact", path: "/shop/contact" },
 

@@ -2,6 +2,9 @@
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
+import { authMiddleware } from "../../controllers/auth/auth-controller.js";
+
+
 
 dotenv.config();
 const router = express.Router();

@@ -82,7 +82,7 @@ function ShoppingHome() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
-    }, 15000);
+    }, 1000);
 
     return () => clearInterval(timer);
   }, [featureImageList]);
@@ -107,43 +107,56 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Banner */}
-      <div className="relative w-full h-[600px] overflow-hidden">
+      <div className="relative w-full h-[420px] md:h-[600px] overflow-hidden rounded-3xl shadow-2xl my-8">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
               <img
                 src={slide?.image}
                 key={index}
                 className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+                  index === currentSlide
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-105"
+                } absolute top-0 left-0 w-full h-full object-cover transition-all duration-1000`}
+                alt={`slide-${index}`}
               />
             ))
           : null}
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent z-10" />
+        {/* Centered Text */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 text-center px-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg animate-fade-in-up">
+            Welcome to Abay Industrial Shopping
+          </h1>
+          <p className="mt-4 text-lg md:text-2xl text-blue-100 font-medium max-w-2xl mx-auto animate-fade-in-up delay-150">
+            Discover quality products, bulk deals, and more from Ethiopia’s
+            leading industrial group.
+          </p>
+        </div>
+        {/* Navigation Buttons */}
         <Button
           variant="outline"
           size="icon"
           onClick={() =>
             setCurrentSlide(
-              (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
+              (prev) =>
+                (prev - 1 + featureImageList.length) % featureImageList.length
             )
           }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 hover:bg-blue-500 hover:text-white z-30"
         >
-          <ChevronLeftIcon className="w-4 h-4" />
+          <ChevronLeftIcon className="w-6 h-6" />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() =>
-            setCurrentSlide(
-              (prevSlide) => (prevSlide + 1) % featureImageList.length
-            )
+            setCurrentSlide((prev) => (prev + 1) % featureImageList.length)
           }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80 hover:bg-blue-500 hover:text-white z-30"
         >
-          <ChevronRightIcon className="w-4 h-4" />
+          <ChevronRightIcon className="w-6 h-6" />
         </Button>
       </div>
 

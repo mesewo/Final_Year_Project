@@ -18,7 +18,13 @@ import { useNavigate } from "react-router-dom";
 
 const MIN_BULK_QUANTITY = 10; // Minimum quantity for bulk requests
 
-function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }) {
+function ProductDetailsDialog({
+  open,
+  setOpen,
+  productDetails,
+  storeId,
+  isBulk,
+}) {
   const [feedbackMsg, setFeedbackMsg] = useState("");
   const [rating, setRating] = useState(0);
   const dispatch = useDispatch();
@@ -59,7 +65,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
         }
       }
     }
-    
+
     console.log("Adding to cart:", {
       userId: user?.id,
       productId: getCurrentProductId,
@@ -68,11 +74,9 @@ function ProductDetailsDialog({ open, setOpen, productDetails, storeId, isBulk }
       // sellerId: optional
     });
 
-    
-console.log("Adding to cart:", {
-  userId: user?.id, // or maybe user?._id
-});
-
+    console.log("Adding to cart:", {
+      userId: user?.id, // or maybe user?._id
+    });
 
     dispatch(
       addToCart({
@@ -94,6 +98,10 @@ console.log("Adding to cart:", {
 
   // Add to bulk cart logic (NEW)
   const handleBulkRequest = async (productId) => {
+    if (!user?.id) {
+      navigate("/auth/login"); 
+      return;
+    }
     const quantity = Number(bulkQuantity) || MIN_BULK_QUANTITY;
     const stock =
       typeof storeStock === "number"
@@ -125,24 +133,26 @@ console.log("Adding to cart:", {
         productId,
         quantity,
       })
-    ).then((res) => {
-      if (res?.payload?.success) {
-        dispatch(fetchBulkCartItems(user?.id));
-        toast({ title: "Added to bulk cart." });
-      } else {
+    )
+      .then((res) => {
+        if (res?.payload?.success) {
+          dispatch(fetchBulkCartItems(user?.id));
+          toast({ title: "Added to bulk cart." });
+        } else {
+          toast({
+            title: res?.payload?.message || "Failed to add to bulk cart.",
+            description: JSON.stringify(res?.payload, null, 2),
+            variant: "destructive",
+          });
+        }
+      })
+      .catch((err) => {
         toast({
-          title: res?.payload?.message || "Failed to add to bulk cart.",
-          description: JSON.stringify(res?.payload, null, 2),
+          title: "Error adding to bulk cart.",
+          description: err?.message || JSON.stringify(err, null, 2),
           variant: "destructive",
         });
-      }
-    }).catch((err) => {
-      toast({
-        title: "Error adding to bulk cart.",
-        description: err?.message || JSON.stringify(err, null, 2),
-        variant: "destructive",
       });
-    });
   };
 
   // Handle dialog close
@@ -155,19 +165,26 @@ console.log("Adding to cart:", {
 
   // Add feedback logic
   async function handleAddFeedback() {
-    const userOrder = userOrders?.find(order => {
-      const items = order?.orderItems?.length ? order.orderItems : order?.cartItems || [];
+    const userOrder = userOrders?.find((order) => {
+      const items = order?.orderItems?.length
+        ? order.orderItems
+        : order?.cartItems || [];
       return (
-        ["delivered", "completed", "approved", "confirmed"].includes(order.orderStatus) &&
+        ["delivered", "completed", "approved", "confirmed"].includes(
+          order.orderStatus
+        ) &&
         Array.isArray(items) &&
-        items.some(item => String(item.productId) === String(productDetails?._id))
+        items.some(
+          (item) => String(item.productId) === String(productDetails?._id)
+        )
       );
     });
     const orderId = userOrder?._id;
 
     if (!orderId) {
       toast({
-        title: "You must purchase and try this product before leaving feedback.",
+        title:
+          "You must purchase and try this product before leaving feedback.",
         variant: "destructive",
       });
       return;
@@ -213,16 +230,18 @@ console.log("Adding to cart:", {
 
   // Fetch feedback details when product changes
   useEffect(() => {
-    if (productDetails !== null) dispatch(getFeedbackDetails(productDetails?._id));
+    if (productDetails !== null)
+      dispatch(getFeedbackDetails(productDetails?._id));
   }, [productDetails, dispatch]);
 
   // Fetch store stock when product or store changes
   useEffect(() => {
     if (productDetails?._id && storeId) {
-      dispatch(fetchStoreProductStock({ productId: productDetails._id, storeId }))
-        .then(res => {
-          setStoreStock(res?.payload?.quantity ?? 0);
-        });
+      dispatch(
+        fetchStoreProductStock({ productId: productDetails._id, storeId })
+      ).then((res) => {
+        setStoreStock(res?.payload?.quantity ?? 0);
+      });
     }
   }, [productDetails, storeId, dispatch]);
 
@@ -242,10 +261,10 @@ console.log("Adding to cart:", {
     typeof storeStock === "number"
       ? storeStock
       : typeof productDetails?.quantity === "number"
-        ? productDetails.quantity
-        : typeof productDetails?.totalStock === "number"
-          ? productDetails.totalStock
-          : null;
+      ? productDetails.quantity
+      : typeof productDetails?.totalStock === "number"
+      ? productDetails.totalStock
+      : null;
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
@@ -258,7 +277,7 @@ console.log("Adding to cart:", {
         >
           {/* <X size={24} /> */}
         </button>
-        
+
         {/* Product Image */}
         <div className="relative overflow-hidden rounded-lg shadow-sm bg-white flex items-center justify-center">
           <img
@@ -272,7 +291,9 @@ console.log("Adding to cart:", {
         {/* Product Info & Actions */}
         <div className="flex flex-col h-full">
           <div>
-            <h1 className="text-3xl font-extrabold mb-2">{productDetails?.title}</h1>
+            <h1 className="text-3xl font-extrabold mb-2">
+              {productDetails?.title}
+            </h1>
             <p className="text-muted-foreground text-lg mb-4">
               {productDetails?.description}
             </p>
@@ -305,8 +326,8 @@ console.log("Adding to cart:", {
               {stock === 0
                 ? "Out of stock"
                 : stock > 0
-                  ? `In stock: ${stock}`
-                  : "Loading stock..."}
+                ? `In stock: ${stock}`
+                : "Loading stock..."}
             </span>
           </div>
           {isBulk && (
@@ -318,7 +339,7 @@ console.log("Adding to cart:", {
                 min={MIN_BULK_QUANTITY || 1}
                 max={stock}
                 value={bulkQuantity}
-                onChange={e => setBulkQuantity(e.target.value)}
+                onChange={(e) => setBulkQuantity(e.target.value)}
                 className="w-32"
               />
             </div>
@@ -331,19 +352,16 @@ console.log("Adding to cart:", {
             ) : isBulk ? (
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={()=>{handleBulkRequest(productDetails?._id)}}
+                onClick={() => {
+                  handleBulkRequest(productDetails?._id);
+                }}
               >
                 Add to Bulk Cart
               </Button>
             ) : (
               <Button
                 className="w-full"
-                onClick={() =>
-                  handleAddToCart(
-                    productDetails?._id,
-                    stock,
-                  )
-                }
+                onClick={() => handleAddToCart(productDetails?._id, stock)}
               >
                 Add to Cart
               </Button>
